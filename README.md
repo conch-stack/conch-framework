@@ -77,5 +77,127 @@
 
 
 
+### Spring AOP（Aspect Oriented Programming）
 
-### Spring AOP
+#### 分析
+
+- 进行功能增强：功能
+  - Advice通知：要进行功能增强的逻辑
+- 对类方法增强：可选择要增强的方法
+  - Pointcuts切入点：寻找功能增强的点
+- 不改变原类去情况下，实现增强
+  - Weaving织入：代理
+
+
+
+#### Advice设计
+
+- 特点：可选时机：方法功能前、后、异常
+
+定义一套标准接口，由用户实现
+
+接口类图
+
+- Advice
+  - MethodBeforeAdvice
+    - before(Method method, Object[] args, Object object)
+  - AfterReturningAdvice
+    - afterReturning(Object returnValue, Method method, Object[] args, Object object)
+  - MethodInterceptor 环绕
+    - invoke(Method method, Object[] args, Object object):Object
+
+
+
+#### Pointcut设计
+
+分析；
+
+- 指定哪些方法需要切入
+
+- xx类的xx方法
+
+- 重载问题：需要参数类型
+
+完整的需要的是一个：方法签名
+
+- com.beihu.zjz.Test.testMethod(Boy, Time)
+- com.beihu.zjz.Test.testMethod(Boy, Girl, Time)
+
+需要一个表达式：能够描述多个方法，模糊匹配
+
+- 包名：有父子特点，要能模拟匹配
+- 类名：要能模拟匹配
+- 方法名：要能模拟匹配
+- 参数类型：参数可以多个
+
+匹配方式：
+
+- 正则表达式  - yes
+- Ant Path表达式
+- AspectJ的pointcut表达式  - yes
+  - execution(* com.beihu.zjz.service.AccountService.*(..))
+
+匹配类、匹配方法
+
+接口类图
+
+- Pointcut
+  - matchClass(Class<?> targetClass):boolean
+  - matchMethod(Method method, Class<?> targetClass):boolean
+
+
+
+#### Aspect设计
+
+组合Advice和Pointcut
+
+类图
+
+- Advisor
+  - getAdviceBeanName:String
+  - getExpression():Stirng
+
+
+
+
+
+#### Weaving设计
+
+织入时间：创建Bean实例的时候，在**Bean初始化**后，进行增强
+
+- 初始化bean
+- 判断bean是否要增强
+  - 如果要增强：代理增强，返回实例
+  - 如果不要增强，直接返回实例
+
+**扩展：**（观察者模式）
+
+> 1. 创建Bean定义
+> 2. 注册Bean定义
+> 3. 创建Bean实例
+> 4. 初始化Bean实例
+> 5. ...
+
+在每个步骤前后，都可添加事件，触发观察者更新
+
+
+
+定义观察者接口
+
+- BeanPostProcessor
+  - postProcessBeforeInitialization(Object bean, String beanName):Object
+  - postProcessAfterInitialization(Object bean, String beanName):Object
+- AdvisorAutoProxyCreator implement BeanPostProcessor, AdvisorRegistry : 实现观察者
+  - postProcessAfterInitialization(Object bean, String beanName):Object
+  - List\<Advisor> 注册所有的切面到代理里面来
+- BeanFactory
+  - registerBeanPostProcess(BeanPostProcessor bpp)  : 注册到Bean工厂
+
+
+
+
+
+
+
+
+
