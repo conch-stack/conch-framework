@@ -1,4 +1,4 @@
-# eihu-Framework
+# Beihu-Framework
 
 ### Getting Started
 
@@ -43,11 +43,19 @@
 
 #### 如何定义参数依赖？
 
+- List存储
+- BeanDefinition中定义获取属性List接口
+- GenericBeanDefinition中实现这个方法，定义List存储结构
+- DefaultBeanFactory在构造完Bean后，获取从BeanDefinition中获取参数依赖、循环赋值
+- 赋值同样涉及直接值和Bean依赖问题，同构造参数依赖一样
+
 
 
 #### 如何定义构造参数依赖？
 
-- List存储
+- List存储 
+- BeanDefinition中定义获取属性List接口
+- GenericBeanDefinition中实现这个方法，定义List存储结构
 - 参数顺序：按顺序放入List
 - 参数值用：Object
 
@@ -58,6 +66,12 @@
   - Bean工厂在构造Bean实例时，遍历判断参数是否是BeanReference的，如果是，则替换为依赖的Bean实例
 - BeanReference
   - 只需指明依赖的的Bean的名字
+- 处理循环依赖
+  - 添加正在构建Set数组，check是否正在构建，构建完后，删除之。
+
+
+
+#### Bean增加别名支持（别名也是唯一的）
 
 
 
