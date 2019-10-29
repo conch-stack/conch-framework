@@ -1,6 +1,6 @@
 # Beihu-Framework
 
-### Getting Started
+
 
 ### Spring IOC（Inversion of Control）
 - BeanDefinition：Bean定义，Bean的元信息（单例、原型、初始化方法名，构造方式：构造器、工厂静态、工厂成员方法，销毁方法名、校验检查等）
@@ -197,7 +197,53 @@
 
 
 
+### Mybatis设计
 
+1. 设计一个类存放从xml和注解获得的SQL映射信息
 
+```
+public class MappedStatement {
 
+    /**
+     * 唯一编号：完整类名+方法名
+     */
+    private String id;
 
+    /**
+     * sql
+     */
+    private String sql;
+
+    /**
+     * sql命令类型
+     */
+    private SqlCommandType sqlCommandType;
+
+}
+
+```
+
+2. 存放MappedStatement
+
+```
+public class Configuration {
+
+    /**
+     * key = MappedStatement.id
+     */
+    private Map<String, MappedStatement> mappedStatements;
+
+    public void addMappedStatement(MappedStatement mappedStatement) {
+        mappedStatements.put(mappedStatement.getId(), mappedStatement);
+    }
+
+    public MappedStatement getMappedStatement(String id) {
+        return mappedStatements.get(id);
+    }
+
+    public boolean hasMappedStatement(String id) {
+        return mappedStatements.containsKey(id);
+    }
+
+}
+```
