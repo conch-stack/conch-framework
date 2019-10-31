@@ -18,7 +18,6 @@
         <license.maven.plugin>3.0</license.maven.plugin>
         <maven.java.formatter.plugin>0.4</maven.java.formatter.plugin>
         <project.encoding>UTF-8</project.encoding>
-        <java.version>1.8</java.version>
         <maven.compiler.plugin>3.1</maven.compiler.plugin>
     </properties>
 
