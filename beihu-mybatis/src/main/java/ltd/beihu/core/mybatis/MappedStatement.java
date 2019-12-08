@@ -1,10 +1,9 @@
 package ltd.beihu.core.mybatis;
 
 /**
- * @Author: zjz
- * @Desc: 存放注解获得的sql映射信息
- * @Date: 2019/10/29
- * @Version: V1.0.0
+ *
+ * @author Adam
+ * @since 2019/12/7
  */
 public class MappedStatement {
 

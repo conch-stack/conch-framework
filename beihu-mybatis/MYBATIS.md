@@ -1,16 +1,39 @@
-package ltd.beihu.core.mybatis;
+# Mybatis设计
 
-import java.util.Map;
 
-/**
- * Configuration to store {@code MappedStatement}
- * @author Adam
- * @since 2019/12/7
- */
+### 1. 设计一个类存放从xml和注解获得的SQL映射信息
+
+```
+public class MappedStatement {
+
+    /**
+     * 唯一编号：完整类名+方法名
+     */
+    private String id;
+
+    /**
+     * sql
+     */
+    private String sql;
+
+    /**
+     * sql命令类型
+     */
+    private SqlCommandType sqlCommandType;
+
+}
+
+```
+
+
+
+### 2. 存放MappedStatement
+
+```
 public class Configuration {
 
     /**
-     * key MappedStatement.id
+     * key = MappedStatement.id
      */
     private Map<String, MappedStatement> mappedStatements;
 
@@ -27,3 +50,4 @@ public class Configuration {
     }
 
 }
+```

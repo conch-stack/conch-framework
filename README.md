@@ -16,7 +16,12 @@
 
 
 
-TODO：参考https://github.com/seaswalker
+TODO：
+    参考:
+        https://github.com/seaswalker
+        https://github.com/seaswalker/spring-analysis
+
+
 
 ### Spring DI（Dependency Injection）
 
@@ -201,51 +206,55 @@ TODO：参考https://github.com/seaswalker
 
 ### Mybatis设计
 
-1. 设计一个类存放从xml和注解获得的SQL映射信息
+#### 需要愿景
 
-```
-public class MappedStatement {
+- 用户只需要定义持久层接口、方法对应的SQL语句
+- 用户需指明接口方法的参数与语句参数的对应关系
+- 用户需指明查询结果集与对象属性的映射关系
+- 框架完成接口对象的生成，JDBC执行过程
 
-    /**
-     * 唯一编号：完整类名+方法名
-     */
-    private String id;
+#### 设计
 
-    /**
-     * sql
-     */
-    private String sql;
+##### 需求1：用户只需要定义持久层接口、方法对应的SQL语句
 
-    /**
-     * sql命令类型
-     */
-    private SqlCommandType sqlCommandType;
+1、我们该提供什么样的方式来让用户定义SQL语句?
 
-}
+- XML:独立于代码，修改很方便(不需改代码)
 
-```
+- 注解:直接加在方法上，零xml配置。
 
-2. 存放MappedStatement
+2、SQL语句怎么与接口方法对应?
 
-```
-public class Configuration {
+- Mapper与Dao的关联关系定义
+- 扫描（包下）@Mapper注解的类
+- 扫描到Mapper后同时加载其xml
 
-    /**
-     * key = MappedStatement.id
-     */
-    private Map<String, MappedStatement> mappedStatements;
+3、这些SQL语句、对应关系我们框架需要获取到，谁来获取?又该如何表示存储
 
-    public void addMappedStatement(MappedStatement mappedStatement) {
-        mappedStatements.put(mappedStatement.getId(), mappedStatement);
-    }
+- 定义信息存储到Configuration中
 
-    public MappedStatement getMappedStatement(String id) {
-        return mappedStatements.get(id);
-    }
 
-    public boolean hasMappedStatement(String id) {
-        return mappedStatements.containsKey(id);
-    }
 
-}
-```
+##### 需求2：用户需指明接口方法的参数与语句参数的对应关系
+
+JDBC的SQL预编译功能
+
+- 定义@Param注解解析
+- 直接反射获取方法参数名（name）
+
+- \#{name}不用于参数预编译、${name}用于字符串替换
+
+参数映射：
+
+- 正则表达式
+- antlr
+
+表示：
+
+- 预编译问好的index下标
+- 对应值来源
+
+解析触发：
+
+- 设计如何执行一个Mapper接口
+- 定义SqlSession & SqlSessionFactory
