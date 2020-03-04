@@ -258,3 +258,12 @@ JDBC的SQL预编译功能
 
 - 设计如何执行一个Mapper接口
 - 定义SqlSession & SqlSessionFactory
+
+
+
+##### 需求3：
+
+
+
+##### 需求4：框架完成接口对象的生成，JDBC执行过程
+
