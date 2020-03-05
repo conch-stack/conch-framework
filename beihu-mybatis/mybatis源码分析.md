@@ -11,27 +11,26 @@
 ```shell
 $ tree -L 1
 .
-├── annotations
-├── binding
-├── builder
-├── cache
-├── cursor
-├── datasource
-├── exceptions
-├── executor
-├── io
-├── jdbc
-├── lang
-├── logging
-├── mapping
-├── package-info.java
-├── parsing
-├── plugin
-├── reflection
-├── scripting
-├── session
-├── transaction
-└── type
+├── annotations  注解
+├── binding 将Mapper接口与映射配置文件关联，并自动为接口生成动态代理对象
+├── builder 构造SQL或者Configuration的一些Builder：基于XML和Annotation
+├── cache    缓存模块
+├── cursor    游标特性模块
+├── datasource  数据源模块
+├── exceptions 异常模块
+├── executor  执行器
+├── io			资源加载工具
+├── jdbc     JDBC工具
+├── lang    Java语言版本定义
+├── logging  日志模块
+├── mapping  映射信息：ParameterMap，ResultMap，MappedStatement，SqlSoure，BoundSql
+├── parsing  具体解析XPath的工具
+├── plugin  插件
+├── reflection  反射模块
+├── scripting 解析动态SQL及占位符
+├── session   对外接口&Configuration
+├── transaction  事务
+└── type    类型处理器
 ```
 
 
@@ -45,22 +44,32 @@ $ tree -L 1
   - XMLMapperBuilder
 
     - mapper节点解析
+
     - parameterMap 节点解析
+
     - resultMap 节点解析
+
     - sql 节点解析
+
     - select|insert|update|delete 节点解析
 
-  - XMLScriptBuilder
+      - XMLStatementBuilder.parseStatementNode() : 解析每个statementNode(select,insert,update,delete) 
 
-    - 先解析动态SQL脚本节点
+        - XMLIncludeTransformer解析拼接字符串applyIncludes()
 
-      - > - trim      TrimHandler 
-        > - where     WhereHandler
-        > - set 、foreach  、if  、choose  、when  、otherwise 、bind     
+        - XMLScriptBuilder
 
-    - 再解析SQL中的占位符 （#{xxx}）
+          - 先解析动态SQL脚本节点
 
-      - > SqlSourceBuilder.parse()  -> ParameterMappingTokenHandler -> GenericTokenParser
+            - > trim      TrimHandler 
+              >
+              > where     WhereHandler
+              >
+              > set 、foreach  、if  、choose  、when  、otherwise 、bind     
+
+          - 再解析SQL中的占位符 （#{xxx}）
+
+            - > SqlSourceBuilder.parse()  -> ParameterMappingTokenHandler -> GenericTokenParse
 
 - SQL执行
 
