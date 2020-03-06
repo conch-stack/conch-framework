@@ -35,6 +35,12 @@ $ tree -L 1
 
 
 
+##### 三层架构：
+
+![image-20200306232757125](assets/image-20200306232757125.png)
+
+
+
 ##### XML方式解析：
 
 - 加载XML文件 -> InputStream -> XPathParser
@@ -55,7 +61,7 @@ $ tree -L 1
 
       - XMLStatementBuilder.parseStatementNode() : 解析每个statementNode(select,insert,update,delete) 
 
-        - XMLIncludeTransformer解析拼接字符串applyIncludes()
+        - XMLIncludeTransformer解析拼接字符串applyIncludes() ???
 
         - XMLScriptBuilder
 
@@ -87,5 +93,5 @@ $ tree -L 1
 
 ##### MyBatis执行一条语句的完整流程：
 
-<img src="assets/image-20200304200333284.png" alt="image-20200304200333284" style="zoom:50%;" />
+<img src="../beihu-mybatis/assets/image-20200304200333284.png" alt="image-20200304200333284" style="zoom:50%;" />
 
