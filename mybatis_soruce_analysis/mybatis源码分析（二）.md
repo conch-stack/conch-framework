@@ -79,15 +79,32 @@
       }
       ```
 
-      
-
-
-
-
-
-
-
-
+  - Invoker
+  
+    - MyBatis将方法、属性的反射包装了一层，统一调用模式
+  
+    - ```
+      Invoker
+        |_ AmbiguousMethodInvoker 模糊方法反射 抛异常
+        |_ MethodInvoker          有效方法反射
+        |_ GetFieldInvoker        获取字段值的反射
+        |_ SetFieldInvoker        设置字段值的反射
+      ```
+  
+  - ReflectorFactory：构造并缓存Refector
+  
+  - TypeParameterResolver：
+  
+    - Type
+  
+      - ```
+        Class:
+        ParameterizedType:参数化类型,List<String>,Map<String,String>这种带泛型的类型
+        		getRawType():获取原始数据类型，List<string>的原始类型为List
+        GenericArrayType:
+        TypeVariable:
+        WildcardType:
+        ```
 
 
 

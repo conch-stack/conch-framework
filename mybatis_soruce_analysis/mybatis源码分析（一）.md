@@ -93,5 +93,5 @@ $ tree -L 1
 
 ##### MyBatis执行一条语句的完整流程：
 
-<img src="../beihu-mybatis/assets/image-20200304200333284.png" alt="image-20200304200333284" style="zoom:50%;" />
+<img src="./assets/image-20200304200333284.png" alt="image-20200304200333284" style="zoom:50%;" />
 
