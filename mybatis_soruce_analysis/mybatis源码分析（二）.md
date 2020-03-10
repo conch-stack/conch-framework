@@ -75,7 +75,7 @@
          * 属性名转大写 <UpperCase_Property_name, Original_Property_name>
          */
         private Map<String, String> caseInsensitivePropertyMap = new HashMap<>();
-        ...
+        // ...
       }
       ```
 
@@ -177,23 +177,156 @@
          * 负责构建Reflector的工厂
          */
         private final ReflectorFactory reflectorFactory;
-        ...
+        // ...
       }
       ```
   
-- TypeHandler类型转换
+- TypeHandler：类型转换（**其实就是封装了JDBC的PreparedStatement和ResultSet的类型赋值和取值**）
 
   - JdbcType：维护(缓存)了 java.sql.Types (JDBC) 中的常量 与JdbcType的关联关系
+
+  - MappedTypes：注解在TypeHandler上，表明该 TypeHandler 能够处理的Java类型集合
+
+  - MappedJdbcTypes：注解在TypeHandler上， 表明该 TypeHandler 能够处理的JDBC类型集合
+
   - TypeHandler: 策略模式，类型转换器
-    - 
 
+    - ```java
+      public interface TypeHandler<T> {
+      
+        /**
+         * 处理类型
+         * 封装JDBC使用PreparedStatement处理数据类型的动作
+         *    TODO 会将数据Java类型到对应的JdbcType
+         *
+         *  PreparedStatement preparedstatement = connection.prepareStatement(sql);
+         *  preparedstatement.setInt(1, 3);
+         *  preparedstatement.setString(3, "198312");
+         *
+         * @param ps PreparedStatement
+         * @param i 参数索引
+         * @param parameter 参数值
+         * @param jdbcType jdbc类型
+         */
+        void setParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException;
+      
+        /**
+         * TODO 从ResultSet中获取数据时，将数据有JdbcType转换为Java类型
+         *
+         * @param columnName Colunm name, when configuration <code>useColumnLabel</code> is <code>false</code>
+         */
+        T getResult(ResultSet rs, String columnName) throws SQLException;
+      
+        T getResult(ResultSet rs, int columnIndex) throws SQLException;
+      
+        /**
+         * 存储过程
+         */
+        T getResult(CallableStatement cs, int columnIndex) throws SQLException;
+      
+      }
+      ```
 
+  - TypeHandlerRegistry：注册所有类型转换策略
+
+    - ```java
+      public final class TypeHandlerRegistry {
+      
+        /**
+         * JDBC 类型 + Handler ：用于将JdbcType转换为Java类型
+         * <JdbcType, TypeHandler>
+         */
+        private final Map<JdbcType, TypeHandler<?>>  jdbcTypeHandlerMap = new EnumMap<>(JdbcType.class);
+      
+        /**
+         * Java 类型 + 多个 JDBC类型+Handler ： 用于将Java类型转换为JdbcType，可能存在多个JdbcType的情况
+         * <Type, Map<NULL, TypeHandler> ：Java类型与JDBC类型只有一一对应关系时
+         * <Type, Map<Varchar, TypeHandler>： Java类型与JDBC类型只有一对多的关系时
+         * <Type, Map<Char, TypeHandler>： Java类型与JDBC类型只有一对多的关系时
+         *
+         */
+        private final Map<Type, Map<JdbcType, TypeHandler<?>>> typeHandlerMap = new ConcurrentHashMap<>();
+      
+        /**
+         * 未知数据类型 Object等
+         */
+        private final TypeHandler<Object> unknownTypeHandler;
+      
+        /**
+         * 所有类型handler注册
+         * <TypeHandler.class, TypeHandler>
+         */
+        private final Map<Class<?>, TypeHandler<?>> allTypeHandlersMap = new HashMap<>();
+      
+        /**
+         * 空 null 类型 handler注册
+         */
+        private static final Map<JdbcType, TypeHandler<?>> NULL_TYPE_HANDLER_MAP = Collections.emptyMap();
+      
+        /**
+         * 默认枚举类型 handler
+         */
+        private Class<? extends TypeHandler> defaultEnumTypeHandler = EnumTypeHandler.class;
+      
+        /**
+         * The default constructor.
+         */
+        public TypeHandlerRegistry() {
+          this(new Configuration());
+        }
+      
+        /**
+         * The constructor that pass the MyBatis configuration.
+         *
+         * @param configuration a MyBatis configuration
+         * @since 3.5.4
+         */
+        public TypeHandlerRegistry(Configuration configuration) {
+          this.unknownTypeHandler = new UnknownTypeHandler(configuration);
+      
+          /**
+           * 放入 typeHandlerMap 中，同时放入 allTypeHandlersMap
+           */
+          register(Boolean.class, new BooleanTypeHandler());
+          register(boolean.class, new BooleanTypeHandler());
+          /**
+           * 只放入 jdbcTypeHandlerMap
+           */
+          register(JdbcType.BOOLEAN, new BooleanTypeHandler());
+          register(JdbcType.BIT, new BooleanTypeHandler());
+          // ...
+        }
+        // ...
+      }
+      ```
+
+  - TypeAliasRegistry：别名，注册别名，易于使用
+
+    - ```java
+      public class TypeAliasRegistry {
+      
+        private final Map<String, Class<?>> typeAliases = new HashMap<>();
+      
+        public TypeAliasRegistry() {
+          registerAlias("string", String.class);
+      
+          registerAlias("byte", Byte.class);
+          registerAlias("long", Long.class);
+          // ...
+        }
+      }
+      ```
 
 
 
 
 
 ##### other：
+
+- TODO: ResolverUtil  a nice util
+- TODO：IO模块分析
+
+
 
 ```
 简析：Spring Boot MyBatis运行路径：(暂时放在这里，后面到具体章节会移走)
