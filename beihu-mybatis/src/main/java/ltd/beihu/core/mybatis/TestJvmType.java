@@ -11,7 +11,7 @@ import java.util.*;
  * @author Adam
  * @since 2020/3/8
  */
-public class Test {
+public class TestJvmType {
 
     public static String methodToProperty(String name) {
         if (name.startsWith("is")) {
@@ -41,12 +41,14 @@ public class Test {
 
     private TestType<String> testType;
 
+    private List<String>[] testGenericArrayType;
+
 
     /**
      * 参数化类型
      */
     public static void testParameterizedType() {
-        Field[] fields = Test.class.getDeclaredFields();
+        Field[] fields = TestJvmType.class.getDeclaredFields();
         System.out.println("===========================================================================================================================================");
         for (Field field : fields) {
             if (field.getGenericType() instanceof ParameterizedType) {
@@ -79,7 +81,7 @@ public class Test {
      * 类型变量：反映JVM在编译该泛型前的信息
      */
     public static void testTypeVariable() {
-        Field[] fields = Test.class.getDeclaredFields();
+        Field[] fields = TestJvmType.class.getDeclaredFields();
         for (Field field : fields) {
             Class<?> type = field.getType();
             System.out.println(field.getName());
@@ -115,14 +117,72 @@ public class Test {
         }
     }
 
-    public static void main(String[] args) {
+    /**
+     * 泛型数组
+     */
+    public static void testGenericArrayType() throws NoSuchFieldException {
+        Field testGenericArrayType = TestJvmType.class.getDeclaredField("testGenericArrayType");
+        Type genericType = testGenericArrayType.getGenericType();
+        if (genericType instanceof GenericArrayType) {
+            GenericArrayType genericArrayType = (GenericArrayType) genericType;
+            Type genericComponentType = genericArrayType.getGenericComponentType();
+            System.out.println("泛型数组：" + genericComponentType.getTypeName());
+        }
+    }
+
+    /**
+     * 通配符泛型
+     */
+    public static void testWildcardType() {
+        Method[] declaredMethods = TestJvmType.class.getDeclaredMethods();
+        for (Method declaredMethod : declaredMethods) {
+            if (declaredMethod.getName().equals("wildcardType")) {
+                Parameter[] parameters = declaredMethod.getParameters();
+                for (Parameter parameter : parameters) {
+                    System.out.println(parameter.getType().getSimpleName());
+                    System.out.println(parameter.getName());
+                    System.out.println(parameter.getParameterizedType().getTypeName());
+
+                    ParameterizedType parameterizedType = (ParameterizedType) parameter.getParameterizedType();
+                    Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+                    for (Type actualTypeArgument : actualTypeArguments) {
+                        if (actualTypeArgument instanceof WildcardType) {
+                            WildcardType wildcardType = (WildcardType) actualTypeArgument;
+                            Type[] lowerBounds = wildcardType.getLowerBounds();
+                            Type[] upperBounds = wildcardType.getUpperBounds();
+                            if (upperBounds.length != 0) {
+                                System.out.println("表达式上边界：" + Arrays.asList(upperBounds));
+                            }
+                            if (lowerBounds.length != 0) {
+                                System.out.println("表达式下边界：" + Arrays.asList(lowerBounds));
+                            }
+                        }
+                    }
+
+                }
+                System.out.println("-------------------------------------");
+                Type[] genericParameterTypes = declaredMethod.getGenericParameterTypes();
+                Type genericReturnType = declaredMethod.getGenericReturnType();
+                Class<?>[] parameterTypes = declaredMethod.getParameterTypes();
+                Class<?> returnType = declaredMethod.getReturnType();
+                TypeVariable<Method>[] typeParameters = declaredMethod.getTypeParameters();
+            }
+        }
+    }
+
+    public void wildcardType(TestType<? super String> param) {
+
+    }
+
+    public static void main(String[] args) throws NoSuchFieldException {
         //        System.out.println(methodToProperty("getAbc"));
         //        System.out.println(methodToProperty("getabc"));
         //        System.out.println(methodToProperty("getAAbc"));
 
-        //        testParameterizedType();
-
-        testTypeVariable();
+        //                testParameterizedType();
+        //        testTypeVariable();
+        //        testGenericArrayType();
+        testWildcardType();
     }
 
     public class TestType<T extends String> {
