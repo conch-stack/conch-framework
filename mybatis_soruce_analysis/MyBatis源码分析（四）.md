@@ -83,54 +83,169 @@ ClassLoader基本知识：(双亲委派模型：简单来说就是子类必须�
     public static File getResourceAsFile(ClassLoader loader, String resource)
     ```
 
-- ResolverUtil：根据指定的条件在指定的类路径下查找类
 
-  - 组合 ClassLoader：记录当前的类加载器，默认为当前线程的上下文类加载器
 
-  - 条件定义接口：org.apache.ibatis.io.ResolverUtil.Test 
+##### ResolverUtil：根据指定的条件在指定的类路径下查找类
 
-    - ```java
+- 组合 ClassLoader：记录当前的类加载器，默认为当前线程的上下文类加载器
+
+- 条件定义接口：org.apache.ibatis.io.ResolverUtil.Test 
+
+  - ```java
+    /**
+     * 定义条件规则
+     */
+    public interface Test {
       /**
-       * 定义条件规则
+       * 过滤类的接口方法，返回为True的才能够被 ResolverUtil 使用
        */
-      public interface Test {
-        /**
-         * 过滤类的接口方法，返回为True的才能够被 ResolverUtil 使用
-         */
-        boolean matches(Class<?> type);
-      }
-      ```
+      boolean matches(Class<?> type);
+    }
+    ```
 
-    - IsA：实现了 org.apache.ibatis.io.ResolverUtil.Test ，检测类是否继承了指定类或接口
+  - IsA：实现了 org.apache.ibatis.io.ResolverUtil.Test ，检测类是否继承了指定类或接口
 
-      ```java
-      public static class IsA implements Test {
-        private Class<?> parent; // TODO 指定类
-        
-        public IsA(Class<?> parentType) {
-          this.parent = parentType;
-        }
+    ```java
+    public static class IsA implements Test {
+      private Class<?> parent; // TODO 指定类
       
-        @Override
-        public boolean matches(Class<?> type) { // TODO 目标 type
-          return type != null && parent.isAssignableFrom(type);
+      public IsA(Class<?> parentType) {
+        this.parent = parentType;
+      }
+    
+      @Override
+      public boolean matches(Class<?> type) { // TODO 目标 type
+        return type != null && parent.isAssignableFrom(type);
+      }
+    }
+    ```
+
+  - AnnotatedWith：实现了 org.apache.ibatis.io.ResolverUtil.Test ，检测类是否添加了指定的注解
+
+    ```java
+    public static class AnnotatedWith implements Test {
+      private Class<? extends Annotation> annotation;
+    
+      public AnnotatedWith(Class<? extends Annotation> annotation) {
+        this.annotation = annotation;
+      }
+    
+      @Override
+      public boolean matches(Class<?> type) {
+        return type != null && type.isAnnotationPresent(annotation);
+      }
+    }
+    ```
+
+- 使用Demo
+
+  ```java
+  ResolverUtil<ActionBean> resolver = new ResolverUtil<ActionBean>();
+  // 在 pkg1和pkg2下查找实现了 ActionBean 的类
+  resolver.findImplementation(ActionBean.class, pkg1, pkg2);
+  resolver.find(new CustomTest(), pkg1);  // pkg1包下查找符合CustomTest的类Class
+  resolver.find(new CustomTest(), pkg2);
+  Collectionz<ActionBean> beans = resolver.getClasses();
+  ```
+
+- find() 实现：
+
+  ```java
+  public ResolverUtil<T> find(Test test, String packageName) {
+    String path = getPackagePath(packageName);
+  
+    try {
+      // TODO 通过 VFS 获取包路径下的所有资源
+      List<String> children = VFS.getInstance().list(path);
+      for (String child : children) {
+        if (child.endsWith(".class")) {
+          addIfMatching(test, child);
         }
       }
-      ```
-
-    - AnnotatedWith：实现了 org.apache.ibatis.io.ResolverUtil.Test ，检测类是否添加了指定的注解
-
-      ```java
-      public static class AnnotatedWith implements Test {
-        private Class<? extends Annotation> annotation;
-      
-        public AnnotatedWith(Class<? extends Annotation> annotation) {
-          this.annotation = annotation;
+    } catch (IOException ioe) {
+      log.error("Could not read package: " + packageName, ioe);
+    }
+  
+    return this;
+  }
+  
+  protected void addIfMatching(Test test, String fqn) {
+      try {
+        // TODO 构建完全限定名
+        String externalName = fqn.substring(0, fqn.indexOf('.')).replace('/', '.');
+        ClassLoader loader = getClassLoader();
+        if (log.isDebugEnabled()) {
+          log.debug("Checking to see if class " + externalName + " matches criteria [" + test + "]");
         }
-      
-        @Override
-        public boolean matches(Class<?> type) {
-          return type != null && type.isAnnotationPresent(annotation);
+  
+        // TODO 加载类
+        Class<?> type = loader.loadClass(externalName);
+        if (test.matches(type)) {
+          matches.add((Class<T>) type);
         }
+      } catch (Throwable t) {
+        log.warn("Could not examine class '" + fqn + "'" + " due to a " +
+            t.getClass().getName() + " with message: " + t.getMessage());
       }
-      ```
+    }
+  ```
+
+
+
+##### VFS：虚拟文件系统（Virtual File System）
+
+单例模式
+
+用于查找指定路径下的资源
+
+- VFS抽象类：
+
+  - 存放VFS实现类定义Class
+
+  ```java
+  /** MyBatis实现的VFS */
+  public static final Class<?>[] IMPLEMENTATIONS = { JBoss6VFS.class, DefaultVFS.class };
+  
+  /** 用户实现的VFS added by {@link #addImplClass(Class)}. */
+  public static final List<Class<? extends VFS>> USER_IMPLEMENTATIONS = new ArrayList<>();
+  ```
+
+  - Singleton Instance Holder：
+
+  ```java
+  private static class VFSHolder {
+      static final VFS INSTANCE = createVFS();
+  
+      @SuppressWarnings("unchecked")
+      static VFS createVFS() {
+        // TODO 有限使用用户设置的VFS，然后使用MyBatis自带的
+        List<Class<? extends VFS>> impls = new ArrayList<>();
+        impls.addAll(USER_IMPLEMENTATIONS);
+        impls.addAll(Arrays.asList((Class<? extends VFS>[]) IMPLEMENTATIONS));
+  
+        // Try each implementation class until a valid one is found
+        VFS vfs = null;
+        for (int i = 0; vfs == null || !vfs.isValid(); i++) {
+          Class<? extends VFS> impl = impls.get(i);
+          try {
+            // TODO 实例化
+            vfs = impl.getDeclaredConstructor().newInstance();
+  					// ...
+          } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            return null;
+          }
+        }
+        return vfs;
+      }
+    }
+  ```
+
+  
+
+
+
+
+
+
+
+- Resources 和 VFS 什么场景下用？？？
