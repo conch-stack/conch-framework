@@ -186,3 +186,111 @@ public class UnpooledDataSource implements DataSource {
 
 ##### 重点：PooledDataSource源码：
 
+> PooledDataSource 通过 PoolState 管理 PooledConnection
+
+- PooledConnection：代理 java.sql.Connection
+
+```java
+class PooledConnection implements InvocationHandler {
+
+  private static final String CLOSE = "close";
+  private static final Class<?>[] IFACES = new Class<?>[] { Connection.class };
+
+  private final int hashCode;
+  // TODO 持有 PooledDataSource 对象，用于归还 Connection 等
+  private final PooledDataSource dataSource;
+  private final Connection realConnection;   // 真正的数据库连接
+  private final Connection proxyConnection;  // 代理的数据库连接
+  private long checkoutTimestamp;         // 从连接池中取出该连接的时间
+  private long createdTimestamp;        // 该连接创建时间
+  private long lastUsedTimestamp;       // 最后一次使用时间
+  // TODO 由数据库URL、用户名、密码计算出来的Hash值，用于标识该连接所在的连接池
+  private int connectionTypeCode;
+  // TODO 检测当前PooledConnection是否有效，防止程序通过 close() 归还连接后，依然使用该连接操作数据库
+  private boolean valid;
+  //...
+  
+  @Override
+  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    String methodName = method.getName();
+    // TODO 调用Connection的Close方法时，归还连接
+    if (CLOSE.equals(methodName)) {
+      dataSource.pushConnection(this);
+      return null;
+    }
+    try {
+      if (!Object.class.equals(method.getDeclaringClass())) {
+        checkConnection(); // 校验连接valid
+      }
+      // 调用真正数据库连接对象的方法
+      return method.invoke(realConnection, args);
+    } catch (Throwable t) {
+      throw ExceptionUtil.unwrapThrowable(t);
+    }
+  }
+}
+```
+
+- **PoolState：管理PooledConnection对象及其状态**
+
+```java
+public class PoolState {
+  protected PooledDataSource dataSource;
+
+  // TODO 管理闲置状态连接
+  protected final List<PooledConnection> idleConnections = new ArrayList<>();
+  // TODO 管理活跃状态连接  
+  // PooledDataSource的所有连接都是放在这个里面存储的
+  protected final List<PooledConnection> activeConnections = new ArrayList<>();
+  /**
+   * 统计
+   */
+  protected long requestCount = 0;  // 请求数据库连接次数
+  protected long accumulatedRequestTime = 0;  // 累计请求时间
+  protected long accumulatedCheckoutTime = 0; // 所有连接累计借出时长
+  protected long claimedOverdueConnectionCount = 0; // 超时的连接个数
+  protected long accumulatedCheckoutTimeOfOverdueConnections = 0;  // 累计超时时间
+  protected long accumulatedWaitTime = 0;  // 累计等待时间
+  protected long hadToWaitCount = 0;  // 等待次数
+  protected long badConnectionCount = 0;  // 无效连接次数
+  // ...
+}
+```
+
+- PooledDataSource：
+- 核心方法：借助 poolState 对象锁，继续wait()和notifyAll()的操作，实现类似阻塞队列的效果
+  - popConnection(String username, String password)   // 取出连接
+  - pushConnection(PooledConnection conn)  // 归还连接
+  - pingConnection(PooledConnection conn) // SQL检测连接
+  - forceCloseAll()  // 强制关闭所有连接，当修改数据库属性（URL，用户名，密码，autoCommit等）触发
+    - 将所有PooledConnection置为无效
+    - 清空：activeConnections 和 idleConnections
+
+```java
+public class PooledDataSource implements DataSource {
+  
+  // TODO 持有一个 PoolState 对象，管理所有连接
+  private final PoolState state = new PoolState(this);
+	// TODO 持有一个 UnpooledDataSource 对象，用于创建新连接
+  private final UnpooledDataSource dataSource;
+
+  // OPTIONAL CONFIGURATION FIELDS
+  protected int poolMaximumActiveConnections = 10;    // 最大活跃连接数
+  protected int poolMaximumIdleConnections = 5;       // 最大空闲连接数
+  protected int poolMaximumCheckoutTime = 20000;      // 最大取出时长
+  protected int poolTimeToWait = 20000;               // 无法获取连接时，线程等待时间
+  protected int poolMaximumLocalBadConnectionTolerance = 3;   // 最大错误连接容忍数
+  protected String poolPingQuery = "NO PING QUERY SET"; // 测试数据库连接是否可用，测试SQL
+  protected boolean poolPingEnabled; // 是否允许发送测试SQL语句
+  protected int poolPingConnectionsNotUsedFor;  // 当连接超过该值（毫秒）未使用时，发送一次测试SQL，检测连接是否正常
+
+  // TODO 根据数据库URL、用户名、密码生成一个hash值，该hash值标识当前的连接池
+  //（意味着可能还有连接池的池：多数据源）在构造函数中初始化
+  private int expectedConnectionTypeCode;
+
+  public PooledDataSource() {
+    dataSource = new UnpooledDataSource();
+  }
+  // ...
+}
+```
