@@ -228,7 +228,7 @@ public class MapperMethod {
           executeWithResultHandler(sqlSession, args);
           result = null;
         } else if (method.returnsMany()) {
-          result = executeForMany(sqlSession, args);
+          result = executeForMany(sqlSession, args);  // 处理数组或Collection集合返回值
         } else if (method.returnsMap()) {
           result = executeForMap(sqlSession, args);
         } else if (method.returnsCursor()) {
@@ -304,19 +304,22 @@ public class MapperMethod {
   // 方法的签名信息
   public static class MethodSignature {
 
-    private final boolean returnsMany;
-    private final boolean returnsMap;
-    private final boolean returnsVoid;
-    private final boolean returnsCursor;
-    private final boolean returnsOptional;
-    private final Class<?> returnType;
-    private final String mapKey;
+    private final boolean returnsMany; // 返回类型是否为Collection类型或者数组
+    private final boolean returnsMap; // 返回类型是否为Map类型
+    private final boolean returnsVoid; // 返回类型是否为void
+    private final boolean returnsCursor; // 返回类型是否为Cursor（游标）
+    private final boolean returnsOptional; // 返回类型是Optional类型
+    private final Class<?> returnType; // 返回值类型
+    private final String mapKey;  // 如果返回值是Map，则记录其作为key的列名
+    // 用于标识该方法参数列表中ResultHandler类型参数的位置（因为它不会被记录进参数names中）
     private final Integer resultHandlerIndex;
+    // 用于标识该方法参数列表中RowBounds类型参数的位置（因为它不会被记录进参数names中）
     private final Integer rowBoundsIndex;
     // TODO 处理Mapper方法的参数列表 （具体参考下面）
     private final ParamNameResolver paramNameResolver;
 
     public MethodSignature(Configuration configuration, Class<?> mapperInterface, Method method) {
+      // TODO 解析返回值类型
       Type resolvedReturnType = TypeParameterResolver.resolveReturnType(method, mapperInterface);
       if (resolvedReturnType instanceof Class<?>) {
         this.returnType = (Class<?>) resolvedReturnType;
@@ -325,6 +328,7 @@ public class MapperMethod {
       } else {
         this.returnType = method.getReturnType();
       }
+      // TODO 判断 返回值类型
       this.returnsVoid = void.class.equals(this.returnType);
       this.returnsMany = configuration.getObjectFactory().isCollection(this.returnType) || this.returnType.isArray();
       this.returnsCursor = Cursor.class.equals(this.returnType);
@@ -333,88 +337,17 @@ public class MapperMethod {
       this.returnsMap = this.mapKey != null;
       this.rowBoundsIndex = getUniqueParamIndex(method, RowBounds.class);
       this.resultHandlerIndex = getUniqueParamIndex(method, ResultHandler.class);
+      // 参数名处理
       this.paramNameResolver = new ParamNameResolver(configuration, method);
     }
-
+    // ...
+    
+    // TODO 重要 获取 参数名 与 实参的对应关系
     public Object convertArgsToSqlCommandParam(Object[] args) {
       return paramNameResolver.getNamedParams(args);
     }
-
-    public boolean hasRowBounds() {
-      return rowBoundsIndex != null;
-    }
-
-    public RowBounds extractRowBounds(Object[] args) {
-      return hasRowBounds() ? (RowBounds) args[rowBoundsIndex] : null;
-    }
-
-    public boolean hasResultHandler() {
-      return resultHandlerIndex != null;
-    }
-
-    public ResultHandler extractResultHandler(Object[] args) {
-      return hasResultHandler() ? (ResultHandler) args[resultHandlerIndex] : null;
-    }
-
-    public String getMapKey() {
-      return mapKey;
-    }
-
-    public Class<?> getReturnType() {
-      return returnType;
-    }
-
-    public boolean returnsMany() {
-      return returnsMany;
-    }
-
-    public boolean returnsMap() {
-      return returnsMap;
-    }
-
-    public boolean returnsVoid() {
-      return returnsVoid;
-    }
-
-    public boolean returnsCursor() {
-      return returnsCursor;
-    }
-
-    /**
-     * return whether return type is {@code java.util.Optional}.
-     * @return return {@code true}, if return type is {@code java.util.Optional}
-     * @since 3.5.0
-     */
-    public boolean returnsOptional() {
-      return returnsOptional;
-    }
-
-    private Integer getUniqueParamIndex(Method method, Class<?> paramType) {
-      Integer index = null;
-      final Class<?>[] argTypes = method.getParameterTypes();
-      for (int i = 0; i < argTypes.length; i++) {
-        if (paramType.isAssignableFrom(argTypes[i])) {
-          if (index == null) {
-            index = i;
-          } else {
-            throw new BindingException(method.getName() + " cannot have multiple " + paramType.getSimpleName() + " parameters");
-          }
-        }
-      }
-      return index;
-    }
-
-    private String getMapKey(Method method) {
-      String mapKey = null;
-      if (Map.class.isAssignableFrom(method.getReturnType())) {
-        final MapKey mapKeyAnnotation = method.getAnnotation(MapKey.class);
-        if (mapKeyAnnotation != null) {
-          mapKey = mapKeyAnnotation.value();
-        }
-      }
-      return mapKey;
-    }
   }
+}
 ```
 
 
@@ -478,20 +411,23 @@ public class ParamNameResolver {
     names = Collections.unmodifiableSortedMap(map);
   }
 
+  // 获取对应索引位置的方法名
   private String getActualParamName(Method method, int paramIndex) {
     return ParamNameUtil.getParamNames(method).get(paramIndex);
   }
 
   /**
-   * TODO 
+   * TODO 将实参与对应名称关联
    */
-  public Object getNamedParams(Object[] args) {
+	public Object getNamedParams(Object[] args) {
     final int paramCount = names.size();
-    if (args == null || paramCount == 0) {
+    if (args == null || paramCount == 0) { // 无参，返回null
       return null;
-    } else if (!hasParamAnnotation && paramCount == 1) {
+    } else if (!hasParamAnnotation && paramCount == 1) { // 未使用@Param注解，且只有一个参数
       return args[names.firstKey()];
-    } else {
+    } else {  // 处理 @Param 注解
+      // key: 参数名
+      // value: 对应实参
       final Map<String, Object> param = new ParamMap<>();
       int i = 0;
       for (Map.Entry<Integer, String> entry : names.entrySet()) {
@@ -499,6 +435,7 @@ public class ParamNameResolver {
         // add generic param names (param1, param2, ...)
         final String genericParamName = GENERIC_NAME_PREFIX + (i + 1);
         // ensure not to overwrite parameter named with @Param
+        // TODO 保证未使用@Param注解的参数解析， 如果对应 generic param name 已经存在 names 集合中，则忽略
         if (!names.containsValue(genericParamName)) {
           param.put(genericParamName, args[entry.getKey()]);
         }
