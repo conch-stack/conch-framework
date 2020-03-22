@@ -228,7 +228,7 @@ public class MapperMethod {
           executeWithResultHandler(sqlSession, args);
           result = null;
         } else if (method.returnsMany()) {
-          result = executeForMany(sqlSession, args);  // 处理数组或Collection集合返回值
+          result = executeForMany(sqlSession, args);
         } else if (method.returnsMap()) {
           result = executeForMap(sqlSession, args);
         } else if (method.returnsCursor()) {
@@ -342,7 +342,7 @@ public class MapperMethod {
     }
     // ...
     
-    // TODO 重要 获取 参数名 与 实参的对应关系
+    // TODO 重要 获取 参数名 与
     public Object convertArgsToSqlCommandParam(Object[] args) {
       return paramNameResolver.getNamedParams(args);
     }
