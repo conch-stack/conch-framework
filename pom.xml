@@ -23,6 +23,8 @@
 
     <modules>
         <module>beihu-core</module>
+        <module>beihu-mybatis</module>
+        <module>thinking-in-spring</module>
     </modules>
 
     <build>
