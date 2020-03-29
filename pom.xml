@@ -19,6 +19,8 @@
         <maven.java.formatter.plugin>0.4</maven.java.formatter.plugin>
         <project.encoding>UTF-8</project.encoding>
         <maven.compiler.plugin>3.1</maven.compiler.plugin>
+
+        <springboot.version>2.1.0.RELEASE</springboot.version>
     </properties>
 
     <modules>
@@ -26,6 +28,18 @@
         <module>beihu-mybatis</module>
         <module>thinking-in-spring</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${springboot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
