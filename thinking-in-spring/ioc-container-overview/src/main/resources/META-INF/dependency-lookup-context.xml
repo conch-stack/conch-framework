@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="user" class="ltd.beihu.spring.ioc.overview.domain.User">
+        <property name="name" value="郑飞飞"/>
+        <property name="age" value="18"/>
+    </bean>
+
+    <!-- 延迟获取 -->
+    <bean id="objectFactory" class="org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean">
+        <property name="targetBeanName" value="user"/>
+    </bean>
+
+    <bean id="superUser" class="ltd.beihu.spring.ioc.overview.domain.SuperUser" parent="user" primary="true">
+        <property name="address" value="上海"/>
+    </bean>
+</beans>
