@@ -157,9 +157,10 @@ public class ApplicationContextAsIoCContainerDemo {
         applicationContext.register(ApplicationContextAsIoCContainerDemo.class);
         // 启动应用上下文
         applicationContext.refresh();
-
         // 依赖查找
         lookupCollectionType(applicationContext);
+        // 停止
+        applicationContext.close();
     }
 
     @Bean
@@ -176,3 +177,59 @@ public class ApplicationContextAsIoCContainerDemo {
     }
 }
 ```
+
+
+
+##### IoC生命周期
+
+- 启动:applicationContext.refresh();
+- 运行
+- 停止:applicationContext.close();
+
+
+
+##### BeanFactory 和 FactoryBean 的区别
+
+- BeanFactory是IoC的底层容器
+
+- FactoryBean是创建Bean的一种方式，帮助实现复杂的初始化逻辑
+
+  ```java
+  public interface FactoryBean<T> {
+  
+     String OBJECT_TYPE_ATTRIBUTE = "factoryBeanObjectType";
+  
+     /**
+      * 获取对象
+      */
+     @Nullable
+     T getObject() throws Exception;
+  
+     /**
+      * 获取对象类型
+      */
+     @Nullable
+     Class<?> getObjectType();
+  
+     /**
+      * 是否为单例
+      */
+     default boolean isSingleton() {
+        return true;
+     }
+  }
+  ```
+
+  FactoryBean会被BeanFactory容器调用，根据其类型和是否为单例进行对象创建
+
+  问题：FactoryBean被创建的Bean会不会被纳入Bean的生命周期
+
+
+
+##### Spring IoC容器启动做了哪些准备？
+
+- IoC配置元信息的读取和解析（XML、Annotation）
+- IoC容器生命周期 （refresh、postProcessor）
+- Spring事件发布
+- 国际化
+- ....

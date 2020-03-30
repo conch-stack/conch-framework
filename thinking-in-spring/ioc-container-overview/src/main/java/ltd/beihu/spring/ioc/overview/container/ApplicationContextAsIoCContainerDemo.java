@@ -24,11 +24,14 @@ public class ApplicationContextAsIoCContainerDemo {
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
         // 注册当前类 作为 配置类 Configuration Class
         applicationContext.register(ApplicationContextAsIoCContainerDemo.class);
-        // 启动应用上下文
+        // 启动应用上下文 // TODO 重点
         applicationContext.refresh();
 
         // 依赖查找
         lookupCollectionType(applicationContext);
+
+        // 停止
+        applicationContext.close();
     }
 
     @Bean
