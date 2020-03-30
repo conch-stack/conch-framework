@@ -52,8 +52,37 @@ IoC
 
 
 
-
-
 ##### ApplicationContext 和 BeanFactory的关系
 
-ApplicationContext  实现了 BeanFactory接口，同时又组合了一个BeanFactory，所有在用ApplicationContext时，一定要去获取去真正的BeanFactory
+ApplicationContext  实现了 BeanFactory接口，同时又组合了一个BeanFactory，所以在用ApplicationContext时，一定要去获取去真正的BeanFactory
+
+类似代理；
+
+官方介绍：
+
+In short, the `BeanFactory` provides the configuration framework and basic functionality, and the `ApplicationContext` adds more enterprise-specific functionality.
+
+简而言之，BeanFactory提供了配置框架和基本功能，而ApplicationContext增加了更多企业特定的功能。
+
+ApplicationContext提供：
+
+- Easier integration with Spring’s AOP features：更容易与Spring AOP集成
+- Message resource handling (for use in internationalization)：消息处理，用于国际化
+- Event publication：事件发布
+- Application-layer specific contexts such as the `WebApplicationContext` for use in web applications.：应用级别的上下文，如给web应用使用的WebApplicationContext
+
+
+
+##### Spring IoC配置元信息
+
+- Bean定义配置
+  - 基于XML文件
+  - 基于Properties文件
+  - 基于Java注解
+  - 基于Java API
+- IoC容器配置
+  - 基于XML文件
+  - 基于Java注解
+  - 基于Java API
+- 外部化属性配置
+  - 基于Java注解：@Value("")
