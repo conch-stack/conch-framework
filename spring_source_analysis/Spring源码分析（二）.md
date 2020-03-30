@@ -52,6 +52,22 @@ IoC
 
 
 
+##### Spring IoC配置元信息
+
+- Bean定义配置
+  - 基于XML文件
+  - 基于Properties文件
+  - 基于Java注解
+  - 基于Java API
+- IoC容器配置
+  - 基于XML文件
+  - 基于Java注解
+  - 基于Java API
+- 外部化属性配置
+  - 基于Java注解：@Value("")
+
+
+
 ##### ApplicationContext 和 BeanFactory的关系
 
 ApplicationContext  实现了 BeanFactory接口，同时又组合了一个BeanFactory，所以在用ApplicationContext时，一定要去获取去真正的BeanFactory
@@ -73,16 +89,90 @@ ApplicationContext提供：
 
 
 
-##### Spring IoC配置元信息
+ApplicationContext除了IOC容器角色，还提供：
 
-- Bean定义配置
-  - 基于XML文件
-  - 基于Properties文件
-  - 基于Java注解
-  - 基于Java API
-- IoC容器配置
-  - 基于XML文件
-  - 基于Java注解
-  - 基于Java API
-- 外部化属性配置
-  - 基于Java注解：@Value("")
+- 面向切面（AOP）
+- 配置元信息（Configuration Metadata）
+- 资源管理（Resources）
+- 事件（Events）
+- 国际化（i18n）
+- 注解（Annotations）
+- Environment 抽象（Environment Abstraction）
+
+
+
+##### 什么时候用ApplicationContext and BeanFactory
+
+```java
+/**
+ * BeanFactory 作为 IOC 容器
+ *
+ * TODO 用这个就没有那些事件等复杂的支持了
+ *
+ * @author Adam
+ * @since 2020/3/30
+ */
+public class BeanFactoryAsIoCContainerDemo {
+
+    public static void main(String[] args) {
+        // 创建 BeanFactory 容器
+        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+        // 加载配置
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
+        int beansNum = reader.loadBeanDefinitions("classpath:META-INF/dependency-lookup-context.xml");
+        System.out.println("加载的Bean的个数：" + beansNum);
+
+        // 依赖查找
+        lookupCollectionType(beanFactory);
+    }
+
+
+    private static void lookupCollectionType(BeanFactory beanFactory) {
+        if (beanFactory instanceof ListableBeanFactory) {
+            ListableBeanFactory listableBeanFactory = (ListableBeanFactory) beanFactory;
+            Map<String, User> users = listableBeanFactory.getBeansOfType(User.class);
+            System.out.println("查找所有类型为User的Bean：" + users);
+        }
+    }
+}
+```
+
+
+
+```java
+/**
+ * Application 作为 IOC 容器
+ *      注解能力的 context
+ *
+ * @author Adam
+ * @since 2020/3/30
+ */
+@Configuration
+public class ApplicationContextAsIoCContainerDemo {
+
+    public static void main(String[] args) {
+        // 创建 ApplicationContext 容器
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+        // 注册当前类 作为 配置类 Configuration Class
+        applicationContext.register(ApplicationContextAsIoCContainerDemo.class);
+        // 启动应用上下文
+        applicationContext.refresh();
+
+        // 依赖查找
+        lookupCollectionType(applicationContext);
+    }
+
+    @Bean
+    public User user() {
+        return new User("ApplicationContext", 10);
+    }
+
+    private static void lookupCollectionType(BeanFactory beanFactory) {
+        if (beanFactory instanceof ListableBeanFactory) {
+            ListableBeanFactory listableBeanFactory = (ListableBeanFactory) beanFactory;
+            Map<String, User> users = listableBeanFactory.getBeansOfType(User.class);
+            System.out.println("查找所有类型为User的Bean：" + users);
+        }
+    }
+}
+```
