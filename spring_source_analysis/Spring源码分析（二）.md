@@ -19,7 +19,36 @@ IoC
     - 集合 Bean 对象
 
 - 依赖注入
+  - 根据Bean名称注入： \<ref bean="superUser"/>
+  - 根据Bean类型注入：autowire="byType"
+    - 单个Bean对象
+    - 集合Bean对象
+  - 注入容器内建Bean对象：
+  - 注入非Bean对象
+  - 注入类型
+    - 实时注入
+    
+    - 延迟注入
+    
+      - ```java
+        private ObjectFactory<User> objectFactory; // 延迟注入的属性
+        ```
+  
 - 依赖来源
+
+  - 自定义Bean
+
+  - 容器内建Bean对象
+
+    - ```java
+      // 容器内建 Bean
+      Environment environment = beanFactory.getBean(Environment.class);
+      System.out.println("获取Environment类型的Bean：" + environment);
+      ```
+
+  - 容器内建依赖
+
+    - 不可以通过 beanFactory.getBean("xxx") 去获取
 
 
 
