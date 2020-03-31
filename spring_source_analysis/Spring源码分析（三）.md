@@ -2,7 +2,7 @@
 
 Spring Bean基础
 
-- 定义Bean
+- **定义Bean**
   - Spring中定义Bean的配置元信息接口
     - Bean的全限定名
     - Bean的行为配置元素，如作用域、自动绑定，生命周期回调等
@@ -12,6 +12,10 @@ Spring Bean基础
 
 
 - **BeanDefinition元信息**
+  - 构建BeanDefinition：
+    - 通过BeanDefinitionBuilder
+    - 通过AbstractBeanDefinition及其派生类 GenericBeanDefinition
+      - **AnnotatedBeanDefiniton** 标注注解的Bean定义
 
 | 属性                     | 说明                                           |
 | ------------------------ | ---------------------------------------------- |
@@ -25,17 +29,47 @@ Spring Bean基础
 | Initialization Method    | Bean初始化回调方法名称                         |
 | Destruction Method       | Bean销毁回调的方法名称                         |
 
-构建BeanDefinition：
-
-- 通过BeanDefinitionBuilder
-- 通过AbstractBeanDefinition及其派生类
 
 
+- **命名 Spring Bean**
+  - Bean的id或name，别名
+  - Spring不强求要求一点要指定Bean的id或name
+    - 未指定，会自动生成（Java驼峰规则）
+      - BeanNameGenerator，DefaultBeanNameGenerator
+      - AnnotationBeanNameGenerator
 
-- 命名 Spring Bean
-- Spring Bean 别名
+
+
+- **Spring Bean 别名**
+
+  - 复用现有的BeanDefinition
+
+  
+
+
+
 - 注册 Spring Bean
+
+
+
+
+
+
+
 - 实例化 Spring Bean
+
+
+
+
+
 - 延迟初始化 Spring Bean
+
+
+
+
+
 - 销毁 Spring Bean
+
+
+
 - 垃圾回收 Spring Bean

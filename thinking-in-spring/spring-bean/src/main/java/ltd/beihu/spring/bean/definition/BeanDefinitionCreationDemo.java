@@ -34,5 +34,9 @@ public class BeanDefinitionCreationDemo {
         mutablePropertyValues.addPropertyValue("name", "啧啧啧");
         mutablePropertyValues.addPropertyValue("age", 12);
         genericBeanDefinition.setPropertyValues(mutablePropertyValues);
+
+        // 3. AnnotatedBeanDefinition
+
+
     }
 }
