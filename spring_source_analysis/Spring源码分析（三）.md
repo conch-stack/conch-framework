@@ -46,11 +46,17 @@ Spring Bean基础
 
   
 
-
-
-- 注册 Spring Bean
-
-
+- **注册 Spring Bean**
+  - XML配置元信息
+    - <bean name="" ... />
+  - Java注解配置元信息
+    - @Bean
+    - @Component
+    - @Import
+  - Java API配置元信息
+    - 命名方式：BeanDefinitionRegistry#registerBeanDefinition(String, BeanDefinition)
+    - 非命名方式：BeanDefinitionReaderUtils#registerWithGeneratedName(AbstractBeanDefinition,BeanDefinitionRegistry)
+    - 配置类方式：AnnotatedBeanDefinitionReader#register(Class...)
 
 
 
