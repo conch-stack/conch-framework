@@ -60,8 +60,6 @@ Spring Bean基础
 
 
 
-
-
 - 实例化 Spring Bean
   - 常规方法：
     - 通过构造器（配置元信息：XML、注解、JAVA API）
@@ -76,8 +74,12 @@ Spring Bean基础
 
 
 - 延迟初始化 Spring Bean
-
-
+  - @PostConstruct标注的方法
+  - 实现InitializingBean接口的 afterPropertiesSet() 方法
+  - 自定义初始化方法
+    - XML: <bean init-method="initXXX" ../>
+    - Java注解：@Bean(initMethod="initXXX")
+    - JavaAPI方法：AbstractBeanDefinition#setInitMethodName(String)
 
 
 

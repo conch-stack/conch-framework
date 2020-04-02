@@ -1,6 +1,7 @@
 package ltd.beihu.spring.bean.definition;
 
 import ltd.beihu.spring.bean.factory.UserFactoryBean;
+import ltd.beihu.spring.bean.initialization.InitializationBean;
 import ltd.beihu.spring.ioc.overview.domain.User;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
@@ -16,6 +17,8 @@ import java.util.Map;
 /**
  * 注解 Bean Definition 示例
  *      注册Bean Definition
+ *      实例化Bean
+ *      初始化Bean
  *
  * @author Adam
  * @since 2020/3/31
@@ -46,10 +49,13 @@ public class AnnotatedBeanDefinitonDemo {
         Map<String, User> users = applicationContext.getBeansOfType(User.class);
         System.out.println("users: " + users);
 
+        // FactoryBean 实例化Bean
         User userByFactoryBean = applicationContext.getBean("user-by-factroy-bean", User.class);
         System.out.println("userByFactoryBean: " + userByFactoryBean);
 
-
+        // 初始化Bean
+        InitializationBean initializationBean = applicationContext.getBean("test-InitializationBean", InitializationBean.class);
+        System.out.println("initializationBean: " + initializationBean);
         // 停止
         applicationContext.close();
     }
@@ -84,6 +90,11 @@ public class AnnotatedBeanDefinitonDemo {
         @Bean(name = "user-by-factroy-bean")
         public UserFactoryBean userFactoryBean() {
             return new UserFactoryBean();
+        }
+
+        @Bean(name = "test-InitializationBean", initMethod = "initMethod")
+        public InitializationBean initializationBean() {
+            return new InitializationBean();
         }
     }
 }
