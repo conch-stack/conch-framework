@@ -10,5 +10,4 @@
 
     <!-- 别名 -->
     <alias name="user" alias="aliasUser"/>
-
 </beans>

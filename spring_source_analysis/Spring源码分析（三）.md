@@ -63,8 +63,15 @@ Spring Bean基础
 
 
 - 实例化 Spring Bean
-
-
+  - 常规方法：
+    - 通过构造器（配置元信息：XML、注解、JAVA API）
+    - 通过静态工厂方法（配置元信息：XML、JAVA API）
+    - 通过Bean工厂（配置元信息：XML、JAVA API）
+    - 通过FactoryBean（配置元信息：XML、注解、JAVA API）
+  - 特殊方法：
+    - 通过 ServiceLoaderFactoryBean（配置元信息：XML、注解、JAVA API）
+    - 通过 AutowireCapableBeanFactory#createBean(Class, int, boolean)
+    - 通过BeanDefinitionRegistry#registerBeanDefinition(String, BeanDefinition)
 
 
 

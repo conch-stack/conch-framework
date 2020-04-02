@@ -1,5 +1,6 @@
 package ltd.beihu.spring.bean.definition;
 
+import ltd.beihu.spring.bean.factory.UserFactoryBean;
 import ltd.beihu.spring.ioc.overview.domain.User;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
@@ -14,6 +15,8 @@ import java.util.Map;
 
 /**
  * 注解 Bean Definition 示例
+ *      注册Bean Definition
+ *
  * @author Adam
  * @since 2020/3/31
  */
@@ -42,6 +45,10 @@ public class AnnotatedBeanDefinitonDemo {
         System.out.println("userConfigs: " + userConfigs);
         Map<String, User> users = applicationContext.getBeansOfType(User.class);
         System.out.println("users: " + users);
+
+        User userByFactoryBean = applicationContext.getBean("user-by-factroy-bean", User.class);
+        System.out.println("userByFactoryBean: " + userByFactoryBean);
+
 
         // 停止
         applicationContext.close();
@@ -72,6 +79,11 @@ public class AnnotatedBeanDefinitonDemo {
         @Bean(name = {"user", "aliasUser"})
         public User user() {
             return new User("AnnotatedBeanDefinitonDemo", 10);
+        }
+
+        @Bean(name = "user-by-factroy-bean")
+        public UserFactoryBean userFactoryBean() {
+            return new UserFactoryBean();
         }
     }
 }
