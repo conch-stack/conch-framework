@@ -44,3 +44,5 @@ hutool
 秒杀设计
 
 - https://github.com/colg-cloud/seckill
+
+command + F12

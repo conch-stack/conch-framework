@@ -9,6 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ioc-container-overview</artifactId>
+    <artifactId>dependency-lookup</artifactId>
+
 
 </project>
