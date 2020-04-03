@@ -73,17 +73,55 @@ Spring Bean基础
 
 
 
-- 延迟初始化 Spring Bean
+- 初始化 Spring Bean
   - @PostConstruct标注的方法
   - 实现InitializingBean接口的 afterPropertiesSet() 方法
   - 自定义初始化方法
     - XML: <bean init-method="initXXX" ../>
     - Java注解：@Bean(initMethod="initXXX")
     - JavaAPI方法：AbstractBeanDefinition#setInitMethodName(String)
+  
+  
+  
+  > 如果三个定义在一个Bean中，执行顺序为：
+  >
+  > @PostConstuct -> InitializingBean -> 自定义初始化方法
+
+
+
+- 延迟初始化 Spring Bean
+
+  - XML配置：<bean lazy-init="true" .../>
+  - Java注解：@Lazy(true)
+
+  延迟与非延迟的区别：
+
+  ```java
+  // 启动应用上下文 TODO 会默认启动非延迟初始化的的Bean
+  applicationContext.refresh();
+  // 区别在于，初始化的时间，默认Spring应用上下文在启动后自动初始化非延迟加载的Bean
+  // 延迟加载的Bean会在依赖查找或者依赖注入的时候进行初始化
+  ```
 
 
 
 - 销毁 Spring Bean
+
+  - @PreDestory标注方法（Java原生的，在被垃圾回收之前进行操作，在Spring场景下就是销毁Bean）
+
+  - 实现 DisposableBean 接口的 destory() 方法
+
+  - 自定义销毁方法：
+
+    - XML 配置： <bean destory="destory" .../>
+    - Java 注解：@Bean(destory = "destory")
+    - Java API方法：AbstractBeanDefinition#setDestoryMethodName(String)
+
+    
+
+  > 如果三种方法定义在同一个Bean中，执行顺序为：
+  >
+  > 
 
 
 

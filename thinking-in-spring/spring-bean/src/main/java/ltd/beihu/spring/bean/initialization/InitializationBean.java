@@ -5,6 +5,7 @@ import org.springframework.beans.factory.InitializingBean;
 import javax.annotation.PostConstruct;
 
 /**
+ * 初始化 Spring Bean
  * @author Adam
  * @since 2020/4/3
  */
