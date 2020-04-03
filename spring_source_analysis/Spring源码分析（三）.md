@@ -57,6 +57,9 @@ Spring Bean基础
     - 命名方式：BeanDefinitionRegistry#registerBeanDefinition(String, BeanDefinition)
     - 非命名方式：BeanDefinitionReaderUtils#registerWithGeneratedName(AbstractBeanDefinition,BeanDefinitionRegistry)
     - 配置类方式：AnnotatedBeanDefinitionReader#register(Class...)
+  - 注册外部单例Bean
+    - 可将外部Bean对象托管给Spring进行管理
+      - BeanFactory.registerSingleton(String 名称, BeanInstance 实例)
 
 
 
@@ -121,8 +124,13 @@ Spring Bean基础
 
   > 如果三种方法定义在同一个Bean中，执行顺序为：
   >
-  > 
+  > @PreDestory -> DisposableBean -> 自定义销毁方法
 
 
 
 - 垃圾回收 Spring Bean
+  - 触发顺序
+    - 关闭Spring 容器 （应用上下文）
+    - 执行GC
+    - Spring Bean 覆盖的 finalize() 方法被回调
+

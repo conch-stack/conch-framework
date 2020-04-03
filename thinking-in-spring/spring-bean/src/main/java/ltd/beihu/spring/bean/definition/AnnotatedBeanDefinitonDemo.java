@@ -5,6 +5,7 @@ import ltd.beihu.spring.bean.factory.UserFactoryBean;
 import ltd.beihu.spring.bean.initialization.InitializationBean;
 import ltd.beihu.spring.ioc.overview.domain.User;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -30,7 +31,7 @@ import java.util.Map;
 @Import(AnnotatedBeanDefinitonDemo.UserConfig.class)
 public class AnnotatedBeanDefinitonDemo {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         // 创建 ApplicationContext 容器
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
@@ -54,6 +55,13 @@ public class AnnotatedBeanDefinitonDemo {
         Map<String, User> users = applicationContext.getBeansOfType(User.class);
         System.out.println("users: " + users);
 
+        // 外部单体Bean委托Spring管理
+        User outUser = new User("外部单体Bean", 1);
+        ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
+        beanFactory.registerSingleton("outUser", outUser);
+        User outUserByLookup = beanFactory.getBean("outUser", User.class);
+        System.out.println("outUser == outUserByLookup : " + (outUser == outUserByLookup));
+
         System.out.println("===============================================: 实例化Bean");
         // FactoryBean 实例化Bean
         User userByFactoryBean = applicationContext.getBean("user-by-factroy-bean", User.class);
@@ -76,6 +84,12 @@ public class AnnotatedBeanDefinitonDemo {
         System.out.println("===============================================: 停止ing");
         applicationContext.close();
         System.out.println("===============================================: 停止完成");
+
+        System.out.println("===============================================: 强制 GC:(需开启JVM的full GC支持)");
+        Thread.sleep(1000);
+        System.gc();
+        Thread.sleep(5000);
+        System.out.println("===============================================:  GC 结束");
     }
 
     public static void registerBeanDefinition(BeanDefinitionRegistry beanDefinitionRegistry, String beanName, Class<?> beanClazz) {

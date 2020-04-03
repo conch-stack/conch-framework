@@ -24,4 +24,9 @@ public class DestoryBean implements DisposableBean {
     public void destroy() throws Exception {
         System.out.println("使用 DisposableBean 方法销毁Bean");
     }
+
+    @Override
+    protected void finalize() throws Throwable {
+        System.out.println("DestoryBean 正在被GC回收...(finalize方法并不是每次都会被回调，但这并不意味着不GC)");
+    }
 }
