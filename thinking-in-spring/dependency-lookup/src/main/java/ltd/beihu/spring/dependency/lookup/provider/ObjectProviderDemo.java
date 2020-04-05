@@ -3,6 +3,7 @@ package ltd.beihu.spring.dependency.lookup.provider;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 
 /**
  * 单一类型依赖查找： BeanFactory
@@ -30,13 +31,28 @@ public class ObjectProviderDemo {
         ObjectProvider<String> beanProvider = applicationContext.getBeanProvider(String.class);
         System.out.println(beanProvider.getObject());
 
+        System.out.println(beanProvider.getIfAvailable());
+        System.out.println(beanProvider.getIfAvailable(String::new));
+
+        System.out.println("unique: " + beanProvider.getIfUnique());
+        
+        // 流处理
+        System.out.println(beanProvider.stream().count());
+        beanProvider.stream().forEach(System.out::println);
+
         // TODO ObjectProvider<T> getBeanProvider(ResolvableType requiredType)  处理泛型 多类型方式
 
         applicationContext.close();
     }
 
     @Bean
+    @Primary
     public String helloBean() {
         return "hello, world";
+    }
+
+    @Bean
+    public String WorldBean() {
+        return "xxxxxx";
     }
 }
