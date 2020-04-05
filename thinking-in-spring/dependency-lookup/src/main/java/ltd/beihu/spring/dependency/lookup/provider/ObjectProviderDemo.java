@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Primary;
  *   3. 按照Bean名称+类型查找
  *
  *  TODO  尽量使用：ObjectProvider 来查找Bean
- *  
+ *
  * @author Adam
  * @date 2020/4/4
  */

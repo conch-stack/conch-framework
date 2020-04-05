@@ -79,7 +79,15 @@
 
 
 
-内建可查找的依赖
+- 内建可查找的依赖
+  - 构造器注入
 
-依赖查找中的经典异常
+
+
+- 依赖查找中的经典异常
+  - NoSuchBeanDefinitionException：当Bean不存在与IOC容器时
+  - NoUniqueBeanDefinitionException：类型依赖查找时，IOS容器存在多个Bean实例
+  - BeanInstantiationException：当Bean所对应的类型非具体类时（抽象类、接口等）
+  - BeanCreationException：当Bean初始化过程中发生异常
+  - BeanDefinitionStoreException：当BeanDefinition配置元信息非法时
 
