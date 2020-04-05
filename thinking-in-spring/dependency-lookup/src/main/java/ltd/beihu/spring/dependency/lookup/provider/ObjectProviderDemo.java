@@ -15,7 +15,8 @@ import org.springframework.context.annotation.Primary;
  *              ObjectProvider （Spring 5.1）
  *   3. 按照Bean名称+类型查找
  *
- *
+ *  TODO  尽量使用：ObjectProvider 来查找Bean
+ *  
  * @author Adam
  * @date 2020/4/4
  */
@@ -35,7 +36,7 @@ public class ObjectProviderDemo {
         System.out.println(beanProvider.getIfAvailable(String::new));
 
         System.out.println("unique: " + beanProvider.getIfUnique());
-        
+
         // 流处理
         System.out.println(beanProvider.stream().count());
         beanProvider.stream().forEach(System.out::println);
@@ -43,6 +44,7 @@ public class ObjectProviderDemo {
         // TODO ObjectProvider<T> getBeanProvider(ResolvableType requiredType)  处理泛型 多类型方式
 
         applicationContext.close();
+
     }
 
     @Bean

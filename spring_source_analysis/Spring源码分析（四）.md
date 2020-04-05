@@ -52,10 +52,32 @@
 
 
 - 延迟依赖查找
+  - ObjectFactory
+  - ObjectProvider
+    - getObject()
+    - getIfAvailable()
+    - getIfUnique()
+    - iterator()
+    - stream()
 
 
 
-安全依赖查找
+- 安全依赖查找 (NoSuchBeanException...)
+
+| 依赖查找类型 | 代表实现                           | 是否安全 |
+| ------------ | ---------------------------------- | -------- |
+| 单一类型查找 | BeanFactory#getBean                | 否       |
+|              | ObjectFactory#getObject            | 否       |
+|              | ObjectProvider#getIfAvailable      | 是       |
+|              |                                    |          |
+| 集合类型查找 | ListableBeanFactory#getBeansOfType | 是       |
+|              | ObjectProvider#stream              | 是       |
+
+>  层次依赖查找的安全性取决于其扩展的单一或集合类型的BeanFactory接口
+
+尽量使用：ObjectProvider 来查找Bean
+
+
 
 内建可查找的依赖
 
