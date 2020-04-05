@@ -7,22 +7,49 @@
 - 单一类型依赖查找：BeanFactory
 
   ```
-  1. 按照Bean的名称查找
+  1. 按照Bean的名称查找（略）
   2. 按照Bean的类型查找
-           实时
+           实时:
+           		getBean(String name)
            延迟：
                ObjectFactory
-               ObjectProvider （Spring 5.1）
+               ObjectProvider （Spring 5.1 引入）
+               		applicationContext.getBeanProvider(Class<T> requiredType);
+               		getBeanProvider(ResolvableType requiredType); // 泛型 
   3. 按照Bean名称+类型查找
   ```
 
-- 集合类型依赖查找
+- 集合类型依赖查找：ListableBeanFactory
+
+  - 根据Bean类型查找
+    - 获取同类型Bean名称的列表：(可先不实例化)
+      - getBeanNamesForType(Class<?> type) 
+      - getBeanNamesForType(Class<?> type, boolean includeNonSingletons, boolean allowEagerInit)
+      - getBeanNamesForType(ResolvableType type)
+    - 获取同类型Bean实例列表：
+      - getBeansOfType(Class) 以及其重载方法
+  - 根据注解类型查找
+    - Spring3.0 获取标注类型Bean名称列表
+      - getBeanNamesForAnnotation(Class<? extends Annotation>)
+    - Spring3.0 获取标注类型Bean实例列表
+      - getBeansWithAnnotation(Class<? extends Annotation> )
+    - Spring3.0 获取指定名称 + 注解类型 的Bean实例
+      - findAnnotationOnBean(String, Class<? extends Annotation>)
 
 
 
+- 层次依赖查找：HierarchicalBeanFactory
+  - 双亲BeanFactory：getParentBeanFactory()
+  - 层次性查找：
+    - 根据Bean的名称查找
+      - 基于 containsLocalBean() 方法实现
+    - 根据Bean类型查询实例列表
+      - 单一类型：BeanFactoryUtils#beanOfType
+      - 集合类型：BeanFactoryUtils#beansOfTypeIncludingAncestors
+    - 根据 Java注解查找名称列表
+      - BeanFactoryUtils#beanNamesForTypezIncludingAncestors
 
 
-层次依赖查找
 
 延迟依赖查找
 
