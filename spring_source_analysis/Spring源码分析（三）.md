@@ -1,6 +1,6 @@
 ## Spring源码分析（三）
 
-Spring Bean基础
+> Spring Bean基础
 
 - **定义Bean**
   - Spring中定义Bean的配置元信息接口
