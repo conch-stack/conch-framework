@@ -78,7 +78,18 @@
   - 自动
   
     - byName：
+  
+      ```xml
+      <bean name="userHolder" class="ltd.beihu.spring.dependency.injection.setter.UserHolder" autowire="byName">
+      </bean>
+      ```
+  
     - byType：
+  
+      ```xml
+      <bean name="userHolderBytype" class="ltd.beihu.spring.dependency.injection.setter.UserHolder" autowire="byType">
+      </bean>
+      ```
 
 
 
