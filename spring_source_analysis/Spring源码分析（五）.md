@@ -29,19 +29,56 @@
 
 
 
-自动绑定（Autowiring）
+- 自动绑定（Autowiring）模式
+  - no: 默认值，Spring默认不推荐使用 AutowireCapableBeanFactory.AUTOWIRE_NO
+  - byName：AutowireCapableBeanFactory.AUTOWIRE_BY_NAME
+  - byType：AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE
+  - constructor：AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR
 
 
 
-自动绑定（Autowiring）模式
+- 自动绑定（Autowiring）限制与不足:
+  - 容易产生错误绑定
+  - 上下文存在多个同类型的bean时，容易产生歧义
 
 
 
-自动绑定（Autowiring）限制与不足
+- Setter方法依赖注入
 
+  - 手动
 
+    - XML：
 
-Setter方法依赖注入
+      ```xml
+      <bean name="userHolder" class="ltd.beihu.spring.dependency.injection.setter.UserHolder">
+              <property name="user" ref="superUser" />
+      </bean>
+      ```
+
+    - 注解：
+
+      ```java
+      @Bean
+      public UserHolder userHolder(User user) {
+          return new UserHolder(user);
+      }
+      ```
+
+    - JAVA API：
+
+      ```java
+      private static BeanDefinition buildUserHolderApiBeanDefinition() {
+          BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(UserHolderApi.class);
+          // api 方式
+          beanDefinitionBuilder.addPropertyReference("user", "user");
+          return beanDefinitionBuilder.getBeanDefinition();
+      }
+      ```
+  
+  - 自动
+  
+    - byName：
+    - byType：
 
 
 
