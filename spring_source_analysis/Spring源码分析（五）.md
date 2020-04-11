@@ -114,23 +114,48 @@
       }
       ```
 
-      
-
     - Java API：
+
+      ```java
+      private static BeanDefinition buildUserHolderApiBeanDefinition() {
+          BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(UserHolderApi.class);
+          // api 方式
+          beanDefinitionBuilder.addConstructorArgReference("user");
+          return beanDefinitionBuilder.getBeanDefinition();
+      }
+      ```
 
   - 自动：
 
+    - constructor：
+
+      ```xml
+      <bean name="userHolder" class="ltd.beihu.spring.dependency.injection.setter.UserHolder" autowire="constructor">
+      </bean>
+      ```
 
 
-字段依赖注入
+
+- 字段依赖注入
+  - 手动模式：
+    - Java注解配置元信息
+      - @Autowired：默认byType（会忽略静态字段的注入）
+      - @Resource：默认byType
+      - @Inject (可选)：JSR-330引入，需要单独引入依赖
 
 
 
-方法依赖注入
+- 方法依赖注入
+  - 手动模式：
+    - Java注解配置元信息
+      - @Autowired：
+      - @Resource：
+      - @Inject：
+      - @Bean：
 
 
 
-回调依赖注入
+- 接口回调依赖注入
 
 
 
