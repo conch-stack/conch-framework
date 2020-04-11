@@ -80,7 +80,27 @@
 
 
 - 内建可查找的依赖
-  - 构造器注入
+  - AbstractApplicationContext内建可查找依赖
+  
+  | Bean名称                    | Bean实例                    | 使用场景               |
+  | --------------------------- | --------------------------- | ---------------------- |
+  | environment                 | Environment对象             | 外部化配置以及Profiles |
+  | systemProperties            | java.util.Properties对象    | Java系统属性           |
+  | systemEnvironment           | java.util.Map对象           | 操作系统环境变量       |
+  | messageSource               | MessageSource对象           | 国际化文案             |
+  | lifecycleProcessor          | LifecycleProcessor对象      | Lifecycle Bean处理器   |
+  | applicationEventMulticaster | ApplicationEventMulticaster | Spring事件广播器       |
+  
+  - 注解驱动Spring应用上下文内建可查找的依赖（部分）| bean名称较长 （AnnotationConfigUtils）
+
+| Bean名称                                                     | Bean实例                                         | 使用场景                                            |
+| ------------------------------------------------------------ | ------------------------------------------------ | --------------------------------------------------- |
+| org.springframework.context.annotation.<br />internalConfigurationAnnotationProcessor | ConfigurationClass<br />PostProcessor对象        | 处理Spring配置类<br />@Configuration                |
+| org.springframework.context.annotation.<br />internalAutowiredAnnotationProcessor | AutowiredAnnotation<br />BeanPostprocessor对象   | 处理@Autowired以及@Value注解                        |
+| org.springframework.context.annotation.<br />internalCommonAnnotationProcessor | CommonAnnotation<br />BeanPostProcessor对象      | （条件激活）处理JSR-250注解，如：@PostConstruct     |
+| org.springframework.context.event.<br />internalEventListenerProcessor | EventListenerMethodProcessor对象                 | 处理标注@EventListener的Spring事件监听方法          |
+| org.springframework.context.event.<br />internalEventListenerFactory | DefaultEventListenerFactory对象                  | @EventListener事件监听方法适配为ApplicationListener |
+| org.springframework.context.annotation.<br />internalPersistenceAnnotationProcessor | PersistenceAnnotation<br />BeanPostPrecessor对象 | (条件激活)处理JPA注解场景                           |
 
 
 

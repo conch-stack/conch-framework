@@ -95,6 +95,8 @@
 
 构造器依赖注入
 
+TODO 48
+
 
 
 字段依赖注入
@@ -146,3 +148,11 @@ Java通用注解注入原理
 
 
 自定义依赖注入注解
+
+
+
+### TODO
+
+- BeanPostProcessor
+
+- BeanFactoryPostProcessor
