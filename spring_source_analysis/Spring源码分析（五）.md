@@ -156,6 +156,20 @@
 
 
 - 接口回调依赖注入
+  - Aware系列接口回调：
+    - 自动模式：
+
+| 内建接口                       | 说明                                                 |
+| ------------------------------ | ---------------------------------------------------- |
+| BeanFactoryAware               | 获取IOC容器 - BeanFactory对象                        |
+| ApplicationContextAware        | 获取Spring应用上下文 - ApplicationContext对象        |
+| EnvironmentAware               | 获取Environment对象                                  |
+| ResourceLoaderAware            | 获取资源加载器 对象 - ResouceLoader                  |
+| BeanClassLoaderAware           | 获取加载当前Bean Class的ClassLoader                  |
+| BeanNameAware                  | 获取当前Bean的名称                                   |
+| MessageSourceAware             | 获取MessageSource对象，用于Spring国际化              |
+| ApplicationEventPublisherAware | 获取ApplicationEventPublishAware对象，用于Spring事件 |
+| EmbeddedValueResolverAware     | 获取StringValueResolver对象，用于占位符处理          |
 
 
 
