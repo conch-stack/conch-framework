@@ -10,14 +10,14 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  * @author Adam
  * @date 2020/4/10
  */
-public class ApiDependencyInjectionDemo {
+public class ApiDependencySetterInjectionDemo {
 
     public static void main(String[] args) {
 
         // 创建 ApplicationContext 容器
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
         // 注册 Configuration Class
-        applicationContext.register(ApiDependencyInjectionDemo.class);
+        applicationContext.register(ApiDependencySetterInjectionDemo.class);
         applicationContext.refresh();
 
         // XML方式读取BeanDefinition

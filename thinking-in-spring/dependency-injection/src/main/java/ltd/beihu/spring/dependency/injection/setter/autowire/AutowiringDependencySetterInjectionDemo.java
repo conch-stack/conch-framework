@@ -11,7 +11,7 @@ import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
  * @author Adam
  * @date 2020/4/10
  */
-public class AutowiringDependencyInjectionDemo {
+public class AutowiringDependencySetterInjectionDemo {
 
     public static void main(String[] args) {
         // 创建BeanFactory

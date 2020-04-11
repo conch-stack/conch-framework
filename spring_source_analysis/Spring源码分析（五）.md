@@ -93,9 +93,32 @@
 
 
 
-构造器依赖注入
+- 构造器依赖注入
 
-TODO 48
+  - 手动：
+
+    - XML：
+
+      ```xml
+      <bean name="userHolder" class="ltd.beihu.spring.dependency.injection.setter.UserHolder">
+          <constructor-arg name="user" ref="user" />
+      </bean>
+      ```
+
+    - 注解：
+
+      ```java
+      @Bean
+      public UserHolder userHolder(User user) {
+          return new UserHolder(user);
+      }
+      ```
+
+      
+
+    - Java API：
+
+  - 自动：
 
 
 

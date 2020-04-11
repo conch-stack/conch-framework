@@ -6,10 +6,11 @@ import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 
 /**
  * XML方式 setter 注入
+ *
  * @author Adam
  * @date 2020/4/10
  */
-public class XmlDepenedencyInjectionDemo {
+public class XmlDepenedencySetterInjectionDemo {
 
     public static void main(String[] args) {
 
