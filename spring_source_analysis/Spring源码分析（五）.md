@@ -173,11 +173,22 @@
 
 
 
-依赖注入类型选择
+- 依赖注入类型选择
+  - 低依赖：构造器注入
+  - 多依赖：Setter方法注入
+  - 便利性：字段注入
+  - 声明类：方法注入
 
 
 
-基础类型注入
+- 基础类型注入
+  - 基础类型：
+    - 原生类型（Primitive）：boolean、byte、char、short、int、float、long、double
+    - 标量类型（Scalar）：Number、Character、Boolean、Enum、Locale、Charset、Currency、Properties、UUID
+    - 常规类型（General）：Object、String、TimeZone、Calendar、Optional等
+    - Spring类型：Resource、InputSource、Formatter等
+
+
 
 
 

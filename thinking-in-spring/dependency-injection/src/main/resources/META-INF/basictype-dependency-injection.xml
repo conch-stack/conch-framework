@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
+
+    <bean name="userTwo" class="ltd.beihu.spring.dependency.injection.basictype.UserTwo">
+        <property name="student" value="true" />
+        <property name="name" value="测试基础类型注入" />
+        <property name="city" value="SHANGHAI" />
+        <property name="resource" value="classpath:META-INF/autowiring-dependency-constructor-injection.xml" />
+    </bean>
+
+</beans>
