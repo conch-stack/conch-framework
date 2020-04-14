@@ -1,4 +1,4 @@
-package ltd.beihu.spring.dependency.injection.basictype;
+package ltd.beihu.spring.dependency.injection.collectiontype;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -8,7 +8,7 @@ import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
  * @author Adam
  * @date 2020/4/14
  */
-public class BasicTypeDependencyInjectionDemo {
+public class CollectionTypeDependencyInjectionDemo {
 
     public static void main(String[] args) {
 
@@ -19,8 +19,11 @@ public class BasicTypeDependencyInjectionDemo {
         XmlBeanDefinitionReader xmlBeanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
         xmlBeanDefinitionReader.loadBeanDefinitions("classpath:META-INF/basictype-dependency-injection.xml");
 
-        ObjectProvider<UserTwo> beanProvider = beanFactory.getBeanProvider(UserTwo.class);
-        UserTwo userTwo = beanProvider.getIfAvailable();
-        System.out.println(userTwo);
+        ObjectProvider<UserThree> beanProvider = beanFactory.getBeanProvider(UserThree.class);
+        UserThree userThree = beanProvider.getIfAvailable();
+        System.out.println(userThree);
+
+        UserThree userThree1 = beanFactory.getBean("userThree1", UserThree.class);
+        System.out.println(userThree1);
     }
 }

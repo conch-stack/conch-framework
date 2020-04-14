@@ -13,4 +13,19 @@
         <property name="resource" value="classpath:META-INF/autowiring-dependency-constructor-injection.xml" />
     </bean>
 
+    <bean name="userThree" class="ltd.beihu.spring.dependency.injection.collectiontype.UserThree" primary="true">
+        <property name="cities" value="SHANGHAI,HANGZHOU" />
+        <property name="cityList" value="SHANGHAI,HANGZHOU" />
+    </bean>
+
+    <bean name="userThree1" class="ltd.beihu.spring.dependency.injection.collectiontype.UserThree">
+        <property name="cities" value="SHANGHAI,HANGZHOU" />
+        <property name="cityList">
+            <list>
+                <value>SHANGHAI</value>
+                <value>HANGZHOU</value>
+                <value>BEIJING</value>
+            </list>
+        </property>
+    </bean>
 </beans>

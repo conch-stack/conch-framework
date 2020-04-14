@@ -7,5 +7,6 @@ package ltd.beihu.spring.dependency.injection.basictype;
 public enum City {
 
     SHANGHAI,
-    HANGZHOU
+    HANGZHOU,
+    BEIJING
 }
