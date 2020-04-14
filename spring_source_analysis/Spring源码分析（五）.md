@@ -199,7 +199,21 @@
 
 
 
-限定注入
+- 限定注入
+
+  - 使用注解@Qualifier限定
+
+    - 通过Bean名称限定
+
+    - 通过分组限定
+
+      - ```
+        加了@Qualifier之后，就被分组了，全部的就看不了他们的，所以别的用的地方必须同样加上 @Qualifier
+        ```
+
+  - 基于注解@Qualifier扩展限定
+
+    - 自定义注解 - 如 Spring Cloud 中的 @LoadBalance：实现了RestTemplate分组，一种带负载均衡一种不带
 
 
 
