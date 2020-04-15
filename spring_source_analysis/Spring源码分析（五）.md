@@ -217,11 +217,21 @@
 
 
 
-延迟依赖注入
+- 延迟依赖注入
+  - 使用API ObjectFactory延迟注入
+    - 单一类型
+    - 集合类型
+  - 使用API ObjectProvider延迟注入（推荐）
+    - 单一类型
+    - 集合类型
+  - 在依赖处理过程中，会被DefaultListableBeanFactory处理为一个CGLib代理对应，并不会进行实例化，当用到时才会实例化
 
 
 
-依赖处理过程
+- 依赖处理过程
+  - 入口：DefaultListableBeanFactory#resolveDependency
+  - 依赖描述符：DependencyDescriptor
+  - 自动绑定候选对象处理器：AutowireCandidateResolver
 
 
 
