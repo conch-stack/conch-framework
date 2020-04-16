@@ -259,9 +259,25 @@
 
 
 
+- JSR-330 @Inject注入原理
 
+  - 注入过程基本类似@Autowired，复用了AutowiredAnnotationBeanPostProcessor
+  - 只是需要额外引入依赖包，且其优先级最低
 
-JSR-330 @Inject注入原理
+  ```java
+  public AutowiredAnnotationBeanPostProcessor() {
+  		this.autowiredAnnotationTypes.add(Autowired.class);
+  		this.autowiredAnnotationTypes.add(Value.class);
+  		try {
+  			this.autowiredAnnotationTypes.add((Class<? extends Annotation>)
+  					ClassUtils.forName("javax.inject.Inject", AutowiredAnnotationBeanPostProcessor.class.getClassLoader()));
+  			logger.trace("JSR-330 'javax.inject.Inject' annotation found and supported for autowiring");
+  		}
+  		catch (ClassNotFoundException ex) {
+  			// JSR-330 API not available - simply skip.
+  		}
+  	}
+  ```
 
 
 
