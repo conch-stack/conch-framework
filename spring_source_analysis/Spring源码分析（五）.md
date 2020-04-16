@@ -235,7 +235,29 @@
 
 
 
-@Autowired注入原理
+- @Autowired注入原理
+  - 元信息解析
+  - 依赖查找
+  - 依赖注入（字段、方法）
+  - **源码分析：**
+  - AutowiredAnnotationBeanPostProcessor#postProcessMergedBeanDefinition 循环合并父子属性和方法，**构建 InjectionMetadata**，并进行校验 + 缓存
+  - AutowiredAnnotationBeanPostProcessor#postProcessProperties 获取InjectionMetadata，**执行其 inject注入方法**， InjectionMetadata内部存储了当前主Bean（需要被注入的类）的所有需要注入的属性或方法（构造器）的 InjectedElement 对象，最终会执行其inject进行依赖处理查找注入等工作
+  - **解析 InjectionMetadata 内部逻辑：**
+    - 构建：InjectionMetadata
+      - 构建：InjectedElement
+        - AutowiredFieldElement：字段自动注入元信息封装
+        - AutowiredMethodElement：方法自动注入元信息封装
+          - PropertyDescriptor -> GenericTypeAwarePropertyDescriptor
+      - \#inject(Object bean, String beanName, PropertyValues pvs) 注入
+        - 构建 DependencyDescriptor （依赖描述）
+          - DependencyDescriptor[]  方法Autowired构建依赖描述数组
+        - 利用 beanFactory.resolveDependency 处理依赖
+        - 注册 beanFactory.registerDependentBean 依赖情况
+        - 赋值：
+          - field.set(bean, value)   字段注入
+          - method.invoke(bean, arguments)  方法注入
+
+
 
 
 
