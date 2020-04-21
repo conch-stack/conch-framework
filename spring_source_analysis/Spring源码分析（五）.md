@@ -281,7 +281,21 @@
 
 
 
-Java通用注解注入原理
+- Java通用注解注入原理
+  - CommonAnnotationBeanPostProcessor
+    - 注入注解：
+      - javax.xml.ws.WebServiceRef
+      - javax.ejb.EJB
+      - javax.annotation.Resource
+    - 生命周期注解：
+      - javax.annotation.PostConstant
+      - javax.annotation.PreDestroy
+  - XXXBeanPostProcessor是有顺序的
+    - @see org.springframework.core.PriorityOrdered 定义了Order顺序，默认优先级最低
+    - @Order 默认是最低优先级,值越小优先级越高
+    - CommonAnnotationBeanPostProcessor为 Ordered.LOWEST_PRECEDENCE - 3
+    - AutowiredAnnotationBeanPostProcessor为 Ordered.LOWEST_PRECEDENCE - 2
+    - 所以 CommonAnnotationBeanPostProcessor 比 AutowiredAnnotationBeanPostProcessor先运行
 
 
 
