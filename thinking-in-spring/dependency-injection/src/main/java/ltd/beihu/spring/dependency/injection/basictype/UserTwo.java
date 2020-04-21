@@ -32,6 +32,11 @@ public class UserTwo {
     public UserTwo() {
     }
 
+    public UserTwo(boolean isStudent, String name) {
+        this.isStudent = isStudent;
+        this.name = name;
+    }
+
     public UserTwo(boolean isStudent, String name, City city, Resource resource) {
         this.isStudent = isStudent;
         this.name = name;
