@@ -299,7 +299,21 @@
 
 
 
-自定义依赖注入注解
+- 自定义依赖注入注解
+
+  - 复用 AutowiredAnnotationBeanPostProcessor
+
+  ```java
+  @Bean
+  @Order(Ordered.LOWEST_PRECEDENCE - 3)
+  public static AutowiredAnnotationBeanPostProcessor injectUserProcessor() {
+    AutowiredAnnotationBeanPostProcessor p = new AutowiredAnnotationBeanPostProcessor();
+    p.setAutowiredAnnotationType(InjectUser.class);
+    return p;
+  }
+  ```
+
+  - 完全自定义开发：特殊需求
 
 
 
