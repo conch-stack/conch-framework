@@ -7,6 +7,7 @@ import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 /**
@@ -40,6 +41,11 @@ public class AnnotationDenpendencyMethodInjectionDemo {
         UserHolder userHolder = new UserHolder();
         userHolder.setUser(user);
         return userHolder;
+    }
+
+    @PostConstruct
+    public void test() {
+        System.out.println("end");
     }
 
     public static void main(String[] args) {

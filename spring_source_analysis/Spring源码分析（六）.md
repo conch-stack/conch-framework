@@ -10,9 +10,10 @@
   - Spring内建BeanDefinition：参考AnnotationConfigUtils.java
   - Spring内建单例对象：参考AbstractApplicationContext#prepareBeanFactory
 
+ 
 
-
-依赖注入来源
+- 依赖注入来源
+  - 
 
 
 

@@ -295,7 +295,10 @@
     - @Order 默认是最低优先级,值越小优先级越高
     - CommonAnnotationBeanPostProcessor为 Ordered.LOWEST_PRECEDENCE - 3
     - AutowiredAnnotationBeanPostProcessor为 Ordered.LOWEST_PRECEDENCE - 2
-    - 所以 CommonAnnotationBeanPostProcessor 比 AutowiredAnnotationBeanPostProcessor先运行
+    - 所以 CommonAnnotationBeanPostProcessor 比 AutowiredAnnotationBeanPostProcessor先构建
+    - 注意：@Order只能定义类的构建顺序，不能决定其执行顺序
+      - **他们真正的执行顺序，定义在AnnotationConfigUtils#registerAnnotationConfigProcessors方法中，构建Spring内建BeanDefinition，放入LinkedHashSet中**
+      - **AnnotationConfigUtils#registerAnnotationConfigProcessors方法由xml触发，或者由 AnnotationConfigApplicationContext中的AnnotatedBeanDefinitionReader初始化时触发**
 
 
 
