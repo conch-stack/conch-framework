@@ -4,7 +4,11 @@
 
 
 
-依赖查找来源
+- 依赖查找来源
+  - BeanDefinition
+  - 单例对象
+  - Spring内建BeanDefinition：参考AnnotationConfigUtils.java
+  - Spring内建单例对象：参考AbstractApplicationContext#prepareBeanFactory
 
 
 
