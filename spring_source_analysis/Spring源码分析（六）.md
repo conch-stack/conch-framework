@@ -43,15 +43,34 @@
 
 
 
-Spring容器管理和游离对象
+- Spring容器管理和游离对象
+
+  | 来源                  | SpringBean对象 | 生命周期管理 | 配置元信息 | 使用场景       |
+  | --------------------- | -------------- | ------------ | ---------- | -------------- |
+  | Spring BeanDefinition | 是             | 是           | 是         | 依赖查找、注入 |
+  | 单体对象              | 是             | 否           | 无         | 依赖查找、注入 |
+  | ResolvableDependency  | 否             | 否           | 无         | 依赖注入       |
+
+  
 
 
 
-Spring BeanDefinition 作为依赖来源
+- Spring BeanDefinition 作为依赖来源
+  - BeanDefinitionRegistry -> DefaultListableBeanFactory 
+    - -> #registerBeanDefinition(String beanName, BeanDefinition beanDefinition)
 
 
 
-单例对象作为依赖来源
+- 单例对象作为依赖来源
+  - 要素：
+    - 来源：外部普通Java对象
+      - 不需要是POJO（JavaBeans中的定义：必须要有默认构造器，getter、setter等）
+    - 注册：SingletonBeanRegistry#registerSingleton(String beanName, Object singletonObjec)
+  - 限制：（未放入容器生命周期托管）
+    - 无生命周期
+    - 无法实现延迟初始化Bean
+  - 依赖查找时，先查找单体对象，找到直接返回，没有在处理复杂的BeanDefiniton逻辑
+    - AbstractBeanFactory#getBean
 
 
 
