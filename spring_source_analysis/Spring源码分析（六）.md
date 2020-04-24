@@ -74,7 +74,17 @@
 
 
 
-非Spring容器管理对象作为依赖来源
+- 非Spring容器管理对象作为依赖来源
+
+  - ConfigurableListableBeanFactory#registerResolvableDependency(Class<?> dependencyType, @Nullable Object autowiredValue)
+  - 限制：
+    - 只能在依赖注入中使用
+    - 只能通过类型来依赖注入
+    - 无生命周期管理
+    - 无法实现延迟初始化Bean
+    - 无法通过依赖查找
+
+  // TODO demo add
 
 
 
