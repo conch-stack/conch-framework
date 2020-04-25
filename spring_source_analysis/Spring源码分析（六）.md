@@ -84,11 +84,37 @@
     - 无法实现延迟初始化Bean
     - 无法通过依赖查找
 
-  // TODO demo add
+  ```java
+  public class ResolvableDependencySourceDemo {
+  
+      @Autowired
+      private String value;
+  
+      @PostConstruct
+      public void print() {
+          System.out.println(value);
+      }
+  
+      public static void main(String[] args) {
+          AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+          applicationContext.register(ResolvableDependencySourceDemo.class);
+  
+          // 注册BeanFactory的后置处理，在 refresh() 中的 invokeBeanFactoryPostProcessors(beanFactory)
+          applicationContext.addBeanFactoryPostProcessor((beanFactory) -> {
+              // 注册 Resolvable Dependency
+              beanFactory.registerResolvableDependency(String.class, "test resolvable bean");
+          });
+          applicationContext.refresh();
+          applicationContext.close();
+      }
+  }
+  ```
+
+  
 
 
 
-外部化配置作为依赖来源
+- 外部化配置作为依赖来源
 
 
 
