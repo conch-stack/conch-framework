@@ -116,5 +116,16 @@
 
 - 外部化配置作为依赖来源
 
+  - 要素：
+    - 类型：非常规Spring对象依赖来源
+  - 限制：
+    - 无生命周期
+    - 无法实现延迟初始化Bean
+    - 无法通过依赖查找
+  - 处理：
+    - AutowiredAnnotationBeanPostProcessor  # @Value   
+
+  
+
 
 
