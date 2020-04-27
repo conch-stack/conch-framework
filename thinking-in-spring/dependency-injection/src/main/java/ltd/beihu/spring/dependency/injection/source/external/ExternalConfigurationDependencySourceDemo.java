@@ -20,7 +20,7 @@ public class ExternalConfigurationDependencySourceDemo {
     private Long id;
 
     @Value("${user.name}")
-    private String name; 
+    private String name;
 
     @Value("${user.namez}")
     private String namez;
