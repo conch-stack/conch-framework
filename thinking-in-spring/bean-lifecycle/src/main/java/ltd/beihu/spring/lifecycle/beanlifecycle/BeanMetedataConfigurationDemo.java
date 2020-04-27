@@ -19,6 +19,11 @@ public class BeanMetedataConfigurationDemo {
 
         // Properties 加载
         PropertiesBeanDefinitionReader propertiesBeanDefinitionReader = new PropertiesBeanDefinitionReader(applicationContext);
+
+        // ClassPath Resource 设置 ： 不需要 "classpath:"
+//        Resource resource = new ClassPathResource("user.properties");
+//        EncodedResource encodedResource = new EncodedResource(resource, "UTF-8");
+
         int numDefinitions = propertiesBeanDefinitionReader.loadBeanDefinitions("classpath:user.properties");
         System.out.println("加载的BeanDefinition个数：" + numDefinitions);
 
