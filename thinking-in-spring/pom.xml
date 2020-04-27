@@ -20,6 +20,7 @@
         <module>spring-bean</module>
         <module>dependency-lookup</module>
         <module>dependency-injection</module>
+		<module>bean-lifecycle</module>
     </modules>
 
 	<properties>
