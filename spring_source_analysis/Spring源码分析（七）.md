@@ -85,7 +85,143 @@
 
 - 自定义 作用域
 
+  - 自定义ThreadLocal Scope
 
+  ```java
+  /**
+   * 1. 定义 ThreadLocal Scope
+   *
+   * @author Adam
+   * @date 2020/4/27
+   */
+  public class ThreadLocalScope implements Scope {
+  
+      public static final String SCOPE_NAME = "thread-local";
+      private final NamedThreadLocal<Map<String, Object>> threadLocal = new NamedThreadLocal<Map<String, Object>>("thread-local-scope") {
+          @Override
+          protected Map<String, Object> initialValue() {
+              return new HashMap<>();
+          }
+      };
+  
+      @Override
+      public Object get(String name, ObjectFactory<?> objectFactory) {
+          Map<String, Object> context = getContext();
+          Object scopeObject = context.get(name);
+          if (null == scopeObject) {
+              scopeObject = objectFactory.getObject();
+              context.put(name, scopeObject);
+          }
+          return scopeObject;
+      }
+  
+      @NonNull
+      private Map<String, Object> getContext() {
+          return threadLocal.get();
+      }
+  
+      @Override
+      public Object remove(String name) {
+          return getContext().remove(name);
+      }
+  
+      @Override
+      public void registerDestructionCallback(String name, Runnable callback) {
+          // todo 注册回调
+      }
+  
+      @Override
+      public Object resolveContextualObject(String key) {
+          return getContext().get(key);
+      }
+  
+      @Override
+      public String getConversationId() {
+          // 会话ID  - 线程ID
+          return String.valueOf(Thread.currentThread().getId());
+      }
+  }
+  ```
+
+  
+
+  - 注册+使用
+
+  ```java
+  /**
+   * 2. 注册 ThreadLocalScope + 使用
+   *
+   * @author Adam
+   * @date 2020/4/27
+   */
+  public class ThreadLocalScopeDemo {
+  
+      /**
+       * 注入
+       */
+      @Bean
+      @Scope(ThreadLocalScope.SCOPE_NAME)
+      public User user() {
+          return buildUser();
+      }
+  
+      private static User buildUser() {
+          User user = new User();
+          user.setName(String.valueOf(System.nanoTime()));
+          return user;
+      }
+  
+      public static void main(String[] args) {
+          AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+          applicationContext.register(ThreadLocalScopeDemo.class);
+  
+          // 2. 注册 自定义 Scope
+          applicationContext.addBeanFactoryPostProcessor(beanFactory -> {
+              beanFactory.registerScope(ThreadLocalScope.SCOPE_NAME, new ThreadLocalScope());
+          });
+  
+          applicationContext.refresh();
+  
+          // demo
+          scopedBeanByLookupOnThread(applicationContext);
+          scopedBeanByLookupMultThread(applicationContext);
+          
+          applicationContext.close();
+      }
+  
+      /**
+       * 同一个线程
+       */
+      public static void scopedBeanByLookupOnThread(AnnotationConfigApplicationContext applicationContext) {
+          for (int i = 0; i < 3; i++) {
+              User user = applicationContext.getBean("user", User.class);
+              System.out.printf("ThreadId: %d : user= %s %n", Thread.currentThread().getId(), user);
+          }
+      }
+  
+      /**
+       * 多个线程
+       */
+      public static void scopedBeanByLookupMultThread(AnnotationConfigApplicationContext applicationContext) {
+          for (int i = 0; i < 3; i++) {
+              Thread thread = new Thread(() -> {
+                  User user = applicationContext.getBean("user", User.class);
+                  System.out.printf("ThreadId: %d : user= %s %n", Thread.currentThread().getId(), user);
+              });
+  
+              thread.start();
+  
+              try {
+                  thread.join();
+              } catch (InterruptedException e) {
+                  e.printStackTrace();
+              }
+          }
+      }
+  }
+  ```
+
+  
 
 
 

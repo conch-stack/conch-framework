@@ -43,7 +43,6 @@ public class ThreadLocalScopeDemo {
         scopedBeanByLookupOnThread(applicationContext);
         scopedBeanByLookupMultThread(applicationContext);
 
-
         applicationContext.close();
     }
 
