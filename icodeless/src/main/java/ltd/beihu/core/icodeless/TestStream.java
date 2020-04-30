@@ -63,6 +63,24 @@ public class TestStream {
     public static void main(String[] args) {
 //        testStream();
 //        testMap1();
-        testMap2();
+//        testMap2();
+
+        // 测试 fastjson bean 转 map ： 忽略字段
+//        SingleOrderMiniRefundDTO singleOrderMiniRefundDTO = new SingleOrderMiniRefundDTO();
+//        singleOrderMiniRefundDTO.setPlatform(1);
+//        singleOrderMiniRefundDTO.setOrderNo("sss");
+//        singleOrderMiniRefundDTO.setAmount(BigDecimal.valueOf(10));
+//        singleOrderMiniRefundDTO.setCourseClosed(true);
+//        singleOrderMiniRefundDTO.setSerialNo(null);
+//        singleOrderMiniRefundDTO.setRemark("dddd");
+//
+//        PropertyPreFilters filters = new PropertyPreFilters();
+//        PropertyPreFilters.MySimplePropertyPreFilter excludefilter = filters.addFilter();
+//        excludefilter.addExcludes("remark");
+//        Map<String, Object> rs = JSON.parseObject(JSON.toJSONString(singleOrderMiniRefundDTO, excludefilter));
+//        Map<String, Object> rs1 = JSON.parseObject(JSON.toJSONString(singleOrderMiniRefundDTO));
+//
+//        System.out.println(rs);
+//        System.out.println(rs1);
     }
 }

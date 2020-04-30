@@ -1,8 +1,10 @@
 package ltd.beihu.spring.lifecycle.beanlifecycle;
 
 import ltd.beihu.spring.ioc.overview.domain.User;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.support.PropertiesBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
 
 /**
  * Bean 元信息配置
@@ -29,10 +31,28 @@ public class BeanMetedataConfigurationDemo {
 
         applicationContext.refresh();
 
+
         User user = applicationContext.getBean("user", User.class);
+        User factoryUser = applicationContext.getBean("factory_user", User.class);
         System.out.println(user);
+        System.out.println(factoryUser);
 
         applicationContext.close();
+    }
+
+    @Bean("factory_user")
+    public FactoryBean<User> user() {
+        return new FactoryBean<User>() {
+            @Override
+            public User getObject() throws Exception {
+                return new User();
+            }
+
+            @Override
+            public Class<?> getObjectType() {
+                return User.class;
+            }
+        };
     }
 
 }

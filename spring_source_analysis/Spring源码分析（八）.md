@@ -5,7 +5,22 @@
 
 
 - Spring Bean元信息配置阶段
+
+  - XML: XmlBeanDefinitionReader
+  - Properties：PropertiesBeanDefinitionReader
+  - Groovy
+
+  
+
 - Spring Bean元信息解析阶段
+  - 面向资源的BeanDefinition解析
+    - BeanDefinitionReader
+      - 指定资源进行读取解析
+      - XML解析器 - BeanDefinitionParser
+  - 面向注解的BeanDefinition解析
+    - AnnotationBeanDefinitionReader
+      - 指定包或者class文件进行解析
+  - API方式
 
 
 
@@ -45,3 +60,9 @@
 - Spring Bean 销毁前阶段
 - Spring Bean 销毁阶段
 - Spring Bean 垃圾收集
+
+
+
+FactoryBean的处理逻辑：
+
+![image-20200430040203289](assets/image-20200430040203289.png)
