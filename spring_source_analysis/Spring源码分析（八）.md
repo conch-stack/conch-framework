@@ -48,12 +48,17 @@
 
 
 - Spring BeanDefinition合并阶段
+  - 父子BeanDefinition合并
+    - 当前BeanFactory查找
+    - 层次BeanFactory查找
+  - RootBeanDefinition不需要合并
+    - 不允许设置parent
+  - GenericBeanDefinition：默认一开始所有构建的BeanDefinition都是GenericBeanDefinition，在合并时会逐步递归，最终变成RootBeanDefinition；注意这个Merge的过程是不会改变原有BeanDefinition的，只会copy一份过来，重写当前被merge的BeanDefinition 
 
 
 
 - Spring Bean Class 加载阶段
-
-
+  - 
 
 - Spring Bean 实例化前阶段
 - Spring Bean 实例化阶段
@@ -84,4 +89,17 @@
 
 FactoryBean的处理逻辑：
 
-![image-20200430040203289](assets/image-20200430040203289.png)
+- RootBeanDefinition
+
+```java
+/** Package-visible field for caching if the bean is a factory bean. */
+@Nullable
+volatile Boolean isFactoryBean;
+```
+
+
+
+![](assets/image-20200430040203289.png)
+
+
+
