@@ -4,6 +4,9 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 
 /**
+ * 注册 类 或 包 ：
+ *      类或包中类上的注解会被扫描
+ *
  * @author Adam
  * @date 2020/4/30
  */
@@ -20,8 +23,9 @@ public class AnnotationBeanDefinitionParsingDemo {
         annotatedBeanDefinitionReader.register(AnnotationBeanDefinitionParsingDemo.class);
         int after = beanFactory.getBeanDefinitionCount();
 
-
         // ResolvableType
         // BeanNameGenerator  AnnotationBeanNameGenerator
+
+
     }
 }

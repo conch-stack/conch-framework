@@ -26,6 +26,25 @@
 
 - Spring Bean注册阶段
 
+  - BeanDefinitionRegistry
+
+    - DefaultListableBeanFactroy
+
+    ```java
+    /** 
+     * Map of bean definition objects, keyed by bean name.  
+     * BeanName->BeanDefinition映射
+     */
+    private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
+    
+    /** List of bean definition names, in registration order.  保证顺序 */
+    private volatile List<String> beanDefinitionNames = new ArrayList<>(256);
+    
+    public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition)
+    ```
+
+    
+
 
 
 - Spring BeanDefinition合并阶段
