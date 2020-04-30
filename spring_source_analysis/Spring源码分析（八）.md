@@ -58,7 +58,64 @@
 
 
 - Spring Bean Class 加载阶段
-  - 
+
+  - ClassLoader类加载：利用Java基础的ClassLoader进行加载
+
+  - Java Security 安全控制
+
+  - ConfigurableBeanFactory 临时 ClassLoader
+
+  - BeanDefinition
+
+    - getBeanClassName()
+    - getParentName()
+    - getFactoryBeanName()
+    - getFactoryMethodName()
+
+  - getBean()
+
+    - 先去单例对象注册中心查找：（这类Bean是无Spring的生命周期的）找到直接返回
+
+    - 没有找到会调用singletonFactory.getObject(): 会调用createBean(beanName, mbd, args)
+
+    - 在子类：AbstractAutowireCapableBeanFactory中实现了createBean
+
+    - resolveBeanClass(mbd, beanName)：获取Class对象
+
+    - hasBeanClass(): 判断当前的BeanDefinition是否已经存在Class对象了
+
+    - ```java
+      @Nullable
+      private volatile Object beanClass;  // 在AbstractBeanDefinition中定义为Object
+      ```
+
+    - 一开始这个值是一个String类型：所有为 false
+
+    - ```java
+      /**
+       * Return whether this definition specifies a bean class.
+       * @see #getBeanClass()
+       * @see #setBeanClass(Class)
+       * @see #resolveBeanClass(ClassLoader)
+       */
+      public boolean hasBeanClass() {
+         return (this.beanClass instanceof Class);
+      }
+      ```
+
+    - false后，触发Class构建 ：doResolveBeanClass(mbd, typeMatch)：
+
+      - typeMatch为空无所谓，有值的话是指定类型去构建Class
+
+    - doResolveBeanClass() 中会获取 ClassLoader 和 dynamicClassLoader（临时ClassLoader）
+
+      - 边角：BeanClassLoaderAware 可获取ClassLoader
+
+    - mdb.resolveBeanClass(beanClassLoader)： AbstractBeanDefinition中处理Class的加载
+
+    - 将之前的String类型的 beanClass 直接替换为 Class对象
+
+
 
 - Spring Bean 实例化前阶段
 - Spring Bean 实例化阶段
