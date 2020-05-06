@@ -118,7 +118,17 @@
 
 
 - Spring Bean 实例化前阶段
+
+  - InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation()
+  - 会打破Spring的注册
+  - 调用链路：getBean#createBean#resolveBeforeInstantiation
+
+  
+
 - Spring Bean 实例化阶段
+
+
+
 - Spring Bean 实例化后阶段
 
 
