@@ -121,15 +121,25 @@
 
   - InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation()
   - 会打破Spring的注册
-  - 调用链路：getBean#createBean#resolveBeforeInstantiation
+  - 调用链路： getBean#createBean#resolveBeforeInstantiation
 
   
 
 - Spring Bean 实例化阶段
 
+  - 构造器注入是按照类型进行注入的：resolveDependency
+
 
 
 - Spring Bean 实例化后阶段
+  - Bean属性**赋值**（Populate）判断
+  - InstantiationAwareBeanPostProcessor#postProcessAfterInstantiation()
+    - 返回True表示需要属性被赋值
+  - 调用链路：getBean#doGetBean#createBean#doCreateBean#populateBean
+    - populateBean里面会判断是否有InstantiationAwareBeanPostProcessor
+      - false时直接return
+      - 全部为true时：
+        - PropertyValues：mbd.getPropertyValues()
 
 
 

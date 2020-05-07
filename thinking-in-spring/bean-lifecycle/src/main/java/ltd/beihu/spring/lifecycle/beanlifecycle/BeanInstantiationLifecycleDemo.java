@@ -42,6 +42,15 @@ public class BeanInstantiationLifecycleDemo {
             // 保持Spring IOC 默认容器实例化
             return null;
         }
+
+        @Override
+        public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
+            if (ObjectUtils.nullSafeEquals("user", beanName) && User.class.equals(bean.getClass())) {
+                // 不赋值
+                return false;
+            }
+            return true;
+        }
     }
 
 }
