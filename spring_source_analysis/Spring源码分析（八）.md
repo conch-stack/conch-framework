@@ -164,7 +164,9 @@
 
 
 
-FactoryBean的处理逻辑：
+
+
+##### FactoryBean的处理逻辑：
 
 - RootBeanDefinition
 
@@ -173,6 +175,38 @@ FactoryBean的处理逻辑：
 @Nullable
 volatile Boolean isFactoryBean;
 ```
+
+
+
+##### AbstractApplicationContext：
+
+- obtainFreshBeanFactory 创建一个新的 BeanFactory、读取和解析 bean 定义。
+- invokeBeanFactoryPostProcessors 提供给开发者对 BeanFactory 进行扩展。
+- registerBeanPostProcessors 提供给开发者对 bean 进行扩展。
+- finishBeanFactoryInitialization 实例化剩余的所有非懒加载单例 bean。
+
+
+
+##### ApplicationContextInitializer：
+
+```java
+// 创建一个 ApplicationContextInitializer 接口的实现类，例如下面的 SpringApplicationContextInitializer，并在 initialize 方法中进行自己的逻辑操作，例如：添加监听器、添加 BeanFactoryPostProcessor。
+public class SpringApplicationContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+    @Override
+    public void initialize(ConfigurableApplicationContext applicationContext) {
+        // 自己的逻辑实现   
+// 例子1：通过硬编码的方式添加监听器
+    EarlyListener earlyListener = new EarlyListener();
+    applicationContext.addApplicationListener(earlyListener);
+ 
+    // 例子2：通过硬编码的方式添加BeanFactoryPostProcessor
+    MyBeanFactoryPostProcessor myBeanFactoryPostProcessor = new MyBeanFactoryPostProcessor();
+    applicationContext.addBeanFactoryPostProcessor(myBeanFactoryPostProcessor);
+}
+}
+```
+
+
 
 
 
