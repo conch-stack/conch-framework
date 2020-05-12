@@ -181,8 +181,21 @@ volatile Boolean isFactoryBean;
 ##### AbstractApplicationContext：
 
 - obtainFreshBeanFactory 创建一个新的 BeanFactory、读取和解析 bean 定义。
+
+  - GenericApplicationContext：构建DefaultListableBeanFactory
+
+    ```java
+    public GenericApplicationContext() {
+       this.beanFactory = new DefaultListableBeanFactory();
+    }
+    ```
+
+  - AbstractRefreshableApplicationContext：
+
 - invokeBeanFactoryPostProcessors 提供给开发者对 BeanFactory 进行扩展。
+
 - registerBeanPostProcessors 提供给开发者对 bean 进行扩展。
+
 - finishBeanFactoryInitialization 实例化剩余的所有非懒加载单例 bean。
 
 

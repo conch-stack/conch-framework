@@ -56,4 +56,65 @@
   }
   ```
 
+- BeanDefinitionParserDelegate#parseBeanDefinitionElement
+
+  ```java
+  public AbstractBeanDefinition parseBeanDefinitionElement(
+        Element ele, String beanName, @Nullable BeanDefinition containingBean) {
   
+     this.parseState.push(new BeanEntry(beanName));
+  
+     // 1.解析class、parent属性
+     String className = null;
+     if (ele.hasAttribute(CLASS_ATTRIBUTE)) {
+        className = ele.getAttribute(CLASS_ATTRIBUTE).trim();
+     }
+     String parent = null;
+     if (ele.hasAttribute(PARENT_ATTRIBUTE)) {
+        parent = ele.getAttribute(PARENT_ATTRIBUTE);
+     }
+  
+     try {
+        // 2.创建用于承载属性的AbstractBeanDefinition类型的GenericBeanDefinition
+        AbstractBeanDefinition bd = createBeanDefinition(className, parent);
+  
+        // 3.解析bean的各种属性 scope、primary、lazy-init、autowre、init-method、destroy-method、factory-method
+        parseBeanDefinitionAttributes(ele, beanName, containingBean, bd);
+        // 提取description
+        bd.setDescription(DomUtils.getChildElementValueByTagName(ele, DESCRIPTION_ELEMENT));
+  
+        // 解析元数据子节点(基本不用, 不深入介绍)
+        parseMetaElements(ele, bd);
+        // 解析lookup-method子节点(基本不用, 不深入介绍)
+        parseLookupOverrideSubElements(ele, bd.getMethodOverrides());
+        // 解析replaced-method子节点(基本不用, 不深入介绍)
+        parseReplacedMethodSubElements(ele, bd.getMethodOverrides());
+  
+        // 4.解析constructor-arg子节点
+        parseConstructorArgElements(ele, bd);
+        // 5.解析property子节点
+        parsePropertyElements(ele, bd);
+        // 解析qualifier子节点(基本不用, 不深入介绍)
+        parseQualifierElements(ele, bd);
+  
+        bd.setResource(this.readerContext.getResource());
+        bd.setSource(extractSource(ele));
+  
+        return bd;
+     }
+     catch (ClassNotFoundException ex) {
+        error("Bean class [" + className + "] not found", ele, ex);
+     }
+     catch (NoClassDefFoundError err) {
+        error("Class that bean class [" + className + "] depends on not found", ele, err);
+     }
+     catch (Throwable ex) {
+        error("Unexpected failure during bean definition parsing", ele, ex);
+     }
+     finally {
+        this.parseState.pop();
+     }
+  
+     return null;
+  }
+  ```
