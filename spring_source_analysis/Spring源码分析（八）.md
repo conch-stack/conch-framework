@@ -200,6 +200,72 @@ volatile Boolean isFactoryBean;
 
 
 
+##### AnnotationConfigApplicationContext：
+
+- AnnotationConfigApplicationContext继承自GenericApplicationContext
+  - 提供了注解配置（例如：Configuration、Component、inject等）和类路径扫描（scan方法）的支持，可以使用register(Class<?>... annotatedClasses)来注册一个一个的进行注册。
+  - 实现了AnnotationConfigRegistry接口，来完成对注册配置的支持，只有两个方法：register和scan。
+  - 内部使用AnnotatedBeanDefinitionReader来完成注解配置的解析，使用ClassPathBeanDefinitionScanner来完成类路径下的bean定义的扫描。
+
+
+
+##### WebApplicationContext：
+
+- 该接口提供了在web应用中的配置，接口提供了一个ServletContext getServletContext()用来获取ServletContext对象。
+- 该接口会和ServletContext的一个属性进行绑定，这个属性就是ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE。
+- 定义了三个作用域的名称：SCOPE_REQUEST,SCOPE_SESSION,SCOPE_APPLICATION。
+- 在工厂中的bean的名称：SERVLET_CONTEXT_BEAN_NAME。
+- ServletContext初始化参数名称：CONTEXT_PARAMETERS_BEAN_NAME。
+- 在工厂中ServletContext属性值环境bean的名称：CONTEXT_ATTRIBUTES_BEAN_NAME。
+
+
+
+##### ConfigurableWebApplicationContext：
+
+- ConfigurableWebApplicationContext继承自WebApplicationContext和ConfigurableApplicationContext，提供了web应用上下文的可配置的能力。相关接口定义如下：
+
+```java
+// 设置web应用上下文的ServletContext
+void setServletContext(@Nullable ServletContext servletContext);
+// 设置web应用上下文的ServletConfig
+void setServletConfig(@Nullable ServletConfig servletConfig);
+// 获取web应用上下文的ServletConfig
+ServletConfig getServletConfig();
+// 设置web应用上下文的命名空间
+void setNamespace(@Nullable String namespace);
+// 获取web应用上下文的命名空间
+String getNamespace();
+// 以初始化参数的形式设置web应用上下文的配置文件位置
+void setConfigLocation(String configLocation);
+// 设置web应用上下文的配置文件的位置
+void setConfigLocations(String... configLocations);
+// 获取web应用上下文的配置文件位置
+String[] getConfigLocations();
+```
+
+上面的接口主要都是一些设置或者获取的方法，在web应用上下文中需要用到的一些东西。
+
+
+
+##### GenericWebApplicationContext：
+
+- GenericWebApplicationContext继承自GenericApplicationContext，实现了ConfigurableWebApplicationContext和ThemeSource接口。
+- 该类设计的目的不是在web.xml中进行声明式的安装，而是编程式的安装，例如使用WebApplicationInitializers来构建内嵌的上下文。
+- 该接口在ConfigurableWebApplicationContext的内容都是一个伪实现，调用其中的大多数方法都会抛出异常。
+- 你也许注意到了，他实现了ThemeSource接口，那么他有什么用呢？字面意思是主题源，它设计的目的主要是用于消息的国际化。
+
+
+
+##### AnnotationConfigWebApplicationContext：
+
+- AnnotationConfigWebApplicationContext继承自AbstractRefreshableWebApplicationContext，接受注解的类作为输入（特殊的@Configuration注解类，一般的@Component注解类，与JSR-330兼容的javax.inject注解）。
+- 允许一个一个的注入，同样也能使用类路径扫描。对于web环境，基本上是和AnnotationConfigApplicationContext等价的。
+- 使用AnnotatedBeanDefinitionReader来对注解的bean进行处理，使用ClassPathBeanDefinitionScanner来对类路径下的bean进行扫描。
+
+
+
+
+
 ##### ApplicationContextInitializer：
 
 ```java

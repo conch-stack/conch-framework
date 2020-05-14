@@ -10,14 +10,14 @@
 
     <bean id="userRepository" class="ltd.beihu.spring.ioc.overview.repository.UserRepository"
           autowire="byType"> <!-- Auto-Wiring -->
+    </bean>
 
-
-        <!-- 手动配置 -->
-        <!--        <property name="users">-->
-        <!--            <util:list>-->
-        <!--                <ref bean="superUser"/>-->
-        <!--                <ref bean="user"/>-->
-        <!--            </util:list>-->
-        <!--        </property>-->
+    <bean id="userRepository1" class="ltd.beihu.spring.ioc.overview.repository.UserRepository">
+        <property name="users">
+            <util:list>
+                <ref bean="superUser"/>
+                <ref bean="user"/>
+            </util:list>
+        </property>
     </bean>
 </beans>
