@@ -45,4 +45,3 @@ hutool
 
 - https://github.com/colg-cloud/seckill
 
-command + F12

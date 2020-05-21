@@ -27,19 +27,8 @@
         <module>beihu-core</module>
         <module>beihu-mybatis</module>
         <module>thinking-in-spring</module>
+        <module>icodeless</module>
     </modules>
-
-<!--    <dependencyManagement>-->
-<!--        <dependencies>-->
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-dependencies</artifactId>-->
-<!--                <version>${springboot.version}</version>-->
-<!--                <type>pom</type>-->
-<!--                <scope>import</scope>-->
-<!--            </dependency>-->
-<!--        </dependencies>-->
-<!--    </dependencyManagement>-->
 
     <build>
         <plugins>
