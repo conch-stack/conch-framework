@@ -5,7 +5,7 @@
 ##### 要素：
 
 - target：被代理类
-- advisor:advice+pointcut ：切面
+- advisor:advice+pointcut ：切面（增强器）
 - AutoProxyCreator：用于创建代理对象
 
 
@@ -81,7 +81,7 @@
 
   - BeanDefinition解析后，添加Aop的BeanPostProcessor：AnnotationAwareAspectJAutoProxyCreator
 
-  - 后置解析器，实例化Bean后，赋值后(populateBean)
+  - 后置解析器，实例化Bean后，赋值后(populateBean)，初始化时被调用
 
     ```java
     protected Object initializeBean(final String beanName, final Object bean, @Nullable RootBeanDefinition mbd) {
@@ -98,11 +98,12 @@
     
     		Object wrappedBean = bean;
     		if (mbd == null || !mbd.isSynthetic()) {
-          // 处理
+          // 处理 初始化前置处理
     			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
     		}
     
     		try {
+          // 处理 初始化方法 (InitializingBean)
     			invokeInitMethods(beanName, wrappedBean, mbd);
     		}
     		catch (Throwable ex) {
@@ -111,6 +112,7 @@
     					beanName, "Invocation of init method failed", ex);
     		}
     		if (mbd == null || !mbd.isSynthetic()) {
+          // 处理 初始化后置处理
     			wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
     		}
     
@@ -118,5 +120,46 @@
     	}
     ```
 
-    
+  - 从BeanFactroy中获取所有的beanNames：
 
+    ```java
+    String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
+    							this.beanFactory, Object.class, true, false);
+    ```
+
+  - 迭代获取所有 非 @PointCut 注解的方法：getAdvisorMethods
+
+  - 注解信息包装成：AspectJExpressionPointcut
+
+  - 将Method对象和AspectJExpressionPointcut封装到 InstantiationModelAwarePointcutAdvisorImpl中成为一个 Advisor （增强器）| 实质都是一个 PointcutAdvisor.class
+
+    ```java
+    List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
+    ```
+
+  - AspectJExpressionPointcut会解析注解中的表达式，并以此匹配类型和方法以绝对是否进行拦截并增强
+
+
+
+- Other
+
+  - 比较高阶
+
+  ```java
+  private static final Comparator<Method> METHOD_COMPARATOR;
+  
+  	static {
+  		Comparator<Method> adviceKindComparator = new ConvertingComparator<>(
+  				new InstanceComparator<>(
+  						Around.class, Before.class, After.class, AfterReturning.class, AfterThrowing.class),
+  				(Converter<Method, Annotation>) method -> {
+  					AspectJAnnotation<?> annotation =
+  						AbstractAspectJAdvisorFactory.findAspectJAnnotationOnMethod(method);
+  					return (annotation != null ? annotation.getAnnotation() : null);
+  				});
+  		Comparator<Method> methodNameComparator = new ConvertingComparator<>(Method::getName);
+  		METHOD_COMPARATOR = adviceKindComparator.thenComparing(methodNameComparator);
+  	}
+  ```
+
+  
