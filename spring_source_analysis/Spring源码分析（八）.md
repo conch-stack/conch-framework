@@ -127,7 +127,22 @@
 
 - Spring Bean 实例化阶段
 
+  - 传统实例化策略：InstantiationStrategy
+
+    - AbstractAutowireCapableBeanFactory#doCreateBean#createBeanInstance#instantiateBean
+
+    - 使用无参构造器进行实例化
+
+    - 默认使用CglibSubclassingInstantiationStrategy策略进行Bean实例的创建
+
+      - ```
+        <p>Uses CGLIB to generate subclasses dynamically if methods need to be overridden by the container to implement <em>Method Injection</em>.
+        只有在方法需要被重写的时候，才会使用CGLIB进行子类动态生成
+        ```
+
   - 构造器注入是按照类型进行注入的：resolveDependency
+
+    - ·按照类型进行注入
 
 
 
