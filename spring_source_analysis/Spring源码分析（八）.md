@@ -143,6 +143,7 @@
   - 构造器注入是按照类型进行注入的：resolveDependency
 
     - ·按照类型进行注入
+    - BeanDefinition#ConstructorArgumentValues
 
 
 
@@ -159,6 +160,14 @@
 
 
 - Spring Bean 属性赋值前阶段
+  - Bean属性值元信息：PropertyValues （MutablePropertyValues）集合对象
+  - Bean属性赋值前回调（**属性值也是可以修改的**）
+    - Spring 1.2-5.0 : InstantiationAwareBeanPostProcessor#postProcessPropertyValues
+    - Spring 5.1 ：InstantiationAwareBeanPostProcessor#postProcessProperties
+  - populateBean#applyPropertyValues(beanName, mbd, bw, pvs)
+    - 将PropertyValues赋值到BeanWrapper上
+      - bw.setPropertyValues(mpvs);
+      - 类型转换
 
 
 

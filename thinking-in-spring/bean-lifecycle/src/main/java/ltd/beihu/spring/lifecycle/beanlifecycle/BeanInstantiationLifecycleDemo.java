@@ -3,6 +3,8 @@ package ltd.beihu.spring.lifecycle.beanlifecycle;
 import ltd.beihu.spring.ioc.overview.domain.SuperUser;
 import ltd.beihu.spring.ioc.overview.domain.User;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -50,6 +52,19 @@ public class BeanInstantiationLifecycleDemo {
                 return false;
             }
             return true;
+        }
+
+        @Override
+        public PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName) throws BeansException {
+            // 可回调处理属性赋值 在 Populate Bean 阶段
+            if (pvs instanceof MutablePropertyValues) {
+                MutablePropertyValues mutablePropertyValues = (MutablePropertyValues) pvs;
+                mutablePropertyValues.addPropertyValue("name", "test");
+                // PropertyValue 对象中持有的对象是 final 的   | propertyValue 默认是 TypedStringValue
+                mutablePropertyValues.removePropertyValue("age");
+                mutablePropertyValues.addPropertyValue("age", "11");
+            }
+            return pvs;
         }
     }
 
