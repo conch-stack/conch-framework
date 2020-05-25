@@ -171,7 +171,23 @@
 
 
 
-- Spring Bean Aware接口回调阶段
+- Spring Bean Aware接口回调阶段（按顺序）
+
+  - getBean#doGetBean#createBean#doCreateBean#initializeBean#invokeAwareMethods
+    - BeanNameAware
+    - BeanClassLoaderAware
+    - BeanFactoryAware
+
+  - ApplicationContext中包含的生命（AbstractApplicationContext#refresh#prepareBeanFactory）
+    - beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this))
+    - 是一个：BeanPostProcessor#postProcessBeforeInitialization
+    - 同样在initializeBean的invokeAwareMethods的后面被递归调用
+      - EnvironmentAware
+      - EmbeddedValueResolverAware
+      - ResouceLoaderAware
+      - ApplicationEventPublisherAware
+      - MessageSourceAware
+      - ApplicationContextAware
 
 
 
