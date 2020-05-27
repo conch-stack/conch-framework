@@ -273,9 +273,17 @@
 
 - Spring Bean 销毁阶段
 
-  - 
+  - AbstractApplicationContext#close()#doClose()#destroyBeans()#destroySingletons()
+    - 最终在 DefaultListableBeanFactory
+
+  
 
 - Spring Bean 垃圾收集
+
+  - Bean垃圾回收（GC）
+    - 关闭Spring容器（应用上下文）
+    - 执行GC
+    - Spring Bean覆盖 finalize() 方法被回调
 
 
 
