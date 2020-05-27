@@ -192,18 +192,45 @@
 
 
 - Spring Bean 初始化前阶段
+
   - BeanPostProcesso#postProcessBeforeInitialization
   - getBean#doGetBean#createBean#doCreateBean#initializeBean#applyBeanPostProcessorsBeforeInitialization
+
 - Spring Bean 初始化阶段
+
   - invokeInitMethods：调用实现InitializingBean接口的afterPropertiesSet()方法
   - mbd.getInitMethodName()：执行 自定义的 初始化方法
   - 问题：如果是走的ApplicationContext，那么 @PostConstruct 会最先执行初始化
     - 原因：CommonAnnotationBeanPostProcessor 生命周期回调时会处理标注对应注解的类的方法
       - setInitAnnotationType(PostConstruct.class);
       - 具体实现在CommonAnnotationBeanPostProcessor的父类InitDestroyAnnotationBeanPostProcessor中
+
 - Spring Bean 初始化后阶段
+
   - getBean#doGetBean#createBean#doCreateBean#initializeBean#applyBeanPostProcessorsAfterInitialization
+
 - Spring Bean 初始化完成阶段
+
+  - **完成阶段方法回调**
+
+    - Spring4.1+ ： SmartInitializingSingleton#afterSingletonsInstantiated方法回调
+
+    - 类实现SmartInitializingSingleton接口并实现afterSingletonsInstantiated()方法，源码调用点：
+
+      - AbstractApplicationContext#refresh#finishBeanFactoryInitialization#preInstantiateSingletons实例化非延迟bean时
+      - 在getBean后，进行回调：
+
+      ```java
+      // Trigger post-initialization callback for all applicable beans...
+      for (String beanName : beanNames) {
+         Object singletonInstance = getSingleton(beanName);
+         if (singletonInstance instanceof SmartInitializingSingleton) {
+            final SmartInitializingSingleton smartSingleton = (SmartInitializingSingleton) singletonInstance;
+            // 省略 jvm 安全机制代码
+            smartSingleton.afterSingletonsInstantiated();
+         }
+      }
+      ```
 
 
 
