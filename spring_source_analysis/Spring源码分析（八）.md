@@ -4,6 +4,16 @@
 
 
 
+##### 重点：
+
+- BeanPostProcessor：定义了Bean初始化的回调接口定义
+  - InstantiationAwareBeanPostProcessor：定义了Bean实例化的接口定义
+  - DestructionAwareBeanPostProcessor：定义了Bean销毁的接口定义
+
+
+
+
+
 - Spring Bean元信息配置阶段
 
   - XML: XmlBeanDefinitionReader
@@ -218,7 +228,7 @@
     - 类实现SmartInitializingSingleton接口并实现afterSingletonsInstantiated()方法，源码调用点：
 
       - AbstractApplicationContext#refresh#finishBeanFactoryInitialization#preInstantiateSingletons实例化非延迟bean时
-      - 在getBean后，进行回调：
+      - 在getBean后，进行回调：（他能够保证我们所有的Bean**完全**初始化后，再回调，意义很大）
 
       ```java
       // Trigger post-initialization callback for all applicable beans...
@@ -235,7 +245,36 @@
 
 
 - Spring Bean 销毁前阶段
+
+  - DestructionAwareBeanPostProcessor#postProcessBeforeDestruction
+
+  - 源码调用点：
+
+    - DefaultListableBeanFactory#destroyBean()
+
+    - DefaultSingletonBeanRegistry#destroyBean()  销毁单例Bean，同时销毁依赖其的所有Bean
+
+    - AbstractAutowireCapableBeanFactory#destroyBean() 多个实现
+
+    - DisposableBeanAdapter#destroy() : 核心逻辑在里面，先迭代DestructionAwareBeanPostProcessor，再处理
+
+      ```java
+      for (DestructionAwareBeanPostProcessor processor : this.beanPostProcessors) {
+         processor.postProcessBeforeDestruction(this.bean, this.beanName);
+      }
+      ```
+
+  - **Bean的销毁并不意味着Bean的GC掉了！！！**
+
+    - 只是代表这边Bean在容器中被销毁了
+    - 已经getBean在内存中的对象然后可以使用
+
+  
+
 - Spring Bean 销毁阶段
+
+  - 
+
 - Spring Bean 垃圾收集
 
 
