@@ -10,6 +10,18 @@
 
 
 
+##### 关键点：
+
+- Spring AOP也是对目标类增强，生成代理类。但是与AspectJ的最大区别在于---Spring AOP的运行时增强，而AspectJ是编译时增强。
+- 一个@AspectJ注解对应多个Advisor，一个Advisor对应一个Advice+其适配的一个Pointcut
+- 问题：@Pointcut是在哪里解析的，和 Pointcut 这个类有什么关系？？？
+
+
+
+![image-20200528233827147](assets/image-20200528233827147.png)
+
+
+
 ##### 源码：
 
 - AopNamespaceHandler：注册BeanDefinitionParser来处理Aop的xml标签或者自动代理的internalAutoProxyCreator（可以自动创建代理对象）
@@ -49,7 +61,7 @@
         	public void b() {}
       }
         ```
-  ```
+  ```java
       
   如上代码，默认情况下，a() 调 b() 时，b方法的事务会失效。
       
@@ -69,11 +81,12 @@
   
     - 核心代理逻辑在这个类里面的父类**AbstractAutoProxyCreator**中
   
-    - 方式一：通过实现SpringBean生命周期中的SmartInstantiationAwareBeanPostProcessor的#postProcessBeforeInstantiation方法#createProxy来打乱Bean实例化
+    - Step1：通过实现SpringBean生命周期中的SmartInstantiationAwareBeanPostProcessor的#postProcessBeforeInstantiation方法
       
-      - **前提：我们有一个 通用的 custom TargetSource ？？？**
+      - createProxy来打乱Bean实例化 | **前提：我们有一个 通用的 custom TargetSource ？？？**
+      - shouldSkip(beanClass, beanName)：会预先实例化一波Advisor，并标记跳过不需要执行代理增强的类，在后续初始化后回调可以跳过
       
-    - 方式二：通过实现SpringBean生命周期中的SmartInstantiationAwareBeanPostProcessor的#postProcessAfterInitialization方法
+    - Step2：通过实现SpringBean生命周期中的SmartInstantiationAwareBeanPostProcessor的#postProcessAfterInitialization方法
   
     - 在Spring创建Bean时AbstractAutowireCapableBeanFactory#doCreateBean会默认为允许**循环引用**的每个单例Bean创建一个由CGLIB代理的引用，会放入每个SmartInstantiationAwareBeanPostProcessor的earlyProxyReferences缓存中
   
@@ -100,6 +113,8 @@
         List<Advisor> candidateAdvisors = findCandidateAdvisors();
         // 从所有Advisor中查找匹配当前beanClass的切面增强 参考下面
         List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
+        // 扩展 判断是否需要组合 Advisor Chain
+        // AspectJProxyUtils.makeAdvisorChainAspectJCapableIfNecessary(candidateAdvisors);
         extendAdvisors(eligibleAdvisors);
         if (!eligibleAdvisors.isEmpty()) {
           eligibleAdvisors = sortAdvisors(eligibleAdvisors);
@@ -202,24 +217,175 @@
 
 - 构建流程
 
+  - BeanFactoryAspectJAdvisorsBuilder#buildAspectJAdvisors()：构建
+
   - 从BeanFactroy中获取所有的beanNames：
 
     ```java
     String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
     							this.beanFactory, Object.class, true, false);
-    ```
-
-  - 迭代获取所有 非 @PointCut 注解的方法：getAdvisorMethods
-
-  - 注解信息包装成：AspectJExpressionPointcut
-
-  - 将Method对象和AspectJExpressionPointcut封装到 InstantiationModelAwarePointcutAdvisorImpl中成为一个 Advisor （增强器）| 实质都是一个 PointcutAdvisor.class
-
-    ```java
+    
+    // 用工厂进行 Advisor 的创建+获取
+    MetadataAwareAspectInstanceFactory factory =
+    										new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
     List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
     ```
 
-  - AspectJExpressionPointcut会解析注解中的表达式，并以此匹配类型和方法以绝对是否进行拦截并增强
+  - ReflectiveAspectJAdvisorFactory核心Advisor解析类：即AspectJAdvisorFactory是 this.advisorFactory的具体实现类
+
+  - 迭代获取所有 非 @PointCut 注解的方法：getAdvisorMethods
+
+  ```java
+  // ReflectiveAspectJAdvisorFactory#getAdvisors()
+  for (Method method : getAdvisorMethods(aspectClass)) { // 参考下面
+    // 解析包装成 Advisor 参考下面
+    Advisor advisor = getAdvisor(method, lazySingletonAspectInstanceFactory, advisors.size(), aspectName);
+    if (advisor != null) {
+      advisors.add(advisor);
+    }
+  }
+  
+  // ReflectiveAspectJAdvisorFactory#getAdvisors()#getAdvisorMethods()
+  private List<Method> getAdvisorMethods(Class<?> aspectClass) {
+    final List<Method> methods = new ArrayList<>();
+    // 反射获取所有 非 @PointCut 注解 标注的方法
+    ReflectionUtils.doWithMethods(aspectClass, method -> {
+      // Exclude pointcuts
+      if (AnnotationUtils.getAnnotation(method, Pointcut.class) == null) {
+        methods.add(method);
+      }
+    }, ReflectionUtils.USER_DECLARED_METHODS);
+    if (methods.size() > 1) {
+      methods.sort(METHOD_COMPARATOR);
+    }
+    return methods;
+  }
+  
+  // ReflectiveAspectJAdvisorFactory#getAdvisor()
+  @Override
+  @Nullable
+  public Advisor getAdvisor(Method candidateAdviceMethod, MetadataAwareAspectInstanceFactory aspectInstanceFactory,
+                            int declarationOrderInAspect, String aspectName) {
+  
+    validate(aspectInstanceFactory.getAspectMetadata().getAspectClass());
+  
+    // 注解信息包装成：AspectJExpressionPointcut 参考下面：
+    AspectJExpressionPointcut expressionPointcut = getPointcut(
+      candidateAdviceMethod, aspectInstanceFactory.getAspectMetadata().getAspectClass());
+    if (expressionPointcut == null) {
+      return null;
+    }
+    // 将Method对象和AspectJExpressionPointcut封装到 InstantiationModelAwarePointcutAdvisorImpl中成为一个 Advisor （增强器）
+    // 会调用instantiateAdvice进而调用下面的getAdvice构建
+    // 在AspectJ中实质都是一个 PointcutAdvisor.class
+    return new InstantiationModelAwarePointcutAdvisorImpl(expressionPointcut, candidateAdviceMethod,
+                                                          this, aspectInstanceFactory, declarationOrderInAspect, aspectName);
+  }
+  
+  // 具体解析工作
+  @Nullable
+  private AspectJExpressionPointcut getPointcut(Method candidateAdviceMethod, Class<?> candidateAspectClass) {
+    // 
+    AspectJAnnotation<?> aspectJAnnotation =
+      AbstractAspectJAdvisorFactory.findAspectJAnnotationOnMethod(candidateAdviceMethod);
+    if (aspectJAnnotation == null) {
+      return null;
+    }
+  
+    AspectJExpressionPointcut ajexp =
+      new AspectJExpressionPointcut(candidateAspectClass, new String[0], new Class<?>[0]);
+    ajexp.setExpression(aspectJAnnotation.getPointcutExpression());
+    if (this.beanFactory != null) {
+      ajexp.setBeanFactory(this.beanFactory);
+    }
+    return ajexp;
+  }
+  
+  
+  // 构建 Advice
+  @Override
+  @Nullable
+  public Advice getAdvice(Method candidateAdviceMethod, AspectJExpressionPointcut expressionPointcut,
+                          MetadataAwareAspectInstanceFactory aspectInstanceFactory, int declarationOrder, String aspectName) {
+  
+    Class<?> candidateAspectClass = aspectInstanceFactory.getAspectMetadata().getAspectClass();
+    validate(candidateAspectClass);
+  
+    AspectJAnnotation<?> aspectJAnnotation =
+      AbstractAspectJAdvisorFactory.findAspectJAnnotationOnMethod(candidateAdviceMethod);
+    if (aspectJAnnotation == null) {
+      return null;
+    }
+  
+    // If we get here, we know we have an AspectJ method.
+    // Check that it's an AspectJ-annotated class
+    if (!isAspect(candidateAspectClass)) {
+      throw new AopConfigException("Advice must be declared inside an aspect type: " +
+                                   "Offending method '" + candidateAdviceMethod + "' in class [" +
+                                   candidateAspectClass.getName() + "]");
+    }
+  
+    if (logger.isDebugEnabled()) {
+      logger.debug("Found AspectJ method: " + candidateAdviceMethod);
+    }
+  
+    AbstractAspectJAdvice springAdvice;
+  
+    switch (aspectJAnnotation.getAnnotationType()) {
+      case AtPointcut: // 跳过
+        if (logger.isDebugEnabled()) {
+          logger.debug("Processing pointcut '" + candidateAdviceMethod.getName() + "'");
+        }
+        return null;
+      case AtAround:
+        springAdvice = new AspectJAroundAdvice(
+          candidateAdviceMethod, expressionPointcut, aspectInstanceFactory);
+        break;
+      case AtBefore:
+        springAdvice = new AspectJMethodBeforeAdvice(
+          candidateAdviceMethod, expressionPointcut, aspectInstanceFactory);
+        break;
+      case AtAfter:
+        springAdvice = new AspectJAfterAdvice(
+          candidateAdviceMethod, expressionPointcut, aspectInstanceFactory);
+        break;
+      case AtAfterReturning:
+        springAdvice = new AspectJAfterReturningAdvice(
+          candidateAdviceMethod, expressionPointcut, aspectInstanceFactory);
+        AfterReturning afterReturningAnnotation = (AfterReturning) aspectJAnnotation.getAnnotation();
+        if (StringUtils.hasText(afterReturningAnnotation.returning())) {
+          springAdvice.setReturningName(afterReturningAnnotation.returning());
+        }
+        break;
+      case AtAfterThrowing:
+        springAdvice = new AspectJAfterThrowingAdvice(
+          candidateAdviceMethod, expressionPointcut, aspectInstanceFactory);
+        AfterThrowing afterThrowingAnnotation = (AfterThrowing) aspectJAnnotation.getAnnotation();
+        if (StringUtils.hasText(afterThrowingAnnotation.throwing())) {
+          springAdvice.setThrowingName(afterThrowingAnnotation.throwing());
+        }
+        break;
+      default:
+        throw new UnsupportedOperationException(
+          "Unsupported advice type on method: " + candidateAdviceMethod);
+    }
+  
+    // Now to configure the advice...
+    springAdvice.setAspectName(aspectName);
+    springAdvice.setDeclarationOrder(declarationOrder);
+    String[] argNames = this.parameterNameDiscoverer.getParameterNames(candidateAdviceMethod);
+    if (argNames != null) {
+      springAdvice.setArgumentNamesFromStringArray(argNames);
+    }
+    springAdvice.calculateArgumentBindings();
+  
+    return springAdvice;
+  }
+  
+  ```
+
+  - AspectJExpressionPointcut会解析注解中的表达式，并以此匹配类型和方法以绝对是否进行拦截并增强 
+    - 问题：什么时候触发解析？？？
 
 
 
@@ -244,4 +410,31 @@
   	}
   ```
 
+  - SpringBoot  | TODO  @Import 注解的执行逻辑，它也是Spring提供的，应该是和@Configuration在同一生命周期中
+
+  ```java
+  @Target(ElementType.TYPE)
+  @Retention(RetentionPolicy.RUNTIME)
+  @Documented
+  @Import(AspectJAutoProxyRegistrar.class)
+  public @interface EnableAspectJAutoProxy {
   
+  	/**
+  	 * Indicate whether subclass-based (CGLIB) proxies are to be created as opposed
+  	 * to standard Java interface-based proxies. The default is {@code false}.
+  	 */
+  	boolean proxyTargetClass() default false;
+  
+  	/**
+  	 * Indicate that the proxy should be exposed by the AOP framework as a {@code ThreadLocal}
+  	 * for retrieval via the {@link org.springframework.aop.framework.AopContext} class.
+  	 * Off by default, i.e. no guarantees that {@code AopContext} access will work.
+  	 * @since 4.3.1
+  	 */
+  	boolean exposeProxy() default false;
+  
+  }
+  ```
+
+  - 优秀文章
+    - https://blog.csdn.net/qq_20597727/article/details/84800176
