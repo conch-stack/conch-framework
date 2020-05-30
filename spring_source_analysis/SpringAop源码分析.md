@@ -75,8 +75,8 @@
         	@Transactional
         	public void b() {}
       }
-    ```
-    
+  ```
+  
   - AnnotationAwareAspectJAutoProxyCreator：
   
     - 核心代理逻辑在这个类里面的父类**AbstractAutoProxyCreator**中
@@ -151,6 +151,7 @@
       public static boolean canApply(Advisor advisor, Class<?> targetClass, boolean hasIntroductions) {
         // 分为基础设施的Advisor
         if (advisor instanceof IntroductionAdvisor) {
+          // 使用类过滤器进行匹配当前目标类
           return ((IntroductionAdvisor) advisor).getClassFilter().matches(targetClass);
         }
         // 和基于Pointcut的Advisor
@@ -163,19 +164,89 @@
           return true;
         }
       }
+    ```
+    
+    - AspectJExpressionPointcut：Pointcut封装，包含
+    
+      ```java
+      /**
+      * 类过滤器
+      */
+      ClassFilter getClassFilter();
+    
+      /**
+    * 方法过滤器
+      */
+      MethodMatcher getMethodMatcher();
+      
+      /**
+      * 增强表达式
+      */
+      @Nullable
+      String getExpression();
+      
       ```
-  
+    
+      说明：已经有类过滤器了，为什么还需要方法过滤器？
+    
+      答：可复用相同方法匹配的场景
+    
+      如何处理类过滤器+方法过滤器：
+    
+      - 创建过滤器：AspectJExpressionPointcut# 
+    
+    ```java
+      @Override
+    public ClassFilter getClassFilter() {  // 获取时，会去创建 PointcutExpression ；基于 PointcutParser
+      obtainPointcutExpression();
+      return this;
+      }
+      
+      @Override
+      public MethodMatcher getMethodMatcher() {
+    obtainPointcutExpression();
+      return this;
+      }
+      
+      // 获得 PointcutExpression
+      private PointcutExpression obtainPointcutExpression() {
+        if (getExpression() == null) {
+          throw new IllegalStateException("Must set property 'expression' before attempting to match");
+        }
+        if (this.pointcutExpression == null) {
+          this.pointcutClassLoader = determinePointcutClassLoader();
+          this.pointcutExpression = buildPointcutExpression(this.pointcutClassLoader);
+        }
+        return this.pointcutExpression;
+      }
+      
+      // 构建 PointcutExpression
+      private PointcutExpression buildPointcutExpression(@Nullable ClassLoader classLoader) {
+        // 初始化 PointcutParser  核心的解析表达式逻辑就在这里了，包含注解的表达式解析
+        PointcutParser parser = initializePointcutParser(classLoader);
+        PointcutParameter[] pointcutParameters = new PointcutParameter[this.pointcutParameterNames.length];
+        for (int i = 0; i < pointcutParameters.length; i++) {
+          pointcutParameters[i] = parser.createPointcutParameter(
+            this.pointcutParameterNames[i], this.pointcutParameterTypes[i]);
+        }
+        return parser.parsePointcutExpression(replaceBooleanOperators(resolveExpression()),
+                                              this.pointcutDeclarationScope, pointcutParameters);
+      }
+      ```
+    
+      
+    
     - wrapIfNecessary#createProxy
-  
+    
     ```java
     // specificInterceptors 就是 所有匹配的 Advisor
     Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
     Object proxy = createProxy(
     					bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
     ```
-  
+    
     - AbstractAutoProxyCreator#createProxy
-  
+    
     ```java
     // AopProxyFactory#DefaultAopProxyFactory
     public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
@@ -195,16 +266,16 @@
       }
     }
     ```
-  
+    
     - Aop多重代理（代理链）：原理可参考[使用 Cglib 实现多重代理](https://www.jianshu.com/p/9ba77d8f200b)
-  
+    
     ```java
     // Get the interception chain for this method.
     List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
     
     // AdvisorChainFactory | DefaultAdvisorChainFactory
     ```
-  
+    
     
   
   
