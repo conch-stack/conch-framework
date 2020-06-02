@@ -287,6 +287,19 @@
 
 
 
+- LifecycleProcessor：处理所有的SmartLifecycle，调用其生命周期方法
+- SmartLifecycle
+  - SmartLifecycle 是一个接口。当Spring容器加载所有bean并完成初始化之后，会接着回调实现该接口的类中对应的方法（start()方法）。
+  - int getPhase()：定义多个 SmartLifecycle 的执行顺序
+  - boolean isAutoStartup()：是否自动启动
+  - boolean isRunning()：是否正在运行，控制start() 和 stop() 方法的执行
+
+
+
+### 参考：
+
+https://blog.csdn.net/v123411739/article/details/87994934
+
 
 
 
