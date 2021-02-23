@@ -21,6 +21,7 @@
         <maven.compiler.plugin>3.1</maven.compiler.plugin>
 
         <springboot.version>2.1.0.RELEASE</springboot.version>
+        <scala.binary.version>2.12</scala.binary.version>
     </properties>
 
     <modules>
@@ -28,7 +29,20 @@
         <module>beihu-mybatis</module>
         <module>thinking-in-spring</module>
         <module>icodeless</module>
+        <module>beihu-akka</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.typesafe.akka</groupId>
+                <artifactId>akka-bom_${scala.binary.version}</artifactId>
+                <version>2.6.12</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
