@@ -7,6 +7,7 @@ import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+import javax.annotation.Resource;
 import java.util.Collection;
 
 /**
@@ -42,6 +43,13 @@ public class QualifierDependencyInjection {
     @UserGroup
     private Collection<User> userGroupUsers;
 
+    /**
+     * UserGroup1 注解分组
+     */
+    @Resource
+    @UserGroup1
+    private Collection<User> userGroup1Users;
+
     // 注册Bean
     @Bean
     @Qualifier
@@ -68,6 +76,13 @@ public class QualifierDependencyInjection {
         return buildUser(444);
     }
 
+
+    @Bean
+    @UserGroup1
+    public User user5() {
+        return buildUser(555);
+    }
+
     public static void main(String[] args) {
 
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
@@ -92,6 +107,8 @@ public class QualifierDependencyInjection {
         System.out.println("qualifiedUsers: [" + bean.qualifiedUsers.size() + "] => " + bean.qualifiedUsers);
         // 2
         System.out.println("userGroupUsers: [" + bean.userGroupUsers.size() + "] => " + bean.userGroupUsers);
+        // 1
+        System.out.println("userGroup1Users: [" + bean.userGroup1Users.size() + "] => " + bean.userGroup1Users);
 
         applicationContext.close();
     }

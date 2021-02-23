@@ -107,7 +107,7 @@
         		
         TypeVariable:类型变量：反映JVM在编译该泛型前的信息 (代表着泛型中的变量)
         		getBounds():类型变量的上边界，未明确，默认为Object,class Test<K extends Person>									中 K 的上界就是 Person
-            getGenericDeclaration():获取该变量的原始类型，class Test<K extends Person>的原									始类型为Test
+            getGenericDeclaratio n():获取该变量的原始类型，class Test<K extends Person>的原									始类型为Test
             getName():获取在源码中定义的名字, class Test<K extends Person>的名字为 K
             
         GenericArrayType:泛型数组(用来描述ParameterizedType、TypeVariable类型的数组；即        									List<T>[] 、T[]等；)
