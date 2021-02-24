@@ -22,6 +22,7 @@ public class ActorDemo {
             System.in.read();
         } catch (IOException ignored) {
         } finally {
+            // 或stop掉当前System下所有的Actor
             actorSystemNew.terminate();
         }
     }

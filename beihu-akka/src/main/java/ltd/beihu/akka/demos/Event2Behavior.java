@@ -1,6 +1,7 @@
 package ltd.beihu.akka.demos;
 
 import akka.actor.typed.Behavior;
+import akka.actor.typed.PostStop;
 import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
@@ -24,7 +25,19 @@ public class Event2Behavior extends AbstractBehavior<Event2> {
 
     @Override
     public Receive<Event2> createReceive() {
-        return newReceiveBuilder().onMessage(Event2.class, this::handleEvent2).build();
+        return newReceiveBuilder().onMessage(Event2.class, this::handleEvent2)
+                .onSignal(PostStop.class, signal -> onPostStop())
+                .build();
+    }
+
+    /**
+     * 处理停止信号 - 生命周期
+     *
+     * @return Behavior Event2
+     */
+    private Behavior<Event2> onPostStop() {
+        getContext().getLog().info("Event2Behavior Stopped");
+        return this;
     }
 
     /**

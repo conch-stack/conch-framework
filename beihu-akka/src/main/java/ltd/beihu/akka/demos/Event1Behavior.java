@@ -2,6 +2,8 @@ package ltd.beihu.akka.demos;
 
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
+import akka.actor.typed.PostStop;
+import akka.actor.typed.SupervisorStrategy;
 import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
@@ -37,7 +39,19 @@ public class Event1Behavior extends AbstractBehavior<Event1> {
 
     @Override
     public Receive<Event1> createReceive() {
-        return newReceiveBuilder().onMessage(Event1.class, this::handleEvent1).build();
+        return newReceiveBuilder().onMessage(Event1.class, this::handleEvent1)
+                .onSignal(PostStop.class, signal -> onPostStop())
+                .build();
+    }
+
+    /**
+     * 处理停止信号 - 生命周期
+     *
+     * @return Behavior Event1
+     */
+    private Behavior<Event1> onPostStop() {
+        getContext().getLog().info("Event1Behavior Stopped");
+        return this;
     }
 
     /**
@@ -47,8 +61,9 @@ public class Event1Behavior extends AbstractBehavior<Event1> {
      * @return Behavior Event1
      */
     public Behavior<Event1> handleEvent1(Event1 event1) {
-        // 构建Event3的ActorRef给Event2用
-        ActorRef<Event3> event3ActorRef = getContext().spawn(Event3Behavior.create(3), "Event3Behavior");
+        // 构建Event3的ActorRef给Event2用 - 失败需重启
+        ActorRef<Event3> event3ActorRef = getContext().spawn(Behaviors.supervise(Event3Behavior.create(3))
+                .onFailure(SupervisorStrategy.restart()), "Event3Behavior");
         // 发消息给Event2
         event2ActorRef.tell(new Event2(event1.name, event3ActorRef));
         return this;

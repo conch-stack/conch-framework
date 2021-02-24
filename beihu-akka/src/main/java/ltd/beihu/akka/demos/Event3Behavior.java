@@ -1,6 +1,8 @@
 package ltd.beihu.akka.demos;
 
 import akka.actor.typed.Behavior;
+import akka.actor.typed.PostStop;
+import akka.actor.typed.PreRestart;
 import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
@@ -34,7 +36,30 @@ public class Event3Behavior extends AbstractBehavior<Event3> {
 
     @Override
     public Receive<Event3> createReceive() {
-        return newReceiveBuilder().onMessage(Event3.class, this::handleEvent3).build();
+        return newReceiveBuilder().onMessage(Event3.class, this::handleEvent3)
+                .onSignal(PreRestart.class, signal -> preRestart())
+                .onSignal(PostStop.class, signal -> onPostStop())
+                .build();
+    }
+
+    /**
+     * 处理预重启信号 - 生命周期
+     *
+     * @return Behavior Event3
+     */
+    private Behavior<Event3> preRestart() {
+        getContext().getLog().info("Event3Behavior will be restarted");
+        return this;
+    }
+
+    /**
+     * 处理停止信号 - 生命周期
+     *
+     * @return Behavior Event3
+     */
+    private Behavior<Event3> onPostStop() {
+        getContext().getLog().info("Event3Behavior Stopped");
+        return this;
     }
 
     /**
@@ -49,6 +74,10 @@ public class Event3Behavior extends AbstractBehavior<Event3> {
         if (eventCounter == max) {
             // 停止
             return Behaviors.stopped();
+        } else if (eventCounter == 2) {
+            // 抛异常 - 重启 Event3Behavior - todo 发现 Event3Behavior 重启后 并没有记录继续执行当前任务
+            getContext().getLog().error("Event3Behavior actor fails now");
+            throw new RuntimeException("I failed!");
         } else {
             // 再次发送Event2事件
             event3.event2ActorRef.tell(new Event2(event3.whom, getContext().getSelf()));
