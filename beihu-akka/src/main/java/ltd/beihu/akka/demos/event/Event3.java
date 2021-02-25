@@ -1,4 +1,4 @@
-package ltd.beihu.akka.demos;
+package ltd.beihu.akka.demos.event;
 
 import akka.actor.typed.ActorRef;
 
@@ -22,8 +22,12 @@ public class Event3 {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {return true;}
-        if (o == null || getClass() != o.getClass()) {return false;}
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Event2 greeted = (Event2) o;
         return Objects.equals(whom, greeted.whom) &&
                 Objects.equals(event2ActorRef, greeted.event3ActorRef);

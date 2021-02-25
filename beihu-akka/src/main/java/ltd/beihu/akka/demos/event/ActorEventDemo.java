@@ -1,16 +1,16 @@
-package ltd.beihu.akka.demos;
+package ltd.beihu.akka.demos.event;
 
 import akka.actor.typed.ActorSystem;
 
 import java.io.IOException;
 
 /**
- * Actor Demo
+ * Actor Event Demo
  *
  * @author Adam
  * @date 2021/2/23
  */
-public class ActorDemo {
+public class ActorEventDemo {
 
     public static void main(String[] args) {
 

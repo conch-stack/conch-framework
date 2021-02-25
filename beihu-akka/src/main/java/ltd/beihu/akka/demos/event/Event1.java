@@ -1,4 +1,4 @@
-package ltd.beihu.akka.demos;
+package ltd.beihu.akka.demos.event;
 
 /**
  * 事件主体1
