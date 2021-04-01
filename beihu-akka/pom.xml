@@ -25,6 +25,12 @@
             <artifactId>akka-actor-typed_${scala.binary.version}</artifactId>
         </dependency>
 
+        <!-- AKKA持久化 -->
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-persistence-typed_${scala.binary.version}</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>

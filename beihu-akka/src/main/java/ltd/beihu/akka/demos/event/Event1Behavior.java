@@ -23,6 +23,9 @@ public class Event1Behavior extends AbstractBehavior<Event1> {
     private Event1Behavior(ActorContext<Event1> context) {
         super(context);
 
+        // todo
+        // context.scheduleOnce()
+
         // Create a child Actor from the given Behavior and with the given name.
         // 创建子Actor
         event2ActorRef = context.spawn(Event2Behavior.create(), "Event2Behavior");
@@ -56,6 +59,33 @@ public class Event1Behavior extends AbstractBehavior<Event1> {
 
     /**
      * 处理 event1
+     *
+     * 延迟重启:
+     *      Behaviors.supervise(CreditCardProcessor.create())
+     *               .onFailure(StorageFailedException.class, SupervisorStrategy.restartWithBackoff(Duration.ofSeconds(2), Duration.ofSeconds(10), 0.2));
+     *
+     * 重启策略：
+     *      SupervisorStrategy.restart().withStopChildren(false)  - 保留子Actor - 消耗大
+     *
+     * 一个actor可以监控其他actor的生命周期，当actor停止的时候就能收到一个通知：
+     *      // 监控configuration actor
+     *      context.watch(configuration);
+     *      // todo
+     *      context.watchWith(actor, protocol)
+     *
+     * 信号包括两类：生命周期信号（PreRestart、PostStop）和监控信号（Terminated、ChildFailed）
+     *
+     * Behaviors.same()
+     * ChildFailed.class
+     * Terminated.class
+     *
+     * .onSignal(ChildFailed.class, childFailed -> {
+     *   context.getLog().warn("子actor {} 失败了，异常原因：{}", childFailed.getRef(), childFailed.cause().getMessage());
+     *   return Behaviors.same();
+     * }).onSignal(Terminated.class, terminated -> {
+     *   context.getLog().error("Configuration actor {} 不可用, 系统出问题了", terminated.getRef());
+     *   return Behaviors.stopped();
+     * })
      *
      * @param event1 event1
      * @return Behavior Event1
