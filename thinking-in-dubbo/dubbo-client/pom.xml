@@ -13,7 +13,10 @@
     <description>Demo project for Spring Boot</description>
 
     <dependencies>
-
+        <dependency>
+            <groupId>ltd.beihu.core.dubbo</groupId>
+            <artifactId>dubbo-facade</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
