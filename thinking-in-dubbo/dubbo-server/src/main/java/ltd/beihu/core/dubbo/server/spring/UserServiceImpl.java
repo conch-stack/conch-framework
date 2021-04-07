@@ -1,4 +1,4 @@
-package ltd.beihu.core.dubbo.server;
+package ltd.beihu.core.dubbo.server.spring;
 
 import ltd.beihu.core.dubbo.facade.User;
 import ltd.beihu.core.dubbo.facade.UserService;
