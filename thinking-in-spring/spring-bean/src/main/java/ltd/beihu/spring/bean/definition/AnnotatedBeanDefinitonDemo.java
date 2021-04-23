@@ -32,7 +32,6 @@ import java.util.Map;
 public class AnnotatedBeanDefinitonDemo {
 
     public static void main(String[] args) throws InterruptedException {
-
         // 创建 ApplicationContext 容器
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
         // 注册 Configuration Class

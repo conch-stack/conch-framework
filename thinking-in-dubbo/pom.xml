@@ -23,8 +23,7 @@
     <properties>
         <java.version>1.8</java.version>
         <main.user.dir>${basedir}/..</main.user.dir>
-        <dubbo.version>2.7.9</dubbo.version>
-        <springboot.version>2.4.4</springboot.version>
+        <dubbo-spring-boot.version>2.7.9</dubbo-spring-boot.version>
     </properties>
 
     <dependencyManagement>
@@ -32,12 +31,7 @@
             <dependency>
                 <groupId>org.apache.dubbo</groupId>
                 <artifactId>dubbo-spring-boot-starter</artifactId>
-                <version>${dubbo.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.dubbo</groupId>
-                <artifactId>dubbo-dependencies-zookeeper</artifactId>
-                <version>${dubbo.version}</version>
+                <version>${dubbo-spring-boot.version}</version>
             </dependency>
 
             <dependency>
@@ -63,6 +57,7 @@
         <dependency>
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo-dependencies-zookeeper</artifactId>
+            <version>${dubbo-spring-boot.version}</version>
             <type>pom</type>
             <exclusions>
                 <exclusion>
