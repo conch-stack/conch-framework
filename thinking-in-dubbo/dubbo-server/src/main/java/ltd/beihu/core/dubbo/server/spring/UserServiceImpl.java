@@ -23,4 +23,9 @@ public class UserServiceImpl implements UserService {
         user.setName(ManagementFactory.getRuntimeMXBean().getName());
         return user;
     }
+
+    @Override
+    public String getUserName() {
+        return ManagementFactory.getRuntimeMXBean().getName();
+    }
 }
