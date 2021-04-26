@@ -51,19 +51,27 @@ public interface Directory<T> extends Node {
 ##### RegistryDirectory：
 
 - Invoker 的列举逻辑（list - doList）
+
 - 接收服务配置变更的逻辑（notify）
+
 - Invoker 列表的刷新逻辑（refreshInvoker）
+
   - **URL -> Invoker（toInvokers）**
 
+    - ```java
+      invoker = new InvokerDelegate<>(protocol.refer(serviceType, url), url, providerUrl);
+      ```
 
 
 
 
 
+##### 源码疑点解析：
+
+queryMap：存放URL解析后的所有参数配置信息
 
 
-todo：
+ConsumerUrl：服务消费者 url
 
-queryMap
 
-ConsumerUrl
+
