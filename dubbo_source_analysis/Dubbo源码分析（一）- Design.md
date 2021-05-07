@@ -46,3 +46,9 @@ Dubbo的URL模式
 ##### 调用链路：
 
 ReferenceConfig（引用对象） -> UserService（服务接口、Proxy） -> Invoker（执行器:FailoverClusterInvoker）-> Directory -> URLs（提供者列表）
+
+
+
+##### Dubbo的线程：
+
+todo
