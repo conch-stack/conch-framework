@@ -210,20 +210,25 @@ private Invoker<T> reselect(LoadBalance loadbalance, Invocation invocation,
 
     // First, try picking a invoker not in `selected`.
     for (Invoker<T> invoker : invokers) {
+      	// 检测可用性
         if (availablecheck && !invoker.isAvailable()) {
             continue;
         }
-
+	
+      	// 如果 selected 列表不包含当前 invoker，则将其添加到 reselectInvokers 中
         if (selected == null || !selected.contains(invoker)) {
             reselectInvokers.add(invoker);
         }
     }
 
+  	// reselectInvokers 不为空，此时通过负载均衡组件进行选择
     if (!reselectInvokers.isEmpty()) {
         return loadbalance.select(reselectInvokers, getUrl(), invocation);
     }
 
     // Just pick an available invoker using loadbalance policy
+    // 若线程走到此处，说明 reselectInvokers 集合为空，此时不会调用负载均衡组件进行筛选。
+    // 这里从 selected 列表中查找可用的 Invoker，并将其添加到 reselectInvokers 集合中
     if (selected != null) {
         for (Invoker<T> invoker : selected) {
             if ((invoker.isAvailable()) // available first
@@ -232,6 +237,7 @@ private Invoker<T> reselect(LoadBalance loadbalance, Invocation invocation,
             }
         }
     }
+  	// 再次进行选择，并返回选择结果
     if (!reselectInvokers.isEmpty()) {
         return loadbalance.select(reselectInvokers, getUrl(), invocation);
     }
