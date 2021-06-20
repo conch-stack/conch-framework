@@ -26,3 +26,6 @@ Freecodecamp
 
 [JVM Attach机制实现](https://www.jianshu.com/p/4fa6a66fc8d9)
 
+
+
+支持业务接口重试 + 支持事件重试

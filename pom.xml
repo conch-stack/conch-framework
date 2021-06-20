@@ -29,7 +29,6 @@
         <module>beihu-mybatis</module>
         <module>thinking-in-spring</module>
         <module>thinking-in-dubbo</module>
-        <module>icodeless</module>
         <module>beihu-akka</module>
     </modules>
 
