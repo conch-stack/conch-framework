@@ -29,3 +29,5 @@ Freecodecamp
 
 
 支持业务接口重试 + 支持事件重试
+
+jdbc savepoint设计
