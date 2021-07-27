@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>ltd.beihu.core</groupId>
+        <artifactId>beihu-framework</artifactId>
+        <version>0.0.1</version>
+    </parent>
+    <groupId>ltd.beihu.core.microprofile</groupId>
+    <artifactId>beihu-microprofile</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>microprofile-core</module>
+    </modules>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <main.user.dir>${basedir}/..</main.user.dir>
+        <dubbo-spring-boot.version>2.7.9</dubbo-spring-boot.version>
+    </properties>
+
+    <dependencyManagement>
+
+    </dependencyManagement>
+
+    <dependencies>
+
+    </dependencies>
+
+</project>

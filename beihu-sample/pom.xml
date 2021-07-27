@@ -12,6 +12,7 @@
 
     <properties>
         <main.user.dir>${basedir}/..</main.user.dir>
+        <java.version>1.8</java.version>
         <slf4j-api.version>1.7.25</slf4j-api.version>
     </properties>
 

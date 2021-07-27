@@ -30,6 +30,7 @@
         <module>thinking-in-spring</module>
         <module>thinking-in-dubbo</module>
         <module>beihu-akka</module>
+        <module>beihu-microprofile</module>
         <module>beihu-sample</module>
     </modules>
 
