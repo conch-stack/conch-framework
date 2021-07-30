@@ -1,12 +1,14 @@
-## Java 类型
+## Java 类型 And 注解
 
 
+
+[TOC]
 
 ![JavaTypes](assets/JavaTypes.png)
 
+### Types
 
-
-##### Type
+#### Type
 
 - **ParameterizedType**：参数化类型，例如：java.util.List<java.lang.String>、java.util.Map<java.lang.Integer, java.lang.String>
 
@@ -39,30 +41,22 @@
 
 
 
+#### TypeVariable
+
+类型变量（反映JVM在编译该泛型前的信息）
 
 
 
+#### Array
 
-##### TypeVariable：类型变量（反映JVM在编译该泛型前的信息）
+判断是否为 Array 类型的方式：
 
-
-
-
-
-
+- Class<?>.isArray()：类的 native 方法 isArray()
+- Type 的 实现类：instanceof *GenericArrayType* 
 
 
 
-##### AnnotatedElement
-
-- AnnotatedType
-- GenericDeclaration
-
-
-
-##### Some Demos:
-
-
+#### Demo
 
 WildcardType:
 
@@ -126,3 +120,20 @@ public class TestJvmType {
     public static class TestType6 implements TestType2<TestType<String>> { }
 }
 ```
+
+
+
+### Annotations
+
+#### AnnotatedElement
+
+- AnnotatedType
+- GenericDeclaration
+
+
+
+\#getAnnotation
+
+\#isAnnotationPresent
+
+\#getAnnotationsByType
