@@ -1,5 +1,7 @@
 package ltd.beihu.core.microprofile.config;
 
+import ltd.beihu.core.microprofile.config.converter.Converters;
+import ltd.beihu.core.microprofile.config.converter.ImplicitConverters;
 import ltd.beihu.core.microprofile.config.util.StringUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.eclipse.microprofile.config.Config;
@@ -13,8 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Baihu Config
@@ -25,7 +27,7 @@ import java.util.Optional;
 public class BeihuConfig implements Config {
 
     private final List<ConfigSource> configSources;
-    private Map<Type, Converter<?>> typeConverterMap;
+    private final Map<Type, Converter<?>> typeConverterMap;
 
     BeihuConfig(List<ConfigSource> configSources, Map<Type, Converter<?>> typeConverterMap) {
         this.configSources = CollectionUtils.isNotEmpty(configSources) ? configSources : new ArrayList<>();
@@ -38,7 +40,7 @@ public class BeihuConfig implements Config {
         for (ConfigSource configSource : configSources) {
             String value = configSource.getValue(propertyName);
             if (value != null && value.length() > 0) {
-
+                return convert(value, propertyType);
             }
         }
         return null;
@@ -46,30 +48,35 @@ public class BeihuConfig implements Config {
 
     @Override
     public ConfigValue getConfigValue(String propertyName) {
+        // todo impl
         return null;
     }
 
     @Override
     public <T> Optional<T> getOptionalValue(String propertyName, Class<T> propertyType) {
+        for (ConfigSource configSource : configSources) {
+            String value = configSource.getValue(propertyName);
+            if (value != null && value.length() > 0) {
+                return Optional.of(convert(value, propertyType));
+            }
+        }
         return Optional.empty();
     }
 
     @Override
     public Iterable<String> getPropertyNames() {
-        return null;
+        return configSources.stream().flatMap(a -> a.getPropertyNames().stream()).collect(Collectors.toSet());
     }
 
     @Override
     public Iterable<ConfigSource> getConfigSources() {
-        return null;
+        return configSources;
     }
 
     @Override
     public <T> Optional<Converter<T>> getConverter(Class<T> forType) {
-
-        Converter<?> converter = typeConverterMap.get(forType);
-
-        return Optional.empty();
+        Converter<T> converter = doGetConverter(forType);
+        return Optional.of(converter);
     }
 
     @Override
@@ -89,22 +96,37 @@ public class BeihuConfig implements Config {
             // 真正需要处理的 Type
             Class<?> componentType = propertyType.getComponentType();
 
-            Converter<?> converter = typeConverterMap.get(componentType);
-            if (Objects.isNull(converter)) {
-                return null;
-            }
+            Converter<T> converter = doGetConverter(componentType);
 
             String[] split = StringUtil.split(value);
             T rs = (T) Array.newInstance(componentType, split.length);
             for (int i = 0; i < split.length; i++) {
-                converter.convert(split[i])
+                T t = converter.convert(split[i]);
+                Array.set(rs, i, t);
             }
-
-
-
+            return rs;
         } else {
-
+            Converter<T> converter = doGetConverter(propertyType);
+            return converter.convert(value);
         }
+    }
 
+    private <T> Converter doGetConverter(Class<T> forType) {
+        if (forType.isArray()) {
+            return doGetConverter(forType.getComponentType());
+        } else {
+            Converter converter = typeConverterMap.get(forType);
+            if (converter == null) {
+                // look for implicit converters
+                synchronized (typeConverterMap) {
+                    converter = ImplicitConverters.getConverter(forType);
+                    typeConverterMap.putIfAbsent(forType, converter);
+                }
+            }
+            if (converter == null) {
+                throw new IllegalArgumentException("No Converter registered for class " + forType);
+            }
+            return converter;
+        }
     }
 }
