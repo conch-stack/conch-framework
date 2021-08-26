@@ -65,3 +65,7 @@ checker：https://github.com/typetools/checker-framework/
 antora：https://gitlab.com/antora/antora
 
 vavr：https://github.com/vavr-io/vavr
+
+MQTT:工业消息协议
+
+Sharding-Sphere：https://mp.weixin.qq.com/s/Dw9e33Xk9DO7PbYPIfo_kg
