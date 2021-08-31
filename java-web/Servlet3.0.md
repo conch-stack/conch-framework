@@ -36,6 +36,12 @@
   - **监听域对象中的属性的增加和删除的事件监听器**
     - ServletContextAttributeListener、HttpSessionAttributeListener、ServletRequestAttributeListener接口。
       - 实现方法：attributeAdded、attributeRemoved、attributeReplaced
+  - **监听绑定到HttpSeesion域中的某个对象的状态的事件监听器(创建普通JavaBean)**
+    - HttpSession中的对象状态：
+      - 绑定→解除绑定：HttpSessionBindingListener接口(valueBound和valueUnbound方法)
+      - 钝化→活化：HttpSessionActivationListener接口(sessionWillPassivate和sessionDidActivate方法)
+        - 钝化 - 当服务器正常关闭时,还存活着的session(在设置时间内没有销毁) 会随着服务器的关闭被以文件(“SESSIONS.ser”)的形式存储在tomcat 的work 目录下,这个过程叫做Session 的钝化。
+        - 活化 - 当服务器再次正常开启时,服务器会找到之前的“SESSIONS.ser” 文件，从中恢复之前保存起来的Session 对象，这个过程叫做Session的活化。
 
 
 
