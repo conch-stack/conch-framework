@@ -20,6 +20,7 @@
         <project.encoding>UTF-8</project.encoding>
         <maven.compiler.plugin>3.1</maven.compiler.plugin>
 
+        <spring.version>5.2.14.RELEASE</spring.version>
         <springboot.version>2.3.10.RELEASE</springboot.version>
         <scala.binary.version>2.13</scala.binary.version>
     </properties>

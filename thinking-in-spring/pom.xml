@@ -26,7 +26,6 @@
     <properties>
         <java.version>1.8</java.version>
         <main.user.dir>${basedir}/..</main.user.dir>
-        <spring.version>5.2.5.RELEASE</spring.version>
         <reflections.version>0.9.12</reflections.version>
         <aspectj.version>1.9.5</aspectj.version>
     </properties>
