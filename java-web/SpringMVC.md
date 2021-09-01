@@ -1,14 +1,14 @@
 ### Spring MVC
 
+![SpringMVC](./assets/SpringMVC.png)
 
 
-<img src="assets/image-20210831205755040.png" alt="image-20210831205755040" style="zoom:50%;" />
 
 
 
 ##### DispatcherServlet
 
-执行流程 todo
+执行流程 **todo 画图**
 
 
 
@@ -110,3 +110,19 @@
 
 
 ##### HttpMessageConverter
+
+
+
+##### HandlerExceptionResolver
+
+实现：
+
+- org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver
+- org.springframework.web.servlet.mvc.annotation.ResponseStatusExceptionResolver
+- org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver
+
+
+
+##### SpringServletContainerInitializer
+
+Spring Web SPI注入
