@@ -85,6 +85,10 @@ org.apache.coyote.Response
 
 
 
+ApplicationHttpRequest
+
+
+
 org.apache.catalina.core.ApplicationFilterChain
 
 org.apache.catalina.connector.RequestFacade 实现自：HttpServletRequest
