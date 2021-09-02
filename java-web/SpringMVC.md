@@ -31,6 +31,32 @@ Spring就实现了自己的监听器，来监听ServletContext的启动事件，
 
 
 
+Tomcat/Jetty启动，对于每个WebApp，依次进行初始化工作：
+1、对每个WebApp，都有一个WebApp ClassLoader，和一个ServletContext
+2、ServletContext启动时，会扫描web.xml配置文件，找到Filter、Listener和Servlet配置
+
+3、如果Listener中配有spring的ContextLoaderListener
+3.1、ContextLoaderListener就会收到webapp的各种状态信息。
+3.3、在ServletContext初始化时，ContextLoaderListener也就会将Spring IOC容器进行初始化，管理Spring相关的Bean。
+3.4、ContextLoaderListener会将Spring IOC容器存放到ServletContext中
+
+4、如果Servlet中配有SpringMVC的DispatcherServlet
+4.1、DispatcherServlet初始化时（其一次请求到达）。
+4.2、其中，DispatcherServlet会初始化自己的SpringMVC容器，用来管理Spring MVC相关的Bean。
+4.3、SpringMVC容器可以通过ServletContext获取Spring容器，并将Spring容器设置为自己的根容器。而子容器可以访问父容器，从而在Controller里可以访问Service对象，但是在Service里不可以访问Controller对象。
+4.2、初始化完毕后，DispatcherServlet开始处理MVC中的请求映射关系。
+
+
+
+DispatcherServlet中的成员变量都是初始化好后就不会被改变了，所以是线程安全的，那“可见性”怎么保证呢？
+
+这是由Web容器比如Tomcat来做到的，Tomcat在调用Servlet的init方法时，用了synchronized。
+
+private synchronized void initServlet(Servlet servlet)
+{...}
+
+
+
 **ContextLoaderListener** -> 实现了Servlet的 **ServletContextListener**
 
 - ```java
@@ -44,6 +70,18 @@ Spring就实现了自己的监听器，来监听ServletContext的启动事件，
   ```
 
 - SpringBootContextLoaderListener
+
+
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20190503213508577.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3poYW5nbGYwMg==,size_16,color_FFFFFF,t_70)
+
+
+
+Spring容器是管理service和dao的，
+
+SpringMVC容器是管理controller对象的，
+
+Servlet容器是管理servlet对象的。
 
 
 
@@ -62,6 +100,12 @@ Spring就实现了自己的监听器，来监听ServletContext的启动事件，
 ##### SpringServletContainerInitializer
 
 Spring Web SPI注入
+
+
+
+**WebServer**
+
+
 
 
 
@@ -173,3 +217,33 @@ Spring Web SPI注入
 - org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver
 - org.springframework.web.servlet.mvc.annotation.ResponseStatusExceptionResolver
 - org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver
+
+
+
+**SpringMVC有两个上下文？Spring的service，dao、SpringMVC的controller？**
+
+**SpringBoot中只有一个Spring上下文：**
+**org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext**
+
+
+
+#### FAQ：
+
+问：servlet容器的Filter跟 spring 的intercepter 有啥区别
+
+Filter是Servlet规范的一部分，是Servlet容器Tomcat实现的。Intercepter是Spring发明的。它们的执行顺序是：
+
+
+Filter.doFilter();
+
+HandlerInterceptor.preHandle();
+
+Controller
+
+HandlerInterceptor.postHandle();
+
+DispatcherServlet 渲染视图
+
+HandlerInterceptor.afterCompletion();
+
+Filter.doFilter(); Servlet方法返回
