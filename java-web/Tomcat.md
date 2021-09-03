@@ -63,6 +63,20 @@ server.xml解析：
 
 
 
+#### 日志
+
+- `catalina.***.log`：主要是记录Tomcat启动过程的信息，在这个文件可以看到启动的JVM参数以及操作系统等日志信息。
+- `catalina.out`：是Tomcat的标准输出（stdout）和标准错误（stderr），这是在Tomcat的启动脚本里指定的，如果没有修改的话stdout和stderr会重定向到这里。所以在这个文件里可以看到我们在Servlet.java程序里打印出来的信息
+- `localhost.**.log`：主要记录Web应用在初始化过程中遇到的未处理的异常，会被Tomcat捕获而输出这个日志文件。
+- `localhost_access_log.**.txt`：存放访问Tomcat的请求日志，包括IP地址以及请求的路径、时间、请求协议以及状态码等信息。
+- `manager.***.log/host-manager.***.log`：存放Tomcat自带的manager项目的日志信息。
+
+
+
+
+
+
+
 
 
 
