@@ -2,7 +2,7 @@
 
 ![Tomcat](./assets/Tomcat.png)
 
-
+#### 组件
 
 - Http服务
   - 和客户端浏览器进行交互，进行socket通信，将字节流和Request/Response等对象进行转换
@@ -18,6 +18,12 @@
 
 
 
+#### 设计
+
+根据功能抽象出组件，组件内部高内聚（相似功能高度聚合）、组件之间低耦合（低依赖，组件之间基于抽象接口交互，封装变化降低耦合）
+
+
+
 #### 连接器（Coyote）
 
 Coyote 是Tomcat 中连接器的组件名称 , 是对外的接口。客户端通过Coyote与服务器建立连接、发送请求并接受响应。
@@ -25,21 +31,24 @@ Coyote 是Tomcat 中连接器的组件名称 , 是对外的接口。客户端通
 - Coyote 封装了底层的网络通信（Socket 请求及响应处理）
 - Coyote 使Catalina 容器（容器组件）与具体的请求协议及IO操作方式完全解耦-
 - Coyote 将Socket 输入转换封装为 Request 对象，进一步封装后交由Catalina 容器进行处理，处理请求完成后, Catalina 通过Coyote 提供的Response 对象将结果写入输出流
-- Coyote 负责的是具体协议（应用层）和IO（传输层）相关内容、
+- Coyote 负责的是具体协议（应用层）和IO（传输层）相关内容
+- 一个连接器对应一个监听端口
 
 
 
 **核心组件：**
 
-- **EndPoint**：是Coyote通信监听接口，是具体的Socket接收发送处理器，是用来实现TCP/IP协议的，是对传输层的抽象。
-
+- **EndPoint**：是Coyote通信监听接口，是具体的Socket接收发送处理器，是用来实现TCP/IP协议的，是对传输层的抽象。主要实现：NioEndpoint、Nio2Endpoint，有两个重要的子组件：Acceptor和SocketProcessor：
+  - Acceptor：用于监听Socket连接请求，Endpoint中的Acceptor有多个，每个Acceptor跑在单独的线程里
+  - SocketProcessor：用于处理接收到的Socket请求，它实现Runnable接口，在Run方法里调用协议处理组件Processor进行处理。为了提高处理能力，SocketProcessor被提交到线程池来执行。而这个线程池叫作执行器（Executor)
 - **Processor**：是Coyote协议处理接口，用来接收EndPoint的Socket，读取字节流解析成Tomcat Request和Response对象，并通过Adapter提交到对应容器处理，是用来实现HTTP协议的，是对应用层的抽象。
-
   - **ProtocolHandler**：Coyote 协议接口，通过Endpoint和Processor组件，实现针对具体协议的处理能力。Tomcat 按照协议和I/O 提供了6个实现类 : AjpNioProtocol，AjpAprProtocol，AjpNio2Protocol，**Http11NioProtocol**，**Http11Nio2Protocol**，Http11AprProtocol
-
+  - 由于I/O模型和应用层协议可以自由组合，比如NIO + HTTP或者NIO2 + AJP。Tomcat的设计者将网络通信和应用层协议解析放在一起考虑，设计了一个叫ProtocolHandler的接口来封装这两种变化点。各种协议和通信模型的组合有相应的具体实现类。比如：Http11NioProtocol和AjpNioProtocol。
 - **Adapter**：由于协议不同，客户端发过来的请求信息格式也不相同。ProtocolHandler接口解析请求并生成Tomcat Request类。由于不同协议导致的Request差异，Tomcat设计者的解决方案是引入**CoyoteAdapter**，连接器调用CoyoteAdapter的Sevice方法，传入Tomcat Request对象， CoyoteAdapter负责将Tomcat Request转成ServletRequest，再调用容器。
 
-  
+
+
+<img src="assets/image-20210906235828999.png" alt="image-20210906235828999" style="zoom: 40%;" />
 
 
 
