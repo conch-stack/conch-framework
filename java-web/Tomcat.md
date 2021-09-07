@@ -1,5 +1,7 @@
 ## Tomcat
 
+#### 架构
+
 ![Tomcat](./assets/Tomcat.png)
 
 #### 组件
@@ -15,6 +17,10 @@
   - JaveEL：表达式语言
   - Naming：提供JNDI服务
   - Juli：服务器日志
+
+
+
+<img src="assets/Component.png" alt="Component" style="zoom: 67%;" />
 
 
 
@@ -70,6 +76,15 @@ server.xml解析：
 - **Context**：表示一个Web应用程序， 一个Web应用可包含多个Wrapper
 - **Wrapper**：表示一个Servlet，Wrapper 作为容器中的最底层，不能包含子容器
 
+**调用链：**(Pipeline-Valve是责任链模式)
+
+- Valve
+- Pipeline
+
+**Mapper：**
+
+<img src="./assets/Container_Mapper.jpg" alt="Container_Mapper" style="zoom:50%;" />
+
 
 
 #### 日志
@@ -85,6 +100,25 @@ server.xml解析：
 
 
 
+
+#### FAQ
+
+Tomcat 的 Context 是一个 Web 应用; Servlet 的 ServletContext 是 Web 应用上下文, 是 Context 的一个成员变量; Spring 的 ApplicationContext 是 spring 容器, 是 Servlet 的一个属性.
+
+```
+<Server>
+	<Service>
+		<Connector>
+		</Connector>
+		<Engine>
+			<Host>
+				<Context>
+				</Context>
+			</Host>
+		</Engine>
+	</Service>
+</Server>
+```
 
 
 
