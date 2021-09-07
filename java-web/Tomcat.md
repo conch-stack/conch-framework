@@ -4,6 +4,13 @@
 
 ![Tomcat](./assets/Tomcat.png)
 
+#### 设计
+
+- **组件化**：根据功能抽象出组件，组件内部高内聚（相似功能高度聚合）、组件之间低耦合（低依赖，组件之间基于抽象接口交互，封装变化降低耦合）
+- **可管理化**：如何统一管理组件的创建、初始化、启动、停止和销毁？如何做到代码逻辑清晰？如何方便地添加或者删除组件？如何做到组件启动和停止不遗漏、不重复？
+
+
+
 #### 组件
 
 - Http服务
@@ -21,12 +28,6 @@
 
 
 <img src="assets/Component.png" alt="Component" style="zoom: 67%;" />
-
-
-
-#### 设计
-
-根据功能抽象出组件，组件内部高内聚（相似功能高度聚合）、组件之间低耦合（低依赖，组件之间基于抽象接口交互，封装变化降低耦合）
 
 
 
@@ -87,6 +88,46 @@ server.xml解析：
 
 
 
+#### 生命周期（组件管理LifeCycle接口）
+
+抽象生命周期中公共的部分，各组件实现之
+
+**可扩展性：**
+
+- **LifeCycle事件**：保证可扩展性；生命周期会触发事件，并通知改监听器（观察者模式）
+
+  - LifeCycle接口里加入两个方法：添加监听器和删除监听器
+
+    - ```
+      void addLifecycleListener(LifecycleListener listener);
+      void removeLifecycleListener(LifecycleListener listener);
+      LifecycleListener[] findLifecycleListeners()
+      ```
+
+  - 生命周期状态获取
+
+    - ```
+      LifecycleState getState()
+      ```
+
+  - 生命周期状态定义
+
+    - LifeCycleState：定义了状态 及 状态对应的 Event事件名
+
+**重用性：**
+
+- LifeCycleBase抽象基类
+
+
+
+LifecycleMBeanBase
+
+
+
+
+
+
+
 #### 日志
 
 - `catalina.***.log`：主要是记录Tomcat启动过程的信息，在这个文件可以看到启动的JVM参数以及操作系统等日志信息。
@@ -103,7 +144,7 @@ server.xml解析：
 
 #### FAQ
 
-Tomcat 的 Context 是一个 Web 应用; Servlet 的 ServletContext 是 Web 应用上下文, 是 Context 的一个成员变量; Spring 的 ApplicationContext 是 spring 容器, 是 Servlet 的一个属性.
+- Tomcat 的 Context 是一个 Web 应用; Servlet 的 ServletContext 是 Web 应用上下文, 是 Context 的一个成员变量; Spring 的 ApplicationContext 是 spring 容器, 是 Servlet 的一个属性.
 
 ```
 <Server>
@@ -119,6 +160,21 @@ Tomcat 的 Context 是一个 Web 应用; Servlet 的 ServletContext 是 Web 应�
 	</Service>
 </Server>
 ```
+
+- Debug Tomcat：
+
+建议跟SpringBoot那样，用嵌入式方式启动Tomcat，这里有例子：
+https://github.com/heroku/devcenter-embedded-tomcat
+
+- 请问tomcat什么时候会reload?
+
+当Web应用文件发生变化的时候。
+
+
+
+
+
+
 
 
 
