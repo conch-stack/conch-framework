@@ -11,6 +11,26 @@
 
 
 
+##### Catalina
+
+Tomcat：比作是一家公司，那么Catalina应该是公司创始人，因为Catalina负责组建团队，也就是创建Server以及它的子组件
+
+Server：是公司的CEO，负责管理多个事业群，每个事业群就是一个Service。
+
+Service：是事业群总经理，它管理两个职能部门：一个是对外的市场部，也就是连接器组件；另一个是对内的研发部，也就是容器组件。
+
+Engine：则是研发部经理，因为Engine是最顶层的容器组件。
+
+server.xml解析：
+
+- Catalina
+  - Server
+    - Service(可多个)
+      - Connector(可多个)
+      - Engine(只一个)
+
+
+
 #### 组件
 
 - Http服务
@@ -59,16 +79,7 @@ Coyote 是Tomcat 中连接器的组件名称 , 是对外的接口。客户端通
 
 
 
-#### Servlet容器（Catalina）
-
-server.xml解析：
-
-- Catalina
-  - Server
-    - Service
-      - Connector
-
-
+#### Servlet容器（Container）
 
 **核心组件：**
 
@@ -118,9 +129,7 @@ server.xml解析：
 
 - LifeCycleBase抽象基类
 
-
-
-LifecycleMBeanBase
+- LifecycleMBeanBase
 
 
 
