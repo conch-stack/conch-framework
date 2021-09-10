@@ -2,7 +2,7 @@
 
 #### 架构
 
-![Tomcat](./assets/Tomcat.png)
+![Tomcat](../assets/Tomcat.png)
 
 #### 设计
 
@@ -47,7 +47,7 @@ server.xml解析：
 
 
 
-<img src="assets/Component.png" alt="Component" style="zoom: 67%;" />
+<img src="../assets/Component.png" alt="Component" style="zoom: 67%;" />
 
 
 
@@ -75,7 +75,7 @@ Coyote 是Tomcat 中连接器的组件名称 , 是对外的接口。客户端通
 
 
 
-<img src="assets/image-20210906235828999.png" alt="image-20210906235828999" style="zoom: 40%;" />
+<img src="../assets/image-20210906235828999.png" alt="image-20210906235828999" style="zoom: 40%;" />
 
 
 
@@ -95,7 +95,7 @@ Coyote 是Tomcat 中连接器的组件名称 , 是对外的接口。客户端通
 
 **Mapper：**
 
-<img src="./assets/Container_Mapper.jpg" alt="Container_Mapper" style="zoom:50%;" />
+<img src="../assets/Container_Mapper.jpg" alt="Container_Mapper" style="zoom:50%;" />
 
 
 
