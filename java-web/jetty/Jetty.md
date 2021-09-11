@@ -1,5 +1,7 @@
 ## Jetty
 
+架构图
+
 ![Jetty](assets/Jetty.png)
 
 #### Connector
@@ -15,8 +17,14 @@
 - **Acceptor**：监听连接
 
   - 用于接受请求，同Tomcat一样，Jetty也有独立的Acceptor线程组来处理连接请求
+
   - Acceptor是ServerConnector中的一个内部类，同时也是一个Runnable，Acceptor线程是通过getExecutor()得到的线程池来执行的，前面提到这是一个全局的线程池
+
+  - **多个Acceptor共享同一个ServerSocketChannel**。多个Acceptor线程调用同一个ServerSocketChannel的accept方法，由操作系统保证线程安全
+
   - Acceptor接收到连接，会触发SocketChannel变为非阻塞，并交由SelectorManager处理
+
+    
 
 - **SelectorManager：I**/O事件查询
 
@@ -78,6 +86,52 @@
 #### Handler
 
 处理Servlet
+
+接口：
+
+```java
+public interface Handler extends LifeCycle, Destroyable
+{
+    //处理请求的方法
+    public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+        throws IOException, ServletException;
+    
+    //每个Handler都关联一个Server组件，被Server管理
+    public void setServer(Server server);
+    public Server getServer();
+
+    //销毁方法相关的资源
+    public void destroy();
+}
+```
+
+类图：
+
+<img src="assets/Jetty-Handler.png" alt="Jetty-Handler" style="zoom:80%;" />
+
+
+
+- AbstractHandlerContainer：包含其他Handler的Handler，定位为HandlerContainer
+- HandlerWrapper：只包含一个其他Handler的引用
+- HandlerCollection：包含一个Handler数组的引用，为了支持Jetty多Web应用
+
+
+
+Handler分类：
+
+- **协调Handler**：这种Handler负责将请求路由到一组Handler中去，比如 HandlerCollection
+- **过滤器Handler**：这种Handler自己会处理请求，处理完了后再把请求转发到下一个Handler，比如图上的HandlerWrapper，它内部持有下一个Handler的引用。需要注意的是，所有继承了HandlerWrapper的Handler都具有了过滤器Handler的特征，比如ContextHandler、SessionHandler和WebAppContext等。
+- **内容Handler**：说白了就是这些Handler会真正调用Servlet来处理请求，生成响应的内容，比如ServletHandler。如果浏览器请求的是一个静态资源，也有相应的ResourceHandler来处理这个请求，返回静态页面
+
+
+
+架构细节：(Handler链)
+
+<img src="assets/Jetty-Detail.jpg" alt="Jetty-Detail" style="zoom: 40%;" />
+
+对比Tomcat的架构图，你可以看到，Jetty的Handler组件和Tomcat中的容器组件是大致是对等的概念，Jetty中的WebAppContext相当于Tomcat的Context组件，都是对应一个Web应用；而Jetty中的ServletHandler对应Tomcat中的Wrapper组件，它负责初始化和调用Servlet，并实现了Filter的功能。
+
+Jetty的Handler设计是它的一大特色，Jetty本质就是一个Handler管理器，Jetty本身就提供了一些默认Handler来实现Servlet容器的功能，你也可以定义自己的Handler来添加到Jetty中，这体现了“**微内核 + 插件**”的设计思想。
 
 
 
