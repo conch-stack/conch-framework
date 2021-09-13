@@ -40,7 +40,7 @@ server.xml解析：
   - 处理业务逻辑
   - Container（Catalina）：容器组件
 - 其他
-  - Jasper：JSP引擎
+  - Jasper：JSP引擎（上面图片拼错了）
   - JaveEL：表达式语言
   - Naming：提供JNDI服务
   - Juli：服务器日志
