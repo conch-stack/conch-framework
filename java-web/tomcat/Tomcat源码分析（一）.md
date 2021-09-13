@@ -1,4 +1,4 @@
-## Tomcat源码分析
+## Tomcat源码分析（一）
 
 #### Catalina
 
@@ -208,3 +208,14 @@ final class StandardEngineValve extends ValveBase {
 }
 ```
 
+
+
+##### 归类：
+
+名字里带有Acceptor的线程负责接收浏览器的连接请求。
+
+名字里带有Poller的线程，其实内部是个Selector，负责侦测IO事件。
+
+名字里带有Catalina-exec的是工作线程，负责处理请求。
+
+名字里带有 Catalina-utility的是Tomcat中的工具线程，主要是干杂活，比如在后台定期检查Session是否过期、定期检查Web应用是否更新（热部署热加载）、检查异步Servlet的连接是否过期等等。
