@@ -34,5 +34,5 @@
   - **SocketProcessor**：Poller会创建SocketProcessor任务类交给线程池处理，而SocketProcessor实现了Runnable接口，用来定义Executor中线程所执行的任务，主要就是调用Http11Processor组件来处理请求。Http11Processor读取Channel的数据来生成ServletRequest对象
   - **SocketWrapper**：Http11Processor并不是直接读取Channel的，只调用SocketWrapper的方法去读写数据。SocketWrapper屏蔽了不同Channel的I/O模型（Tomcat支持同步非阻塞I/O模型和异步I/O模型）
 
-- **Executor**：就是线程池，负责运行SocketProcessor任务类，SocketProcessor的run方法会调用Http11Processor来读取和解析请求数据。我们知道，Http11Processor是应用层协议的封装，它会调用容器获得响应，再把响应通过Channel写出。
+- **Executor**：Tomcat定制版的线程池，负责运行SocketProcessor任务类，SocketProcessor的run方法会调用Http11Processor来读取和解析请求数据。我们知道，Http11Processor是应用层协议的封装，它会调用容器获得响应，再把响应通过Channel写出。
 
