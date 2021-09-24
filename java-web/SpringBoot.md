@@ -1,5 +1,13 @@
 ## SpringBoot
 
+WebServer：
+
+<img src="assets/image-20210924233833212.png" alt="image-20210924233833212" style="zoom:50%;" />
+
+WebServerFactory：
+
+![SpringBoot-WebServer](assets/SpringBoot-WebServer.png)
+
 
 
 ### SpringBoot整合多种Web容器
