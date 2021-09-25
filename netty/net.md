@@ -116,3 +116,50 @@ Reactor模型中定义的三种角色：
 ### Proactor模型（异步I/O）
 
 <img src="assets/image-20210917201422164.png" alt="image-20210917201422164" style="zoom:50%;" />
+
+
+
+
+
+### Keepalive
+
+TCP层Keepalive；类似于心跳检测（应用层Keepalive），当对方出现无法应答的情况时，会就行Keepalive询问，如果对方在无法应答Keepalive的询问，则认为检测不通过，关闭/回收连接资源
+
+##### 如何设计：
+
+- 出现问题的概率小，所以没有必要频繁发起Keepalive询问
+- 判断无法应答时需谨慎，不能武断，存在多次无法应答时，再判死刑
+
+##### 核心参数：
+
+```shell
+# sysctl -a|grep tcp_keepalive
+net.ipv4.tcp_keepalive_time=7200
+net.ipv4.tcp_keepalive_intvl=75
+net.ipv4.tcp_keepalive_probes=9
+
+# 当启用（默认关闭）keepalive时，TCP在连接没有数据通过的7200秒后发送 keepalive 消息，当探测没有应答，按75秒的重试频率重发，一直发9个探测包都没有应答，则连接失败
+```
+
+##### 为何还需要应用层Keepalive
+
+- 协议分层，各层关注点不同，分层思想，设计替换可扩展
+- TCP层的Keepalive默认关闭
+- TCP层Keepalive时间长，默认2小时，虽然可修改，但配置属于操作系统层配置，改动会影响所有应用
+
+##### HTTP的Keep-Alive
+
+概念不能混：HTTP Keep-Alive 指的是 **对 长连接 与 短连接 的选择**
+
+- Connection:Keep-Alive 长连接
+- Connection：Close 短连接
+
+##### Idle检测
+
+配合Keepalive，以减少Keepalive消息
+
+Keepalive设计：
+
+- V1：定时Keepalive消息
+- V2：空闲监测 + 判断为Idle时，才发Keepalive
+
