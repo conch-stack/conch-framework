@@ -26,11 +26,50 @@
 
 那怎么确定线程的忙碌时间和阻塞时间？要经过压测，在代码中埋点统计，***TODO***
 
+> 总结出一个公式：
+>
+> **线程池大小 = 每秒请求数 × 平均请求处理时间**
+
+**查看进程中各线程占用CPU的情况：**
+
+> top -H -p 4361(进程id)
+
 
 
 ##### 连接数：(NioEndPoint)
 
 LimitLatch是连接控制器，它负责控制最大连接数，NIO模式下默认是10000，达到这个阈值后，连接请求被拒绝
+
+Tomcat的最大并发连接数等于**maxConnections + acceptCount**。如果acceptCount设置得过大，请求等待时间会比较长；如果acceptCount设置过小，高并发情况下，客户端会立即触发Connection reset异常
+
+
+
+##### TCP缓冲区大小
+
+TCP的发送和接收缓冲区最好加大到16MB，可以通过下面的命令配置：
+
+```shell
+ sysctl -w net.core.rmem_max = 16777216
+ sysctl -w net.core.wmem_max = 16777216
+ sysctl -w net.ipv4.tcp_rmem =“4096 87380 16777216”
+ sysctl -w net.ipv4.tcp_wmem =“4096 16384 16777216”
+```
+
+##### TCP队列大小
+
+`net.core.somaxconn`控制TCP连接队列的大小，默认值为128，在高并发情况下明显不够用，会出现拒绝连接的错误。但是这个值也不能调得过高，因为过多积压的TCP连接会消耗服务端的资源，并且会造成请求处理的延迟，给用户带来不好的体验。因此我建议适当调大，推荐设置为4096
+
+```shell
+sysctl -w net.core.somaxconn = 4096
+```
+
+`net.core.netdev_max_backlog`用来控制Java程序传入数据包队列的大小，可以适当调大
+
+```shell
+sysctl -w net.core.netdev_max_backlog = 16384
+sysctl -w net.ipv4.tcp_max_syn_backlog = 8192
+sysctl -w net.ipv4.tcp_syncookies = 1
+```
 
 
 

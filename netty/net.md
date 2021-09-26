@@ -8,6 +8,12 @@ HAL层：硬件抽象层
 
 
 
+### 线程
+
+<img src="assets/image-20210926155527100.png" alt="image-20210926155527100" style="zoom:50%;" />
+
+
+
 ### TCP（[写的非常好的文章](https://www.cnblogs.com/xiaolincoding/p/12995358.html)）
 
 TCP 协议栈内核通常会为每一个LISTEN状态的Socket维护两个队列：
