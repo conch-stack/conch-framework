@@ -12,6 +12,22 @@ WebServerFactory：
 
 ### SpringBoot整合多种Web容器
 
+ServletWebServerApplicationContext重写了 AbstractApplicationContext#refresh()#onRefresh() 方法，以启动 内嵌Tomcat容器：
+
+```java
+@Override
+protected void onRefresh() {
+  super.onRefresh();
+  try {
+    // 创建容器
+    createWebServer();
+  }
+  catch (Throwable ex) {
+    throw new ApplicationContextException("Unable to start web server", ex);
+  }
+}
+```
+
 
 
 #### 接口

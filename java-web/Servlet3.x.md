@@ -4,6 +4,7 @@
 
 - **Servlet3.x引入异步Serlvet为什么？**
   - 性能考虑：如果遇到耗时的IO操作，Tomcat的线程会立即返回，当业务线程处理完后，再调用Tomcat的线程将响应发回给浏览器
+  - 典型使用场景：[Nacos LongPolling](https://www.jianshu.com/p/0e968ad2a5fa)
 
 
 
