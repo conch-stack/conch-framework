@@ -161,8 +161,37 @@ B+Tree
 
 ### Change Buffer
 
-更新数据时，如果数据块在内存中，则直接操作内存，如果数据库不在内存中，为避免磁盘操作，提升性能，MySQL设计了Change Buffer，改Change Buffer具备持久化功能（purge），MySQL后台会定时purge Change Buffer到磁盘，同时，如果需要从磁盘读取数据块到内存时，也会触发purge
+更新数据时，如果数据块在内存中，则直接操作内存，如果数据库不在内存中，为避免磁盘操作，提升性能，MySQL设计了Change Buffer，改Change Buffer具备持久化功能（merge），MySQL后台会定时merge Change Buffer到磁盘，同时，如果需要从磁盘读取数据块到内存时，也会触发merge
 
 使用场景：只有 **“普通索引”** 可以使用，对于写多读少的业务来说性能更优秀（账单类、日志类）
 
 配置：change buffer 的大小，可 以通过参数 innodb_change_buffer_max_size 来动态设置。这个参数设置为 50 的时候，表示 change buffer 的大小最多只能占用 buffer pool 的 50%
+
+
+
+### 空间回收
+
+**参数** **innodb_file_per_table**
+
+- drop命令可回收磁盘空间
+
+- 设置表数据存储在**共享表空间**或者**单独文件**
+- OFF：表示存储在共享空间（与数据字典放在一起）- **即使drop掉表，也不会回收空间**
+- ON：以单独文件存储，drop表后，直接删除文件
+- 从 MySQL 5.6.6 版本开始，它的默认值就是 ON 了
+
+**删除数据行，空间未减少问题：**
+
+InnoDB引擎，delete操作导致：
+
+- 对应数据位置标记为删除，新记录可复用该位置；当整个数据块都被删除，则整个数据块被标记为可复用，如果相邻数据块的利用率都不高，就会合并数据块，标记被合并的区域为可复用，磁盘空间不会释放
+- 解决：
+  - 重建表
+    - alter table t engine=InnoDB
+    - analyze table
+    - optimize table
+  - 重建表的实时方式：
+    - 非Online DDL
+    - Online DDL
+    - Ghost：[gh-ost](https://www.cnblogs.com/zhoujinyi/p/9187502.html)为github开源项目，模拟MySQL slave来达到数据回放
+

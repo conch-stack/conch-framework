@@ -80,3 +80,35 @@ ALTER TABLE tbl_name WAIT N add column ...
 普通索引和唯一索引应该怎么选择：
 
 - 其实，这两类索引在查询能力上 是没差别的，主要考虑的是对更新性能的影响。所以，我建议你**尽量选择普通索引**
+
+
+
+##### 脏页
+
+磁盘数据块与内存数据库不一致的情况，我们称为脏页
+
+MySQL控制脏页刷盘更新：
+
+- redo log 空间不够用
+- 脏页比例大了
+- 内存不够用
+
+查询脏页比例情况：
+
+```sql
+select VARIABLE_VALUE into @a from global_status where VARIABLE_NAME = 'Innodb_buffer_pool_pages_dirty';
+select VARIABLE_VALUE into @b from global_status where VARIABLE_NAME = 'Innodb_buffer_pool_pages_total'; 
+select @a/@b;
+```
+
+防止MySQL抖动：合理设置 innodb_io_capacity 的值（控制脏页刷盘），并且**平时要多关注脏页比 例，不要让它经常接近 75%**。
+
+**蔓延策略**：在准备刷一个脏页的时候，如果这个数据页旁 边的数据页刚好是脏页，就会把这个“邻居”也带着一起刷掉
+
+在 InnoDB 中，**innodb_flush_neighbors** 参数就是用来控制这个行为的，值为 1 的时候会有上 述的“连坐”机制，值为 0 时表示不找邻居，自己刷自己的。
+
+找“邻居”这个优化在机械硬盘时代是很有意义的，可以减少很多随机 IO。机械硬盘的随机 IOPS 一般只有几百，相同的逻辑操作减少随机 IO 就意味着系统性能的大幅度提升。
+
+而如果使用的是 SSD 这类 IOPS 比较高的设备的话，我就建议你把 innodb_flush_neighbors 的值设置成 0。因为这时候 IOPS 往往不是瓶颈，而“只刷自己”，就能更快地执行完必要的刷 脏页操作，减少 SQL 语句响应时间。
+
+在 MySQL 8.0 中，innodb_flush_neighbors 参数的默认值已经是 0 了。
