@@ -6,7 +6,36 @@
 
 
 
-##### 连接数查看
+#### 慢查询
+
+```sql
+# 便于测试
+set long_query_time=0;
+# 设置慢查询时间为1   global下次连接生效
+set global long_query_time=0.01;
+
+# 慢查询数
+show status like 'slow_queries';    
+
+# 开启慢查询
+set global slow_query_log=on;
+
+# 是否记录未使用索引的SQL
+set global log_queries_not_using_indexes=on;
+
+# 查看全局慢SQL配置
+show global variables like 'slow%';
+
+# dump 慢SQL
+/usr/local/mysql/bin/mysqldumpslow localhost-slow.log 
+
+# 默认为FILE，改为TABLE
+SET global log_output='TABLE'
+```
+
+
+
+#### 连接数及状态查看
 
 ```sql
 mysql> show processlist;
@@ -17,7 +46,7 @@ mysql> show processlist;
 
 
 
-##### 长连接
+#### 长连接
 
 长连接可减少MySQL建立连接的操作，提升性能，但是存在一个问题：
 
@@ -26,7 +55,7 @@ mysql> show processlist;
 
 
 
-##### 禁用查询缓存
+#### 禁用查询缓存
 
 查询缓存失效频繁，只要对一个表进行更新，那么这个表上的所有查询缓存都会被清空，会加大数据库压力，除非你的表是一张静态表
 
@@ -40,13 +69,13 @@ mysql> select SQL_CACHE * from T where ID=10;
 
 
 
-##### 全表扫描
+#### 全表扫描
 
 给一个表加字段，或者修改字段，或者加索引，需要扫描全表的数据
 
 
 
-##### MDL
+#### MDL
 
 由于MDL的存在，会导致读写表和修改表结构直接发生阻塞，阻塞之后的所有客户端都将无法访问表，解决：**WAIT N**
 
@@ -55,15 +84,21 @@ ALTER TABLE tbl_name NOWAIT add column ...
 ALTER TABLE tbl_name WAIT N add column ...
 ```
 
+查询MDL写锁阻塞的线程pid：
+
+```sql
+select blocking_pid from sys.schema_table_lock_waits
+```
 
 
-##### 两阶段锁协议
+
+#### 两阶段锁协议
 
 如果你的事务中需要锁多个行，要把 最可能造成锁冲突、最可能影响并发度的锁尽量往后放
 
 
 
-##### 死锁
+#### 死锁
 
 方案：发起死锁检测：出现死锁，则失败其中一个事务，让另一个事务可以继续执行
 
@@ -75,15 +110,35 @@ ALTER TABLE tbl_name WAIT N add column ...
 
 
 
-##### 索引
+#### 索引
 
 普通索引和唯一索引应该怎么选择：
 
 - 其实，这两类索引在查询能力上 是没差别的，主要考虑的是对更新性能的影响。所以，我建议你**尽量选择普通索引**
 
+**索引失效：**
 
+- 使用函数：如果对字段做了函数计算，那么该字段的索引的快速定位效果将失效，导致索引全扫描，这是 MySQL 的B+Tree决定的
 
-##### 脏页
+- 隐式类型转换：如果SQL中触发MySQL的String隐式转换为Int，则会导致索引失效
+
+  ```sql
+  mysql> select * from tradelog where tradeid=110717;
+  # 因为这样，MySQL会触发隐式转换函数 CAST
+  mysql> select * from tradelog where CAST(tradid AS signed int) = 110717;
+  ```
+
+- 隐式字符编码转换：两个表的字符集不同，一个是 utf8，一个是 utf8mb4，所以做表连接查询的时候用不上关联字段的索引
+
+  ```sql
+  mysql> select * from trade_detail where tradeid=$L2.tradeid.value;
+  # 因为这样，MySQL会触发隐式转换函数 CONVERT
+  mysql> select * from trade_detail where CONVERT(traideid USING utf8mb4)=$L2.tradeid.value;
+  ```
+
+  
+
+#### 脏页
 
 磁盘数据块与内存数据库不一致的情况，我们称为脏页
 
@@ -111,4 +166,33 @@ select @a/@b;
 
 而如果使用的是 SSD 这类 IOPS 比较高的设备的话，我就建议你把 innodb_flush_neighbors 的值设置成 0。因为这时候 IOPS 往往不是瓶颈，而“只刷自己”，就能更快地执行完必要的刷 脏页操作，减少 SQL 语句响应时间。
 
-在 MySQL 8.0 中，innodb_flush_neighbors 参数的默认值已经是 0 了。
+在 MySQL 8.0 中，**innodb_flush_neighbors** 参数的默认值已经是 0 了。
+
+
+
+#### Count
+
+**show table status** 命令显 示的行数也不能直接使用，官方文档说误差可能达到 40% 到 50%
+
+对于 count(*) 这样的操作，遍历哪个索引树 得到的结果逻辑上都是一样的。因此，MySQL 优化器会找到最小的那棵树来遍历。**在保证逻辑 正确的前提下，尽量减少扫描的数据量，是数据库系统设计的通用法则之一**
+
+**对于 count(主键 id) 来说**，InnoDB 引擎会遍历整张表，把每一行的 id 值都取出来，返回给 server 层。server 层拿到 id 后，判断是不可能为空的，就按行累加。
+
+**对于 count(1) 来说**，InnoDB 引擎遍历整张表，但不取值。server 层对于返回的每一行，放一 个数字“1”进去，判断是不可能为空的，按行累加。
+
+单看这两个用法的差别的话，你能对比出来，count(1) 执行得要比 count(主键 id) 快。因为从 引擎返回 id 会涉及到解析数据行，以及拷贝字段值的操作。
+
+所以结论是:按照效率排序的话，count(字段)<count(主键 id)<count(1)≈count(*)，所以我 建议你，尽量使用 count(*)。
+
+
+
+#### 事务
+
+避免长事务
+
+undo log
+
+事务的值：
+
+- 如果非当前读，则需要依据undo log 计算事务开始时的 trx_id 对应的值
+- 如果是当前读，则直接取当前值
