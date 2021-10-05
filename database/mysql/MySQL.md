@@ -19,11 +19,26 @@
 
 <img src="assets/image-20210928010032431.png" alt="image-20210928010032431" style="zoom:70%;" />
 
+- **redo log buffer**
+  - redo log 的写入策略：参数 innodb_flush_log_at_trx_commit 控制
+    - 设置为 0 的时候，表示每次事务提交时都只是把 redo log 留在 redo log buffer 中
+    - 设置为 1 的时候，表示每次事务提交时都将 redo log 直接持久化到磁盘
+    - 设置为 2 的时候，表示每次事务提交时都只是把 redo log 写到 page cache
+  - InnoDB 有一个后台线程，每隔 1 秒，就会把 redo log buffer 中的日志，调用 write 写到文件 系统的 page cache，然后调用 fsync 持久化到磁盘；一个没有提交的事务的 redo log，也是可能已经 持久化到磁盘的
+    - **一种是，redo log buffer 占用的空间即将达到 innodb_log_buffer_size 一半的时候，后 台线程会主动写盘**
+    - **另一种是，并行的事务提交的时候，顺带将这个事务的 redo log buffer 持久化到磁盘**
+
 
 
 ##### BinLog：归档日志
 
 - 工作在Server层
+- tx start -> binlog cache -> tx commit -> write to FS page cache -> fsync to hard disc
+  - write 和 fsync 的时机，是由参数 **sync_binlog** 控制的:
+    - sync_binlog=0 的时候，表示每次提交事务都只 write，不 fsync
+    - sync_binlog=1 的时候，表示每次提交事务都会执行 fsync
+    - sync_binlog=N(N>1) 的时候，表示每次提交事务都 write，但累积 N 个事务后才 fsync
+  - 将 sync_binlog 设置为 N，对应的风险是:如果主机发生异常重启，**会丢失最近 N 个事 务的 binlog 日志**
 
 
 
@@ -35,6 +50,8 @@
 | 物理日志（记录了：某个数据页上做了什么修改） | 逻辑日志（记录语句的原始逻辑，比如：给ID=2这一行的c字段加1） |
 | 循环写，固定大小                             | 追加写，写到一定大小后，会创建下一个文件                     |
 
+通常我们说 MySQL 的“**双 1”配置**，指的就是 sync_binlog 和 innodb_flush_log_at_trx_commit 都设置成 1。也就是说，一个事务完整提交前，需要等待两 次刷盘，一次是 redo log(prepare 阶段)，一次是 binlog。
+
 
 
 **问题：为什么有两套日志？**
@@ -44,6 +61,14 @@
 **问题：先写redo log还是先写binlog**
 
 答：先写redo log，再写binlog：执行器写完数据后（redolog已写完），才会生成binlog记录操作归档，写入磁盘，重点是这两个流程需要一个两阶段提交来保证一致性
+
+
+
+### 组提交(group commit)机制
+
+批量提交redolog 和 binlog
+
+
 
 
 
@@ -297,4 +322,72 @@ set @sql = concat("select * from t limit ", @Y, ",1"); 4 prepare stmt from @sql;
 execute stmt;
 DEALLOCATE prepare stmt;
 ```
+
+
+
+### 并行复制
+
+##### MySQL 5.7并行复制策略 - 组提交
+
+原则：
+
+- **能够在同一组里提交的事务，一定不会修改同一行**
+
+- **主库上可以并行执行的事务，备库上也一定是可以并行执行的**
+
+实现：
+
+-  同时处于 prepare 状态的事务，在备库执行时是可以并行的
+- 处于 prepare 状态的事务，与处于 commit 状态的事务之间，在备库执行时也是可以并行 的
+
+
+
+##### MySQL 5.7.22 并行复制策略
+
+WRITESET新策略 - 使用参数  binlog-transaction-dependency-tracking  开启：
+
+- **COMMIT_ORDER**：表示的就是前面介绍的，根据同时进入 prepare 和 commit 来判断是 否可以并行的策略
+- **WRITESET**：表示的是对于事务涉及更新的每一行，计算出这一行的 hash 值，组成集合 writeset。如果两个事务没有操作相同的行，也就是说它们的 writeset 没有交集，就可以并 行。
+
+当然为了唯一标识，这个 hash 值是通过“库名 + 表名 + 索引名 + 值”计算出来的。如果一个 表上除了有主键索引外，还有其他唯一索引，那么对于每个唯一索引，insert 语句对应的 writeset 就要多增加一个 hash 值。
+
+**对于“表上没主键”和“外键约束”的场景，WRITESET 策略也是没法并行的，也会暂 时退化为单线程模型**
+
+
+
+##### MySQL8.0 并行复制策略 - 集合
+
+MySQL8.0 是基于write-set的并行复制。MySQL会有一个集合变量来存储事务修改的记录信息（主键哈希值），所有**已经提交的事务所修改的主键值经过hash后都会与那个变量的集合进行对比**，来判断改行是否与其冲突，并以此来确定依赖关系，没有冲突即可并行。这样的粒度，就到了 row级别了，此时并行的粒度更加精细，并行的速度会更快。
+
+并行复制配置与调优
+
+```
+binlog_transaction_dependency_history_size 用于控制集合变量的大小
+
+binlog_transaction_depandency_tracking
+用于控制binlog文件中事务之间的依赖关系，即last_committed值
+
+COMMIT_ORDERE: 基于组提交机制
+WRITESET: 基于写集合机制
+WRITESET_SESSION: 基于写集合，比writeset多了一个约束，同一个session中的事务last_committed按先后顺序递增
+transaction_write_set_extraction
+用于控制事务的检测算法，参数值为：OFF、 XXHASH64、MURMUR32
+
+master_info_repository
+开启MTS功能后，务必将参数master_info_repostitory设置为TABLE，这样性能可以有50%~80%的提升。这是因为并行复制开启后对于元master.info这个文件的更新将会大幅提升，资源的竞争也会变大。
+
+slave_parallel_workers
+若将slave_parallel_workers设置为0，则MySQL 5.7退化为原单线程复制，但将slave_parallel_workers设置为1，则SQL线程功能转化为coordinator线程，但是只有1个worker线程进行回放，也是单线程复制。然而，这两种性能却又有一些的区别，因为多了一次coordinator线程的转发，因此slave_parallel_workers=1的性能反而比0还要差
+
+slave_preserve_commit_order
+MySQL 5.7后的MTS可以实现更小粒度的并行复制，但需要将slave_parallel_type设置为LOGICAL_CLOCK，但仅仅设置为LOGICAL_CLOCK也会存在问题，因为此时在slave上应用事务的顺序是无序的，和relay log中记录的事务顺序不一样，这样数据一致性是无法保证的，为了保证事务是按照relay log中记录的顺序来回放，就需要开启参数slave_preserve_commit_order。
+```
+
+
+
+### 主备
+
+延迟：
+
+- show slave status：seconds_behind_master，用于表示当前备库延迟了多少秒
 
