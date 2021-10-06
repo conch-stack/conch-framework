@@ -44,6 +44,12 @@ mysql> show processlist;
 - Sleep表示空闲连接
 - 客户端如果太长时间没动静，连接器就会自动将它断开。这个时间是由参数 wait_timeout 控制 的，默认值是 8 小时
 
+```sql
+# 控制 InnoDB 的并发线程上限
+# 通常情况下，我们建议把 innodb_thread_concurrency 设置为 64~128 之间的值
+set global innodb_thread_concurrency=3;
+```
+
 
 
 #### 长连接

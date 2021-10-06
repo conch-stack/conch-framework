@@ -337,8 +337,14 @@ DEALLOCATE prepare stmt;
 
 实现：
 
+- 在MySQL 5.7版本中，其设计方式是将组提交的信息存放在**GTID**中
+
 -  同时处于 prepare 状态的事务，在备库执行时是可以并行的
 - 处于 prepare 状态的事务，与处于 commit 状态的事务之间，在备库执行时也是可以并行 的
+
+GTID：Global Transaction Identifier
+
+- 开启：gtid_mode=on 和 enforce_gtid_consistency=on 
 
 
 
@@ -385,9 +391,137 @@ MySQL 5.7后的MTS可以实现更小粒度的并行复制，但需要将slave_pa
 
 
 
+### 主从
+
+延迟问题：show slave status：seconds_behind_master，用于表示当前备库延迟了多少秒
+
+- 解决 ：并行复制，参考上面章节
+
+数据丢失问题
+
+
+
+##### 半同步复制 - semi-sync  replication
+
+解决 数据丢失问题，从节点在relay log后，会 向主 节点发生Ack
+
+- InnoDB Redo File Write (Prepare Write)
+- Binlog File Flush & Sync to Binlog File
+- InnoDB Redo File Commit（Commit Write）
+- Send Binlog to Slave
+  - 当Master不需要关注Slave是否接受到Binlog Event时，即为传统的主从复制。
+  - 当Master需要在第三步等待Slave返回ACK时，即为 after-commit，半同步复制（MySQL 5.5引入）。
+  - 当Master需要在第二步等待 Slave 返回 ACK 时，即为 after-sync，增强半同步（MySQL 5.7引入）。
+
+下图是 MySQL 官方对于半同步复制的时序图，主库等待从库写入 relay log 并返回 ACK 后才进行Engine Commit
+
+<img src="assets/image-20211006080534981.png" alt="image-20211006080534981" style="zoom:50%;" />
+
+
+
+##### MHA高可用方案
+
+MHA Manager负责管理 MySQL主从结构，在MySQL故障切换过程中，MHA能做到在30秒之内自动完成数据库的故障切换操作，并且在进行故障切换的过程中，MHA能在最大程度上保证数据的一致性，以达到真正意义上的高可用。MHA还支持在线快速将Master切换到其他主机，通常只需0.5－2秒。
+
+目前MHA主要支持一主多从的架构，要搭建MHA，要求一个复制集群中必须**最少有三台数据库服务器**
+
+MHA由两部分组成：MHA Manager（管理节点）和MHA Node（数据节点）
+
+MHA故障处理机制
+
+- 把宕机master的binlog保存下来
+- 根据binlog位置点找到最新的slave
+- 用最新slave的relay log修复其它slave
+- 将保存下来的binlog在最新的slave上恢复
+- 将最新的slave提升为master
+- 将其它slave重新指向新提升的master，并开启主从复制
+
+
+
 ### 主备
 
-延迟：
+双Master，单写入
 
-- show slave status：seconds_behind_master，用于表示当前备库延迟了多少秒
+一台master只是作为另一个Master的备份节点，在故障恢复的时候进行主备切换
+
+##### MMM架构
+
+MMM（Master-Master Replication Manager for MySQL）是一套用来管理和监控双主复制，支持双主故障切换 的第三方软件。MMM 使用Perl语言开发，虽然是双主架构，但是业务上同一时间只允许一个节点进行写入操作。
+
+##### MMM故障处理机制
+
+MMM包含writer和reader两类角色，分别对应写节点和读节点
+
+-  当 writer节点出现故障，程序会自动移除该节点上的VIP
+- 写操作切换到 Master2，并将Master2设置为writer
+- 将所有Slave节点会指向Master2
+
+除了管理双主节点，MMM 也会管理 Slave 节点，在出现宕机、复制延迟或复制错误，MMM 会移除该节点的 VIP，直到节点恢复正常。
+
+##### MMM监控机制
+
+MMM 包含monitor和agent两类程序，功能如下：
+
+- monitor：监控集群内数据库的状态，在出现异常时发布切换命令，一般和数据库分开部署。
+- agent：运行在每个 MySQL 服务器上的代理进程，monitor 命令的执行者，完成监控的探针工作和具体服务设置，例如设置 VIP（虚拟IP）、指向新同步节点
+
+
+
+### 主备切换
+
+主备延迟问题
+
+- 可靠性优先
+  - 主备切换过程一般由专门的HA高可用组件完成，但是切换过程中会存在短时间不可用，因为在切换过程中某一时刻主库A和从库B都处于只读状态
+- 可用性优先
+  - 不等主从同步完成， 直接把业务请求切换至从库B ，并且让 从库B可读写 ，这样几乎不存在不可用时间，但可能会数据不一致。
+
+
+
+### 读写分离
+
+##### 延迟问题
+
+导致的数据不一致（虽然有并行复制降低延迟，也有半同步复制ACK保证数据一致，ACK方案如果有多个从节点，那么只要有一个从节点ACK了就会然后成功了，如果查询刚好落在另外未ACK的节点，也会存在数据不一致；同时业务高压力的情况下，依旧会出现主库与从库不一致的情况，从库执行relaylog耗费时间，导致业务提交事务后，立减查询查询不到数据）
+
+解决：等待 GTID 方案
+
+```sql
+select wait_for_executed_gtid_set(gtid_set, 1);
+```
+
+这条命令的逻辑是:
+
+1. 等待，直到这个库执行的事务中包含传入的 gtid_set，返回 0;
+2. 超时返回 1
+
+MySQL 5.7.6 版本开始，允许在执行完更新类事务后，**把这个事务的 GTID 返回给客户端**，这 样等 GTID 的方案就可以减少一次查询。
+
+这时，等 GTID 的执行流程就变成了:
+
+1. trx1 事务更新完成后，从返回包直接获取这个事务的 GTID，记为 gtid1; 
+2. 选定一个从库执行查询语句;
+3. 在从库上执行 select wait_for_executed_gtid_set(gtid1, 1);
+4. 如果返回值是 0，则在这个从库执行查询语句;
+5. 否则，到主库执行查询语句。
+
+跟等主库位点的方案一样，等待超时后是否直接到主库查询，需要业务开发同学来做限流考虑
+
+问题是，怎么 能够让 MySQL 在执行事务后，返回包中带上 GTID 呢? 你只需要将参数 session_track_gtids 设置为 OWN_GTID，然后通过 API 接口
+
+
+
+### Net Buffer
+
+实际上，服务端并不需要保存一个完整的结果集。取数据和发数据的流程是这样的:
+
+1. 获取一行，写到 net_buffer 中。这块内存的大小是由参数 net_buffer_length 定义 的，默认是 16k。
+
+2. 重复获取行，直到 net_buffer 写满，调用网络接口发出去。
+
+3. 如果发送成功，就清空 net_buffer，然后继续取下一行，并写入 net_buffer。
+
+4. 如果发送函数返回 EAGAIN 或 WSAEWOULDBLOCK，就表示本地网络栈(socket
+
+   send buffer)写满了，进入等待。直到网络栈重新可写，再继续发送。
 
