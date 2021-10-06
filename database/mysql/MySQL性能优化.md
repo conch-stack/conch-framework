@@ -202,3 +202,33 @@ undo log
 
 - 如果非当前读，则需要依据undo log 计算事务开始时的 trx_id 对应的值
 - 如果是当前读，则直接取当前值
+
+
+
+#### 内存命中率
+
+执行 show engine innodb status ，可以看到“Buffer pool hit rate”字样，显示的就是 当前的命中率
+
+InnoDB Buffer Pool 的大小是由参数 **innodb_buffer_pool_size** 确定的，一般建议设置 成可用物理内存的 60%~80%
+
+
+
+#### Join
+
+Index Nested-Loop Join（NLJ）
+
+Block Nested-Loop Join（BNL）
+
+如果业务需要join，则需要在join的被驱动表上的字段上添加索引，以命中MySQL的 NLJ
+
+Join的驱动表要选择：**小表**
+
+##### 小表：
+
+小表的定义：不仅仅是表的数据量少
+
+- 可以是命中查询结果集的数据量小，比如添加上where的条件限定
+- 可以是在同样数据量的情况下，需要查询的表的字段少的，比如 select  t1.id , t2.* ........  
+
+**在决定哪个表做驱动表的时候，应该是两个表按照各自的条件过滤， 过滤完成之后，计算参与 join 的各个字段的总数据量，数据量小的那个表，就是“小 表”，应该作为驱动表。**
+
