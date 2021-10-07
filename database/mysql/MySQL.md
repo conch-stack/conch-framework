@@ -593,3 +593,97 @@ join_buffer_size 设定的，默认值是 256k，**如果放不下表 t1 的所�
 
 所以结论是，应该**让小表当驱动表**。
 
+join优化细节，参考MySQL性能优化
+
+
+
+### 临时表
+
+临时表只能被创建它的 session 访问，所以在这个 session 结束的时候，会自动删除 临时表。也正是由于这个特性，**临时表就特别适合 join 优化这种场景**
+
+由于不用担心线程之间的重名冲突，临时表经常会被用在**复杂查询的优化**过程中
+
+#####  跨库查询
+
+分库分表系统的跨库查询就是一个典型的使用场景
+
+如果一个查询需要到每个分表里面取一批数据 出来，再聚合 order by  limit 之类的
+
+方案：
+
+在 proxy 层 把各个分库拿到的数据，汇总到一个 MySQL 实例的一个表中，然后在 这个汇总实例上做逻辑操作。
+
+```sql
+# 原始SQL
+select v from ht where k >= M order by t_modified desc limit 100;
+
+# 在汇总库上创建一个临时表 temp_ht，表里包含三个字段 v、k、t_modified; 在各个分库上执行 - 注意select出来的字段
+select v,k,t_modified from ht_x where k >= M order by t_modified desc limit 100;
+
+# 把分库执行的结果插入到 temp_ht 表中
+# 再 执行
+select v from temp_ht order by t_modified desc limit 100;
+```
+
+**在实践中，我们往往会发现每个分库的计算量都不饱和，所以会直接把临时表 temp_ht 放到 32 个分库中的某一个上**
+
+如果当前的 binlog_format=row，那么跟临时表有关的语句，就不会记录到 binlog 里（主备双Master结构下，如果是别的binlog记录模式，sql语句在备节点回放的时候，如果不记录临时表，则会出现表不存在异常）
+
+
+
+### 内部临时表
+
+##### 场景一：Union：（select a） union （select b）
+
+将第一个查询子集放入内部临时表，再执行第二个查询，拿第二个子集的结果去内部临时表里去重+新增
+
+Union all：不会使用 内部临时表，直接将两个查询子集发送给客户端
+
+##### 场景二：group by
+
+```sql
+# 这个语句的逻辑是把表 t1 里的数据，按照 id%10 进行分组统计，并按照 m 的结果排序 后输出
+select id%10 as m, count(*) as c from t1 group by m;
+```
+
+1. 创建内存临时表，表里有两个字段 m 和 c，主键是 m;
+2. 扫描表 t1 的索引 a，依次取出叶子节点上的 id 值，计算 id%10 的结果，记为 x; 
+   1. 如果临时表中没有主键为 x 的行，就插入一个记录 (x,1); 
+   2. 如果表中有主键为 x 的行，就将 x 这一行的 c 值加 1;
+
+3. 遍历完成后，**再根据字段 m 做排序**，得到结果集返回给客户端。（如果内存 临时表不够用，会触发生成磁盘临时表 ，默认Innodb引擎）
+
+自动排序了？  个人猜测，是因为既然是表，那就要遵循B+tree的顺序逻辑，因为这个内存临时表默认创建了一个主键字段，所有需要维护树的顺序？
+
+如果你的需求并不需要对结果进行排序，那你可以在 SQL 语句末尾增加 **order by null**， 也就是改成:
+
+```sql
+select id%10 as m, count(*) as c from t1 group by m order by null;
+```
+
+##### 优化：思路 - 去掉 临时表、大数据量直接使用磁盘临时表
+
+去掉 临时表：
+
+不论是使用内存临时表还是磁盘临时表，**group by 逻辑都需要构造一个带唯 一索引的表**，执行代价都是比较高的。如果表的数据量比较大，上面这个 group by 语句 执行起来就会很慢
+
+如果索引有序，那么group by  就可以直接顺序读索引，直接知道对应group字段的 count值，再进行count就好了，不需要临时表
+
+InnoDB刚好可以满足这样的顺序性
+
+方案：在 MySQL 5.7 版本支持了 generated column 机制，用来实现列数据的关联更新
+
+```sql
+# 创建一个列 z，然后在 z 列上创建一个索引
+alter table t1 add column z int generated always as(id % 100), add index(z);
+# 这样，索引 z 上的数据就是类似图 10 这样有序的了。上面的 group by 语句就可以改 成:
+select z, count(*) as c from t1 group by z;
+```
+
+大数据量直接使用磁盘临时表（非B+tree模式，采用数组 存储）：
+
+```sql
+# MySQL 的优化器一看，磁盘临时表是 B+ 树存储，存储效率不如数组来得高。所以，既 然你告诉我数据量很大，那从磁盘空间考虑，还是直接用数组来存吧
+select SQL_BIG_RESULT id%100 as m, count(*) as c from t1 group by m order by null;
+```
+

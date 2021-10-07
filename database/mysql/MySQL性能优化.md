@@ -232,3 +232,60 @@ Join的驱动表要选择：**小表**
 
 **在决定哪个表做驱动表的时候，应该是两个表按照各自的条件过滤， 过滤完成之后，计算参与 join 的各个字段的总数据量，数据量小的那个表，就是“小 表”，应该作为驱动表。**
 
+##### 优化：
+
+前提知识：**Multi-Range Read 优化(MRR)** ，这个优化的主要目的是尽量使用**顺序读盘**
+
+MRR 优化的设计思路：**因为大多数的数据都是按照主键递增顺序插入得到的，所以我们可以认为，如果按照主键 的递增顺序查询的话，对磁盘的读比较接近顺序读，能够提升读性能。**
+
+**问题：回表过程是一行行地查数据，还是批量地查数据？**
+
+答：通过 在 read_rnd_buffer 排序后，顺序的回表
+
+1. 根据索引 a，定位到满足条件的记录，将 id 值放入 **read_rnd_buffer** 中 ; 
+2. 将 read_rnd_buffer 中的 id 进行递增排序;
+3. 排序后的 id 数组，依次到主键 id 索引中查记录，并作为结果返回。
+
+这里，read_rnd_buffer 的大小是由 **read_rnd_buffer_length** 参数控制的。如果步骤 1 中，read_rnd_buffer 放满了，就会先执行完步骤 2 和 3，然后清空 read_rnd_buffer。 之后继续找索引 a 的下个记录，并继续循环
+
+如果你想要稳定地使用 MRR 优化的话，需要设置**set optimizer_switch="mrr_cost_based=off"**。(官方文档的说法，是现在的优化器 策略，判断消耗的时候，会更倾向于不使用 MRR，把 mrr_cost_based 设置为 off，就是 固定使用 MRR 了。)
+
+explain 结果中，我们可以看到 Extra 字段多了 Using MRR，表示的是用上了 MRR 优化
+
+前提只是：**Batched Key Access（BKA）**
+
+BKA算法是对 NLJ算法的优化：因为NLJ算法每次都是去被驱动表读取一条记录，所有就无法使用到MRR优化
+
+那怎么才能一次性地多传些值给表 t2 呢?
+
+方法就是，从表 t1 里一次性地多拿些行出来， 一起传给表 t2。
+
+既然如此，我们就把表 t1 的数据取出来一部分，先放到一个临时内存。这个临时内存不是 别人，就是 **join_buffer**。
+
+开启：
+
+```sql
+set optimizer_switch='mrr=on,mrr_cost_based=off,batched_key_access=on';
+```
+
+##### 临时表优化
+
+如果你的业务场景没必要浪费索引去满足NJL，走的是BNL，那么可以选择使用 **临时表** 来优化
+
+思路：
+
+1. 把表 t2 中满足条件的数据放在临时表 tmp_t 中;
+2. 为了让 join 使用 BKA 算法，给临时表 tmp_t 的字段 b 加上索引;
+3. 让表 t1 和 tmp_t 做 join 操作。
+
+```sql
+create temporary table temp_t(id int primary key, a int, b int, index(b))engine=innodb;
+insert into temp_t select * from t2 where b>=1 and b<=2000;
+select * from t1 join temp_t on (t1.b=temp_t.b);
+```
+
+总体来看，不论是在原表上加索引，还是用有索引的临时表，我们的思路都是让 join 语句 能够用上被驱动表上的索引，来触发 BKA 算法，提升查询性能。
+
+**扩展** **-hash join**
+
+如果 join_buffer 里面维护的不是一个无序数组，而是一个哈希表的话，那么查询的效果会有质的提升，但是MySQL 的优化器和执行器一直被诟病的一个原因: 不支持哈希 join
