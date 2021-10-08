@@ -687,3 +687,28 @@ select z, count(*) as c from t1 group by z;
 select SQL_BIG_RESULT id%100 as m, count(*) as c from t1 group by m order by null;
 ```
 
+
+
+### 内存表
+
+Memory引擎
+
+内存表的数据部分以数组的方式单独存放，而主键 id 索引里，存的是每个数据 的位置。主键 id 是 hash 索引，可以看到索引上的 key 并不是有序的
+
+
+
+### 自增主键
+
+存储位置：
+
+- MyISAM：保存在数据文件中
+- InnoDB：
+  - 5.7及以前：保存在内存，每次MySQL重启的时候，会先读取表的的最大id，**并将 id+1** 作为当前表的最大值
+  - 8.0后：id支持持久化，将自增值的变更记录在了 redo log 中，重启的时候依靠 redo log 恢复重启之前的值
+
+自增逻辑：
+
+- 新增数据时， id 字段指定为 0、null 或未指定值，那么就把这个表当前的 AUTO_INCREMENT 值填到自增字段;
+- 如果插入数据时 id 字段指定了具体的值，就直接使用语句里指定的值。
+  - 随后触发 **新的自增值生成算法**：从 auto_increment_offset 开始，以 auto_increment_increment 为步长，持续叠加，直到找到第一个大于 X 的值，作为新的 自增值。
+
