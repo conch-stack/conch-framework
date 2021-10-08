@@ -712,3 +712,11 @@ Memory引擎
 - 如果插入数据时 id 字段指定了具体的值，就直接使用语句里指定的值。
   - 随后触发 **新的自增值生成算法**：从 auto_increment_offset 开始，以 auto_increment_increment 为步长，持续叠加，直到找到第一个大于 X 的值，作为新的 自增值。
 
+
+
+### Where And Having
+
+- WHERE 是直接对表中的字段进行限定，来筛选结果
+
+- HAVING 则需要跟分组关键字GROUP BY 一起使用，通过**对分组字段或分组计算函数**进行限定，来筛选结果
+
