@@ -20,10 +20,10 @@
 <img src="assets/image-20210928010032431.png" alt="image-20210928010032431" style="zoom:70%;" />
 
 - **redo log buffer**
-  - redo log 的写入策略：参数 innodb_flush_log_at_trx_commit 控制
+  - redo log 的写入策略：参数 innodb_flush_log_at_trx_commit 控制（SHOW GLOBAL VARIABLES LIKE 'innodb_flush_log%';）
     - 设置为 0 的时候，表示每次事务提交时都只是把 redo log 留在 redo log buffer 中
     - 设置为 1 的时候，表示每次事务提交时都将 redo log 直接持久化到磁盘
-    - 设置为 2 的时候，表示每次事务提交时都只是把 redo log 写到 page cache
+    - 设置为 2 的时候，表示每次事务提交时都只是把 redo log 写到 page cache - **推荐**
   - InnoDB 有一个后台线程，每隔 1 秒，就会把 redo log buffer 中的日志，调用 write 写到文件 系统的 page cache，然后调用 fsync 持久化到磁盘；一个没有提交的事务的 redo log，也是可能已经 持久化到磁盘的
     - **一种是，redo log buffer 占用的空间即将达到 innodb_log_buffer_size 一半的时候，后 台线程会主动写盘**
     - **另一种是，并行的事务提交的时候，顺带将这个事务的 redo log buffer 持久化到磁盘**
@@ -35,7 +35,7 @@
 - 工作在Server层
 - tx start -> binlog cache -> tx commit -> write to FS page cache -> fsync to hard disc
   - write 和 fsync 的时机，是由参数 **sync_binlog** 控制的:
-    - sync_binlog=0 的时候，表示每次提交事务都只 write，不 fsync
+    - sync_binlog=0 的时候，表示每次提交事务都只 write，不 fsync  - **推荐**
     - sync_binlog=1 的时候，表示每次提交事务都会执行 fsync
     - sync_binlog=N(N>1) 的时候，表示每次提交事务都 write，但累积 N 个事务后才 fsync
   - 将 sync_binlog 设置为 N，对应的风险是:如果主机发生异常重启，**会丢失最近 N 个事 务的 binlog 日志**
@@ -247,7 +247,7 @@ flush tables with read lock;
 
 ### Change Buffer
 
-更新数据时，如果数据块在内存中，则直接操作内存，如果数据库不在内存中，为避免磁盘操作，提升性能，MySQL设计了Change Buffer，改Change Buffer具备持久化功能（merge），MySQL后台会定时merge Change Buffer到磁盘，同时，如果需要从磁盘读取数据块到内存时，也会触发merge
+更新数据时，如果数据块在内存中，则直接操作内存，如果数据库不在内存中，为避免磁盘操作，提升性能，MySQL设计了Change Buffer，该Change Buffer具备持久化功能（merge），MySQL后台会定时merge Change Buffer到磁盘，同时，如果需要从磁盘读取数据块到内存时，也会触发merge
 
 使用场景：只有 **“普通索引”** 可以使用，对于写多读少的业务来说性能更优秀（账单类、日志类）
 
@@ -720,3 +720,10 @@ Memory引擎
 
 - HAVING 则需要跟分组关键字GROUP BY 一起使用，通过**对分组字段或分组计算函数**进行限定，来筛选结果
 
+
+
+### 计算数据量
+
+磁盘扇区、文件系统、InnoDB存储引擎都有各自的最小存储单元
+
+<img src="assets/image-20211021200540153.png" alt="image-20211021200540153" style="zoom:50%;" />
