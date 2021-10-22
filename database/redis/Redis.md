@@ -198,6 +198,89 @@ Redis解决方案：混合AOF和RDB，RDB正常频率执行，在两次快照间
 
 
 
+### 主从
+
+<img src="assets/image-20211022213424078.png" alt="image-20211022213424078" style="zoom:40%;" />
+
+##### 读写分离
+
+> 主从库模式一旦采用了读写分离，所有数据的修改只会在主库上进行，不用协调三个实例。主库有了最新的数据后，会同步给从库，这样，主从库的数据就是一致的。
+
+问题：延迟、数据不一致
+
+##### 第一次主从数据同步：
+
+- 当我们启动多个 Redis 实例的时候，它们相互之间就可以通过 replicaof（Redis 5.0 之前使用 slaveof）命令形成主库和从库的关系，之后会按照三个阶段完成数据的第一次同步。
+
+  <img src="assets/image-20211022214129690.png" alt="image-20211022214129690" style="zoom:40%;" />
+  - runID，是每个 Redis 实例启动时都会自动生成的一个随机 ID，用来唯一标记这个实例。当从库和主库第一次复制时，因为不知道主库的 runID，所以将 runID 设为“？”
+  - offset，此时设为 -1，表示第一次复制
+  - FULLRESYNC：表示第一次采用全量复制
+  - replication buffer：在同步RDB给到从库的过程中，新的写入请求会放入这个buffer
+
+问题：如果从节点过多，生成RDB并传输RDB将耗费主节点大量资源
+
+解决：**主-从-从 模式（主从级联）**
+
+问题：RDB主从复制同步策略是什么？
+
+答：磁盘或者socket：***todo 完善***
+
+- disk-backed；
+- diskless
+
+
+
+##### 基于长连接的命令传播：
+
+第一次主从数据同步后，需要维护网络连接
+
+问题：网络发生故障，导致数据不一致问题
+
+解决：Redis2.8之前，如果发生连接断开，从库会和主库进行一次全量复制；2.8之后，采用增量复制，只会把主从网络断开期间的命令同步给从库
+
+- 只要有从库存在，这个repl_backlog_buffer就会存在。主库的所有写命令除了传播给从库之外，都会在这个repl_backlog_buffer中记录一份，缓存起来，只有预先缓存了这些命令，当从库断连后，从库重新发送psync \$master_runid  \$offset，主库才能通过\$offset在repl_backlog_buffer中找到从库断开的位置，只发送$offset之后的增量数据给从库即可。
+  - repl_backlog_buffer 
+    - 是一个环形缓冲区，主库会记录自己写到的位置（master_repl_offset），从库则会记录自己已经读到的位置（slave_repl_offset）
+    - 它是为了从库断开之后，如何找到主从差异数据而设计的环形缓冲区，从而避免全量同步带来的性能开销。如果从库断开时间太久，repl_backlog_buffer环形缓冲区被主库的写命令覆盖了，那么从库连上主库后只能乖乖地进行一次全量同步，所以repl_backlog_buffer配置尽量大一些，可以降低主从断开后全量同步的概率。而在repl_backlog_buffer中找主从差异的数据后，如何发给从库呢？这就用到了replication buffer。
+  - replication buffer
+    - Redis和客户端通信也好，和从库通信也好，Redis都需要给分配一个 内存buffer进行数据交互，客户端是一个client，从库也是一个client，我们每个client连上Redis后，Redis都会分配一个client buffer，所有数据交互都是通过这个buffer进行的：Redis先把数据写到这个buffer中，然后再把buffer中的数据发到client socket中再通过网络发送出去，这样就完成了数据交互。所以主从在增量同步时，从库作为一个client，也会分配一个buffer，只不过这个buffer专门用来传播用户的写命令到从库，保证主从数据一致，我们通常把它叫做replication buffer
+  - 既然有这个内存buffer存在，那么这个buffer有没有限制呢？如果主从在传播命令时，因为某些原因从库处理得非常慢，那么主库上的这个buffer就会持续增长，消耗大量的内存资源，甚至OOM。所以Redis提供了client-output-buffer-limit参数限制这个buffer的大小，如果超过限制，主库会强制断开这个client的连接，也就是说从库处理慢导致主库内存buffer的积压达到限制后，主库会强制断开从库的连接，此时主从复制会中断，中断后如果从库再次发起复制请求，那么此时可能会导致恶性循环，引发复制风暴，这种情况需要格外注意。
+
+
+
+### 哨兵
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 部署架构参考
+
+![image-20211022220446880](assets/image-20211022220446880.png)
+
 
 
 ### todo list：
