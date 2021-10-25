@@ -213,6 +213,7 @@ Redis解决方案：混合AOF和RDB，RDB正常频率执行，在两次快照间
 - 当我们启动多个 Redis 实例的时候，它们相互之间就可以通过 replicaof（Redis 5.0 之前使用 slaveof）命令形成主库和从库的关系，之后会按照三个阶段完成数据的第一次同步。
 
   <img src="assets/image-20211022214129690.png" alt="image-20211022214129690" style="zoom:40%;" />
+
   - runID，是每个 Redis 实例启动时都会自动生成的一个随机 ID，用来唯一标记这个实例。当从库和主库第一次复制时，因为不知道主库的 runID，所以将 runID 设为“？”
   - offset，此时设为 -1，表示第一次复制
   - FULLRESYNC：表示第一次采用全量复制
@@ -281,6 +282,40 @@ Redis解决方案：混合AOF和RDB，RDB正常频率执行，在两次快照间
 ### 哨兵集群
 
 哨兵集群通信方式：**Redis提供的Pub/Sub**
+
+- 多个哨兵与主库通过Pub/Sub进行互相注册发现
+  - 注册发现后，哨兵之间进行互相连接
+- 每个哨兵向主库发送INFO命令，获取从库信息
+  - 与从库建立连接
+- 每个哨兵通过Pub/Sub向客户端发送各种事件：
+  - 主库下线事件
+    - +sdown：进入主观下线
+    - -sdown：退出主观下线
+    - +odown：进入客观下线
+    - -odown：退出客观下线
+  - 从库重新配置事件
+    - +slave-reconfig-sent：哨兵发送 SLAVEOF 命令 重新配置从库
+    - +slave-reconfig-inprog：从库配置了新主库，但尚未同步
+    - +slave-reconfig-done：从库配置了新主库，且和新主库完成同步
+  - 新主库切换事件
+    - +switch-master：主库地址发生变化
+
+问题：主从切换由那个哨兵执行？
+
+答：Leader选举
+
+- 要求一：拿到半数以上的赞成票
+- 要求二：拿到总票数要大于哨兵配置文件中的quorum值
+
+<img src="assets/image-20211025210019750.png" alt="image-20211025210019750" style="zoom:40%;" />
+
+
+
+
+
+
+
+
 
 
 
