@@ -43,3 +43,67 @@
 
 ##### 排序统计
 
+List和Sorted Set（zset）都具备排序功能，List是以元素进入先后为顺序，zset可设置元素的排序权重（或者叫得分 score）来排序
+
+问题：List排序常见问题，在分页场景下LRANGE分页如果在分页过程中有新数据写入List，则会导致LRANGE出现旧数据
+
+Sorted Set不存在这个问题：因为它是基于权重来排序和**查询**数据的
+
+假设最新的评论权重越大，目前最新评论权重是N
+
+```shell
+# 寻找最小 score 的成员（member），命令如下：
+ZRANGEBYSCORE myzset -inf +inf WITHSCORES LIMIT 0 1
+# 寻找最大 score 的成员（member），命令如下：
+ZREVRANGEBYSCORE myzset +inf -inf WITHSCORES LIMIT 0 1
+
+# 获取最新的10条评论
+ZREVRANGEBYSCORE myzset N N-9
+```
+
+
+
+##### 二值状态统计
+
+二值状态指集合中元素的取值只有 0 和 1 两种
+
+签到打开场景下，签到为1， 未签到为 0
+
+**Bitmap：Redis提供的扩展数据类型**
+
+- Bitmap本身是使用String类型作为底层数据结构实现的一种统计二值状态的数据类型
+- offset从0开始算
+- BITCOUNT：统计该Bitmap中为“1”的数量
+
+假设我们要统计 ID 3000 的用户在 2020 年 8 月份的签到情况，就可以按照下面的步骤进行操作
+
+第一步，执行下面的命令，记录该用户 8 月 3 号已签到
+
+```shell
+# offset： 3-1 = 2 
+SETBIT uid:sign:3000:202008 2 1 
+```
+
+
+
+**问题：如果记录了 1 亿个用户 10 天的签到情况，你有办法统计出这 10 天连续签到的用户总数吗？**
+
+知识点：**BITOP**
+
+Bitmap的使用BITOP可对过个Bitmap进行按位 “与“、”或”、“异或”，并且其操作结果会保存到一个新的Bitmap中
+
+答：
+
+- 为每一天创建一个Bitmap，每个bitmap有1亿个bit，每个bit对应一个用户的当天签到情况；
+- 对10个Bitmap进行 “与” 操作，生成一个新的Bitmap，再使用BITCOUNT即可获取10天内连续登陆的用户总数
+- 内存消耗：
+  - 一个Bitmap 10^8/8/1024/1025 = 12MB；
+  - 10个Bitmap需要消耗120MB
+  - **需要对Bitmap设置缓存失效时间，节约内存**
+
+对与能够在业务上定性为两值的业务场景，都可以使用Bitmap进行海量数据的存储统计
+
+
+
+##### 基数统计
+
