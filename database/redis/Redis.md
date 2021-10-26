@@ -7,7 +7,9 @@
   - 内部编码
     - int：8个字节的长整型
     - embstr：小于等于39个字节的字符串
+      - RedisObject的数据同SDS是一块连续的内存区域
     - raw：大于39个字节的字符串
+      - RedisObject为SDS分配独立空间，用指针指向SDS
   - 场景
     - 缓存
     - 计数
