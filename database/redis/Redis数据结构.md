@@ -40,7 +40,7 @@ Redis全局Hash表的每个item定义为 dictEntry 结构体
 - 元数据（8B）
   - type：对象类型，例如：string
   - encoding：编码方式，例如 raw
-  - lru:LRU_BITS：
+  - lru:LRU_BITS：记录了这个对象最后一次被访问的时间，用于淘汰过期的键值对
   - refcount：被引用次数
 - *ptr（8B）：指向真实对象（real object），例如SDS
 

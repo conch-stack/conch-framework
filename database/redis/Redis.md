@@ -147,6 +147,17 @@ GEO底层使用Sorted Set实现，配合**GeoHash编码**，Sorted Set的key=car
 
   
 
+### 消息队列
+
+- Redis5.0之前：基于List实现
+- Redis5.0及之后：基于Streams实现，可支持消费者组形式
+
+
+
+### 异步机制
+
+<img src="assets/image-20211027213424841.png" alt="image-20211027213424841" style="zoom:50%;" />
+
 
 
 ### Hash冲突
