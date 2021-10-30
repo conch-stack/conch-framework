@@ -2,7 +2,7 @@
 
 ### 操作系统架构
 
-<img src="assets/操作系统架构.jpeg" alt="操作系统架构" style="zoom: 70%;" />
+<img src="assets/操作系统架构.jpg" alt="操作系统架构" style="zoom: 50%;" />
 
 HAL层：硬件抽象层
 
