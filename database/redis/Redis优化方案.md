@@ -63,6 +63,30 @@ INFO命令：
 
 #### CPU核数 和 NUMA架构的影响
 
+多核CPU优化方案：将Redis与CPU某个核绑定
+
+原理：减少CPU的上下文切换的时间
+
+操作：taskset命令
+
+```shell
+# 将redis server 与 编号为 0 的CPU绑定
+taskset -c 0 ./redis-server
+```
+
+
+
+NUMA架构：非统一内存访问架构
+
+同样是将Redis绑定到同一个CPU Socket上
+
+问题：绑定CPU带来的问题是，Redis的一些其他线程，比如AOF、RDB的进程将和主线程竞争资源
+
+解决：
+
+- 一个Redis Server绑定一个物理核，而非逻辑核
+- 修改Redis源码，将子线程与主线程绑定到不同CPU
+
 
 
 
