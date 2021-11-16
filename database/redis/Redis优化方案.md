@@ -89,6 +89,92 @@ NUMA架构：非统一内存访问架构
 
 
 
+#### 延迟监控
+
+```shell
+# 打印120秒内监控到的最大延迟 （基线延迟）
+./redis-cli --intrinsic-latency 120
+
+# 运行延迟 - 执行一个命令的延迟
+# 如果运行延迟达到的基线延迟的两倍，则可认为Redis变慢了
+```
+
+- 当你发现 Redis 性能变慢时，可以通过 Redis 日志，或者是 latency monitor 工具，查询变慢的请求，根据请求对应的具体命令以及官方文档，确认下是否采用了复杂度高的慢查询命令。
+
+- 禁用 KEYS命令
+
+- 删除过期key，如果数据量大，将导致Redis变慢
+  - 使用过期时间不同的算法
+- 慢查询 - 例如聚合 - 优化方案，或放到客户端聚合
+
+
+
+#### Swap
+
+```
+# 获取 Redis进程pid
+./redis-cli info | grep process_id
+# 到机器的对应目录下
+cd /proc/pid
+# 查看Redis进程使用情况
+cat smaps | egrep '^(Swap|Size)'
+```
+
+
+
+#### 内存大页
+
+操作系统提供的机制
+
+问题：内存大页虽然可以给Redis的内存分配带来好处，但是 在 Redis进行快照复制的时候，对复制过程中的 新变更，需要 使用 写时复制 技术，这样将会导致很小的变动，需要复制整个内存页，所以需要关闭内存大页功能
+
+```shell
+# 查看
+cat /sys/kernel/mm/transparent_hugepage/enabled
+# 设置
+echo never /sys/kernel/mm/transparent_hugepage/enabled
+```
+
+
+
+#### 内存碎片
+
+```shell
+# 使用Redis：info memory 命令，查看内存使用情况： 
+# Redis为保存数据实际申请的空间
+used_memory:1073741736
+# 操作系统实际分配给Redis的物理内存空间
+used_memory_rss:1997159792
+# Redis当前内存碎片率
+mem_fragmentation_ratio:1.86
+```
+
+mem_fragmentation_ratio：经验阈值
+
+- 大于1 但小于 1.5 ： 合理
+- 大于1.5：表明内存碎片已经超过50%，需要采取措施来降低内存碎片率
+
+##### 清理内存碎片：
+
+Redis4.0后，提供了自动清理内存碎片的方法：（基本思路：拷贝、合并空间）
+
+```shell
+# 开启Redis内存碎片自动清理
+config set activedefrag yes
+
+# 开始清理的条件 （两个需同时满足）
+active-defrag-ignore-bytes 100mb  # 表示内存碎片的字节数达到100MB时，开始清理
+active-defrag-threshold-lower 10  # 表示内存碎片空间占操作系统分配给Redis的总空间的比例达到 10% 时，开始清理
+
+# 清理的CPU占用控制
+active-defrag-cycle-min 25        # 自动清理过程所用CPU时间的比例不低于25%，保证清理工作正常开展
+active-defrag-cycle-max 75        # 自动清理过程所用CPU时间的比例不高于75%，一旦超过，就停止清理，避免大量内存拷贝阻塞Redis
+```
+
+
+
+
+
 
 
 
