@@ -428,7 +428,14 @@ Redis解决方案：混合AOF和RDB，RDB正常频率执行，在两次快照间
 
 <img src="assets/image-20211117190542487.png" alt="image-20211117190542487" style="zoom:40%;" />
 
+可靠性保证
 
+<img src="assets/image-20211118112027473.png" alt="image-20211118112027473" style="zoom:40%;" />
+
+- Server可靠性：因为每个Server都是Redis实例，所以可以使用Redis的主从架构，配合哨兵机制，形成Server Group
+- 哨兵的可靠性：哨兵集群
+- Zookeeper可靠性：zk本身就是一个分布式的系统，可靠性依靠zab类paxos算法保证可靠性
+- Proxy可靠性：无状态设计，故障后直接重启
 
 
 
