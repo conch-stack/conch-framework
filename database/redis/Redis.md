@@ -1,14 +1,26 @@
 ## Redis
 
+
+
+### 性能
+
+Redis官方测试数据：
+
+- **随机读写性能大约 50万次/秒**
+- RocksDB随机读写性能 大约 20万次/秒
+
+
+
 ### 五大核心数据结构
 
 - **string**
 
   - 内部编码
     - int：8个字节的长整型
+      - long：整数存储（小于 10000，使用共享对象池存储，但有个前提：Redis 没有设置淘汰策略，详见 object.c 的 tryObjectEncoding 函数）
     - embstr：小于等于39个字节的字符串
       - RedisObject的数据同SDS是一块连续的内存区域
-    - raw：大于39个字节的字符串
+    - raw：大于44个字节的字符串
       - RedisObject为SDS分配独立空间，用指针指向SDS
   - 场景
     - 缓存
@@ -20,6 +32,10 @@
 
   - 内部编码
     - ziplist：压缩列表，当哈希类型元素个数小于`hash-max-ziplist-entries`配置（默认512个）同时所有值都小于`hash-max-ziplist-value`配置（默认64字节）时使用，ziplist使用更加紧凑的结构实现多个元素的连续存储，所以比hashtable更加节省内存。
+      - 在Redis中不是具体的结构体，而是设计的一块连续的内存空间，通过不同编码来保存数据
+      - 实际上，ziplistNew 函数的逻辑很简单，就是创建一块连续的内存空间，大小为 ZIPLIST_HEADER_SIZE 和 ZIPLIST_END_SIZE 的总和，然后再把该连续空间的最后一个字节赋值为 ZIP_END，表示列表结束。
+      - 寻找元素需遍历：存放太多元素，性能会下降（适合少量数据存储）
+      - 级联更新：更新、删除元素，会引发级联更新（因为内存连续，前面数据膨胀/删除了，后面要跟着一起动）
     - hashtable：哈希表，当ziplist不能满足要求时，会使用hashtable
 
 - **list**
@@ -88,6 +104,46 @@
       # 查询点赞后三篇文章
       zrange user:article 0 2
       ```
+  
+  - 结构体
+  
+  ```c
+  typedef struct zset {
+  		dict *dict;
+  		zskiplist *zsl;
+  }
+  ```
+  
+  - 为什么 Sorted Set 既能支持高效的范围查询O(logN)+M，同时还能以 O(1) 复杂度获取元素权重值？
+    - ZRANGEBYSCORE：按照元素权重返回一个范围内的元素。
+      - Sorted Set 能支持范围查询，这是因为它的核心数据结构设计采用了跳表
+    - ZSCORE：返回某个元素的权重值。
+      - 这是因为它同时采用了哈希表进行索引
+  - zset存储了两份数据，一份放在跳表中，一份放在hash表中
+
+​	
+
+### quicklist and listpack
+
+为解决ziplist的潜在问题而设计
+
+##### quicklist
+
+- Redis3.0新增
+
+- 一个quicklist就是一个链表，而链表的每个元素又是一个ziplist
+
+<img src="assets/image-20211205144857600.png" alt="image-20211205144857600" style="zoom:50%;" />
+
+- 新增元素时，quicklist会先检查插入位置的ziplist是否能够容纳该元素（容量或元素个数），只要满足一个条件，就可以在当前qicklistNode的ziplist中新增元素，否则就需要新创建一个quicklistNode来存储该元素
+
+
+
+##### listpack
+
+- Redis5.0新增，用来彻底解决连锁更新的问题
+- 取消了记录pre项的大小，从而避免连锁更新
+  - 通过记录每个元素自己的大小，及定义的各种数据编码方式，解析前后项的大小，然后通过偏移来获取正、反向的查询列表功能
 
 
 
