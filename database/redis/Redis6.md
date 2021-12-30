@@ -26,6 +26,8 @@ io-threads 6
 
 所以：**Redis 执行命令的线程还是主 IO 线程**
 
+<img src="assets/image-20211230165719479.png" alt="image-20211230165719479" style="zoom:50%;" />
+
 
 
 ### 客户端缓存
