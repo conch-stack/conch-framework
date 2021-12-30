@@ -44,3 +44,50 @@ $ sar -B 1
 # %vmeff: pgsteal/(pgscank+pgscand), 回收效率，越接近 100 说明系统越安全，越接 近 0 说明系统内存压力越大。
 ```
 
+
+
+##### PageCache难以回收导致系统Load变高
+
+> 系统很卡顿，敲命令响应非常慢; 应用程序的 **RT（Response-time）** 变得很高，或者抖动得很厉害
+
+- 直接内存回收引起的 load 飙高
+
+  - 直接内存回收是指在进程上下文同步进行内存回收 - 阻塞进程
+
+  - 解决方案：**及早地触发后台回收来避免应用程序进行直接内存回收**
+
+    <img src="assets/image-20211230210410058.png" />
+
+    - 当内存水位低于 watermark low 时，就会唤醒 kswapd 进行后台回收，然 后 kswapd 会一直回收到 watermark high
+
+    - 可以增大 min_free_kbytes 这个配置选项来及早地触发后台回收
+      - CentOS-6(2.6.32 内核版本)  ： vm.extra_free_kbytes = 4194304
+      - CentOS-7(3.10.0 以及以上内核版本)：vm.min_free_kbytes = 4194304
+    - 对于大于等于 128G 的系统而言，将 min_free_kbytes 设置为 4G 比较合理，这是我们在 处理很多这种问题时总结出来的一个经验值，既不造成较多的内存浪费，又能避免掉绝大 多数的直接内存回收。
+
+- 系统中脏页积压过多引起的 load 飙高;
+
+  - 脏页回写磁盘IO阻塞（延迟大）
+
+  - 解决方案：
+
+    - 控制系统脏页
+
+      - ```shell
+        vm.dirty_background_bytes = 0 
+        vm.dirty_background_ratio = 10 
+        vm.dirty_bytes = 0 
+        vm.dirty_expire_centisecs = 3000 
+        vm.dirty_ratio = 20
+        
+        # 查看调优效果
+        $ grep "nr_dirty_" /proc/vmstat
+        ```
+
+      - **这些值调整大多少比较合适，也是因系统和业务的不同而异，我的建议也是一边调整 一边观察，将这些值调整到业务可以容忍的程度就可以了**
+
+- 系统 NUMA 策略配置不当引起的 load 飙高
+
+  - 解决方案：
+    - 因为相比内存回收的危害而言，NUMA 带来的性能提升几乎可以忽略，所以配置为 0，利 远大于弊
+      - vm.zone_reclaim_mode = 0
