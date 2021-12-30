@@ -91,3 +91,20 @@ $ sar -B 1
   - 解决方案：
     - 因为相比内存回收的危害而言，NUMA 带来的性能提升几乎可以忽略，所以配置为 0，利 远大于弊
       - vm.zone_reclaim_mode = 0
+
+
+
+##### PageCache专业分析工具
+
+- ftrace
+- ebpf
+- perf
+- systemtap
+
+
+
+### 内存泄露问题
+
+> 检测工具：valgrind
+>
+> $ valgrind --leak-check=full ./a.out
