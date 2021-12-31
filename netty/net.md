@@ -136,7 +136,7 @@ TCP 协议栈内核通常会为每一个LISTEN状态的Socket维护两个队列�
 SYN队列（半连接队列）：这些连接已经接到客户端SYN；
 ACCEPT队列（全连接队列）：这些连接已经接到客户端的ACK，完成了三次握手，等待被accept系统调用取走。
 
-##### TCP连接过程
+#### TCP连接过程
 
 <img src="assets/image-20211231162154727.png" alt="image-20211231162154727" style="zoom:60%;" />
 
@@ -159,7 +159,7 @@ ACCEPT队列（全连接队列）：这些连接已经接到客户端的ACK，�
     - 增大半连接队列；
     - 减少 SYN+ACK 重传次数
       - 减少重传之后，可加快断开无效连接
-- TCP RESET：
+- TCP reset：
   - Server 在将新连接 丢弃时，有的时候需要发送 **reset** 来通知 Client，这样 Client 就不会再次重试了
   - 默认行为是直接丢弃不去通知 Client。
   - 至于是否需要给 Client 发送 reset，是由 tcp_abort_on_overflow 这个配置项来控制的，该值默认为 0，即不发送 reset 给 Client。推荐也是将该值配置为 0，给客户端重试的机会
@@ -167,16 +167,16 @@ ACCEPT队列（全连接队列）：这些连接已经接到客户端的ACK，�
 
 
 
-### Keepalive
+#### Keepalive
 
 TCP层Keepalive；类似于心跳检测（应用层Keepalive），当对方出现无法应答的情况时，会就行Keepalive询问，如果对方在无法应答Keepalive的询问，则认为检测不通过，关闭/回收连接资源
 
-##### 如何设计：
+如何设计：
 
 - 出现问题的概率小，所以没有必要频繁发起Keepalive询问
 - 判断无法应答时需谨慎，不能武断，存在多次无法应答时，再判死刑
 
-##### 核心参数：
+核心参数：
 
 ```shell
 # sysctl -a|grep tcp_keepalive
@@ -187,25 +187,118 @@ net.ipv4.tcp_keepalive_probes=9
 # 当启用（默认关闭）keepalive时，TCP在连接没有数据通过的7200秒后发送 keepalive 消息，当探测没有应答，按75秒的重试频率重发，一直发9个探测包都没有应答，则连接失败
 ```
 
-##### 为何还需要应用层Keepalive
+为何还需要应用层Keepalive
 
 - 协议分层，各层关注点不同，分层思想，设计替换可扩展
 - TCP层的Keepalive默认关闭
 - TCP层Keepalive时间长，默认2小时，虽然可修改，但配置属于操作系统层配置，改动会影响所有应用
 
-##### HTTP的Keep-Alive
+HTTP的Keep-Alive
 
-概念不能混：HTTP Keep-Alive 指的是 **对 长连接 与 短连接 的选择**
+> 概念不能混：HTTP Keep-Alive 指的是 **对 长连接 与 短连接 的选择**
 
 - Connection:Keep-Alive 长连接
 - Connection：Close 短连接
 
-##### Idle检测
+Idle检测
 
-配合Keepalive，以减少Keepalive消息
+- 配合Keepalive，以减少Keepalive消息
 
-Keepalive设计：
+- Keepalive设计：
 
-- V1：定时Keepalive消息
-- V2：空闲监测 + 判断为Idle时，才发Keepalive
+  - V1：定时Keepalive消息
 
+  - V2：空闲监测 + 判断为Idle时，才发Keepalive
+
+
+
+
+#### TCP数据包发送
+
+<img src="assets/image-20211231191349996.png" alt="image-20211231191349996" style="zoom:60%;" />
+
+##### TCP Send Buffer
+
+TCP 发送缓冲区的大小默认是受 **net.ipv4.tcp_wmem** 来控制：（tcp_wmem 中这三个数字的含义分别为 min、default、max）
+
+> net.ipv4.tcp_wmem = 8192 65536 16777216
+
+tcp_wmem 中的 max 不能超过 **net.core.wmem_max** 这个配置项的值，超过则TCP 发送缓冲区最大就是 net.core.wmem_max
+
+> net.core.wmem_max = 16777216
+
+tcp_wmem 以及 wmem_max 的大小设置都是针对单个 TCP 连接的，这两个值的单位都 是 Byte(字节)。系统中可能会存在非常多的 TCP 连接，如果 TCP 连接太多，就可能导 致内存耗尽。因此，所有 TCP 连接消耗的总内存也有限制：(有 3 个值:min、pressure、max，单位是 Page(页数)，也就是 4K)
+
+> net.ipv4.tcp_mem = 8388608 12582912 16777216
+
+调优：调大
+
+
+
+##### IP层
+
+和其他服务器建立 IP 连接时本地端 口(local port)的范围，**默认的端口范围太小，以致于无法创建新连接的问题**
+
+> net.ipv4.ip_local_port_range = 1024 65535
+
+调优：扩大默认的端口范围
+
+
+
+##### qdisc流控（排队规则）
+
+为了能够对 TCP/IP 数据流进行流控，Linux 内核在 IP 层实现了 qdisc(排队规则)
+
+qdisc 的队列长度是我们用 ifconfig 来看 到的 txqueuelen，**在生产环境中 txqueuelen 太小会导致数据包被丢弃的情况**
+
+调优：
+
+```shell
+# 查看  如果观察到 dropped 这一项不为 0，那就有可能是 txqueuelen 太小导致的
+$ ip -s -s link ls dev eth0
+...
+TX: bytes packets errors dropped carrier collsns 3263284 25060 0 0 0 0
+# 调大  - 在调整了 txqueuelen 的值后，你需要持续观察是否可以缓解丢包的问题，这也便于你将 它调整到一个合适的值
+$ ifconfig eth0 txqueuelen 2000
+```
+
+
+
+#### TCP数据包接收
+
+<img src="assets/image-20211231194927658.png" alt="image-20211231194927658" style="zoom:60%;" />
+
+
+
+##### CPU poll 网卡数据
+
+数据包到达网卡后，就会触发中断(IRQ)来告诉 CPU 读取这个数据包。
+
+但是在高性能网 络场景下，数据包的数量会非常大，如果每来一个数据包都要产生一个中断，那 CPU 的处 理效率就会大打折扣，所以就产生了 **NAPI(New API)** **这种机制让 CPU 一次性地去轮询 (poll)多个数据包，以批量处理的方式来提升效率，降低网卡中断带来的性能开销。**
+
+> net.core.netdev_budget = 600  // 一次可poll的个数（默认值是 300）
+
+调优：调大该值（不利影响，会导致 CPU 在这里 poll 的时间增加）
+
+
+
+##### TCP Receive Buffer
+
+TCP 接收缓冲区，默认都是使用 tcp_rmem 来控制缓冲区的大小
+
+> net.ipv4.tcp_rmem = 8192 87380 16777216
+
+不过跟发送缓冲区不同的是，**这个动态调整是可以通过控制选项来关闭的**，这个 选项是 tcp_moderate_rcvbuf 。通常我们都是打开它，这也是它的默认值：
+
+> net.ipv4.tcp_moderate_rcvbuf = 1
+
+之所以接收缓冲区有选项可以控制自动调节，而发送缓冲区没有，那是因为 TCP 接收缓冲 区会直接影响 **TCP 拥塞控制，进而影响到对端的发包**，所以使用该控制选项可以更加灵活 地控制对端的发包行为。
+
+tcp_rmem中的最大值不能超过 net.core.rmem_max 这个配置项的值
+
+> net.core.rmem_max = 16777216
+
+丢包分析：
+
+- SNMP计数 - netstat查看
+- eBPF - 专业 trace 工具
