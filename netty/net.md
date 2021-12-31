@@ -14,17 +14,6 @@ HAL层：硬件抽象层
 
 
 
-### TCP（[写的非常好的文章](https://www.cnblogs.com/xiaolincoding/p/12995358.html)）
-
-TCP 协议栈内核通常会为每一个LISTEN状态的Socket维护两个队列：
-
-SYN队列（半连接队列）：这些连接已经接到客户端SYN；
-ACCEPT队列（全连接队列）：这些连接已经接到客户端的ACK，完成了三次握手，等待被accept系统调用取走。
-
-
-
-
-
 ### I/O模型
 
 对于一个网络I/O通信过程，比如网络数据读取，会涉及两个对象，一个是调用这个I/O操作的用户线程，另外一个就是操作系统内核。一个进程的地址空间分为用户空间和内核空间，用户线程不能直接访问内核空间
@@ -135,6 +124,46 @@ Reactor模型中定义的三种角色：
 <img src="assets/image-20210917201422164.png" alt="image-20210917201422164" style="zoom:50%;" />
 
 
+
+
+
+
+
+### TCP（[写的非常好的文章](https://www.cnblogs.com/xiaolincoding/p/12995358.html)）
+
+TCP 协议栈内核通常会为每一个LISTEN状态的Socket维护两个队列：
+
+SYN队列（半连接队列）：这些连接已经接到客户端SYN；
+ACCEPT队列（全连接队列）：这些连接已经接到客户端的ACK，完成了三次握手，等待被accept系统调用取走。
+
+##### TCP连接过程
+
+<img src="assets/image-20211231162154727.png" alt="image-20211231162154727" style="zoom:60%;" />
+
+- **net.ipv4.tcp_syn_retries** = 2：默认值 6，syn失败重试次数
+  - syn失败后，客户端会重试6次，（1+2+4+8+16+32+64）秒后产生ETIMEOUT错误
+  - **对应网络质量比较好的内部服务，可调小该值，以减少异常Server导致的业务阻塞**
+- **net.ipv4.tcp_max_syn_backlog** = 16384： 半连接队列的长度
+  - 队列中半连接数量超过 配置项，则新的半连接就会被丢弃
+  - 低版本内核可能不只是这个参数控制，同时需要修改内核参数somaxconn，或者Nginx的backlog参数
+  - 全连接队列(accept queue)的长度是由 listen(sockfd, backlog) 这个函数里的 backlog 控制的，而该 backlog 的最大值则是 somaxconn。somaxconn 在 5.4 之前的内核中， 默认都是 128(5.4 开始调整为了默认 4096)，建议将该值适当调大一些:
+    - **net.core.somaxconn = 16384**
+- **net.ipv4.tcp_synack_retries** = 2：重传SYNACK包
+- **net.ipv4.tcp_syncookies** = 1：缓解 TCP SYN Flood 攻击
+  - 开启后，SYN 半连接队列已满，在 Server 收到 SYN 包时，不去分配资源来保存 Client 的信息，而是根据这个 SYN 包计 算出一个 Cookie 值，然后将 Cookie 记录到 SYNACK 包中发送出去。对于正常的连接， 该 Cookies 值会随着 Client 的 ACK 报文被带回来。然后 Server 再根据这个 Cookie 检查 这个 ACK 包的合法性，如果合法，才去创建新的 TCP 连接。通过这种处理，SYN Cookies 可以防止部分 SYN Flood 攻击
+  - syncookies 参数主要有以下三个值：
+    - 0 值，表示关闭该功能；
+    - 1 值，表示仅当 SYN 半连接队列放不下时，再启用它；  - **设置为1即可**
+    - 2 值，表示无条件开启功能；
+  - 其他防御SYN攻击的方法：
+    - 增大半连接队列；
+    - 减少 SYN+ACK 重传次数
+      - 减少重传之后，可加快断开无效连接
+- TCP RESET：
+  - Server 在将新连接 丢弃时，有的时候需要发送 **reset** 来通知 Client，这样 Client 就不会再次重试了
+  - 默认行为是直接丢弃不去通知 Client。
+  - 至于是否需要给 Client 发送 reset，是由 tcp_abort_on_overflow 这个配置项来控制的，该值默认为 0，即不发送 reset 给 Client。推荐也是将该值配置为 0，给客户端重试的机会
+    - net.ipv4.tcp_abort_on_overflow = 0
 
 
 
