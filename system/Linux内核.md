@@ -96,15 +96,28 @@ $ sar -B 1
 
 ##### PageCache专业分析工具
 
-- ftrace
-- ebpf
-- perf
-- systemtap
+- **ftrace**
+- **ebpf**
+- **perf**
+- **systemtap**
 
 
 
-### 内存泄露问题
+### 内存泄漏问题
 
-> 检测工具：valgrind
+> 检测工具：**valgrind**
 >
 > $ valgrind --leak-check=full ./a.out
+
+
+
+- 进程上下文内存泄漏
+  - 如果进程短暂运行，则随着进程的销毁，内存也会被回收
+  - 如果进程长期运行，则会触发操作系统的 OOM 机制（OOM Killer会按照进程的配置、进程的RES等信息计算分值，分值最大的将被kill掉， 存在误杀可能）
+- 进程无异常内存消耗
+  - Shmem：匿名共享内存 异常
+  - 内核消耗内存异常（/proc/meminfo 中的 Slab(高速缓存)、KernelStack(内核栈)和 VmallocUsed(内核通过 vmalloc 申请的内存)）
+    - 内核内存泄漏 检测工具 - **kmemleak**
+      - 开启后，会损耗性能，一般在测试环境开启，分析：第三方驱动等内核模块
+    - 生产环境 - 可以使用内核提供的内核内存申请释放的 **tracepoint**，来动态观察内核内存使用情况
+
