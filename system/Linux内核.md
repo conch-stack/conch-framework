@@ -96,10 +96,11 @@ $ sar -B 1
 
 ##### PageCache专业分析工具
 
-- **ftrace**
-- **ebpf**
+- **ftrace**：是分析内核问题的利器
+- **ebpf**：内核分析
 - **perf**
-- **systemtap**
+- **systemtap**：内核分析
+- **strace**：是应用和内核的边界
 
 
 
@@ -121,3 +122,6 @@ $ sar -B 1
       - 开启后，会损耗性能，一般在测试环境开启，分析：第三方驱动等内核模块
     - 生产环境 - 可以使用内核提供的内核内存申请释放的 **tracepoint**，来动态观察内核内存使用情况
 
+
+
+追踪内核函数：Kprobe、tcpretrans（使用优化Tracepoint，TCP Tracepoint，高版本内核4.16及以上）
