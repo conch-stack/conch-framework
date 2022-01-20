@@ -20,9 +20,7 @@ todo
 
 <img src="assets/image-20210925221358755.png" alt="image-20210925221358755" style="zoom:80%;" />
 
-### Keepalive
-
-**一般不用开启Netty的Keepalive检测，交由应用层处理**
+### Keepalive + Idle
 
 Netty开启TCP Keepalive 和 Idle 检测
 
@@ -44,5 +42,15 @@ ch.pipline().addList("idleCheckHandler", new IdleStateHandler(0, 20, 0, TimeUnit
 // 0 - readerIdleTime
 // 20 - writerIdleTime
 // 0 - allIdleTime
+// 0表示用 
 ```
 
+
+
+目标：
+
+- 服务器加上 read idle check - 服务器10s接收不到channel的请求，就断开连接
+  - 保护自己，及时清理空闲连接
+- 客户端加上 write idle check + keepalive - 客户端5s不发送数据，就发送一个keepalive
+  - 避免连接被断开
+  - 启用不频繁keepalive
