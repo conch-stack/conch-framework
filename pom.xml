@@ -33,6 +33,7 @@
         <module>beihu-akka</module>
         <module>beihu-microprofile</module>
         <module>beihu-sample</module>
+        <module>netty</module>
     </modules>
 
     <dependencyManagement>
