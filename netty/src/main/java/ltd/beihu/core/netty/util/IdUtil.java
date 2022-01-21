@@ -15,7 +15,7 @@ public final class IdUtil {
     private IdUtil() {
     }
 
-    public static long nexxId() {
+    public static long nextId() {
         return IDX.incrementAndGet();
     }
 }

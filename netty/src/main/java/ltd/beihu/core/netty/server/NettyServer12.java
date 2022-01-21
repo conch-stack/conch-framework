@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutionException;
  * @author Adam
  * @since 2022/1/21
  */
-public class Server {
+public class NettyServer12 {
 
     public static void main(String[] args) throws InterruptedException, ExecutionException {
 
@@ -61,8 +61,8 @@ public class Server {
             }
         });
 
-        ChannelFuture sync = serverBootstrap.bind(8090).sync();
-        sync.channel().closeFuture().get();
+        ChannelFuture channelFuture = serverBootstrap.bind(8090).sync();
+        channelFuture.channel().closeFuture().get();
     }
 
 }
