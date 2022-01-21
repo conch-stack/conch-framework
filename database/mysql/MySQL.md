@@ -107,7 +107,7 @@ redo log 与 binlog存在依赖关系，任何一个中间出现问题，就会�
 
 ##### 实现：
 
-- **快照**：MySQL通过全局事务id（row trx_id） + 数据多版本 来实现快照功能
+- **快照**：MySQL通过全局事务id（row trx_id） + 数据多版本 来实现快照功能（**MVCC：Multiversion concurrency**）
 
   - 可重复读情况下：
 
