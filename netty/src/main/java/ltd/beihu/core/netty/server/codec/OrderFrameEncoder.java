@@ -17,7 +17,7 @@ public class OrderFrameEncoder extends LengthFieldPrepender {
 
     /**
      * lengthFieldLength 长度字段的长度
-     */ 
+     */
     public OrderFrameEncoder() {
         super(2);
     }
