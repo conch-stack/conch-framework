@@ -22,7 +22,7 @@
         <!-- apache commons -->
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <commons-collections4.version>4.4</commons-collections4.version>
-        <commons-configuration2.version>2.7</commons-configuration2.version>
+        <commons-configuration2.version>2.8.0</commons-configuration2.version>
     </properties>
 
     <dependencyManagement>
