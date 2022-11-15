@@ -1,14 +1,10 @@
 ## Spring AOP源码分析
 
-
-
 ##### 要素：
 
 - target：被代理类
 - advisor:advice+pointcut ：切面（增强器）
 - AutoProxyCreator：用于创建代理对象
-
-
 
 ##### 关键点：
 
@@ -16,37 +12,33 @@
 - 一个@AspectJ注解对应多个Advisor，一个Advisor对应一个Advice+其适配的一个Pointcut
 - 问题：@Pointcut是在哪里解析的，和 Pointcut 这个类有什么关系？？？
 
-
-
 ![image-20200528233827147](assets/image-20200528233827147.png)
-
-
 
 ##### 源码：
 
 - AopNamespaceHandler：注册BeanDefinitionParser来处理Aop的xml标签或者自动代理的internalAutoProxyCreator（可以自动创建代理对象）
 
 - AopNamespaceUtils：#registerAspectJAnnotationAutoProxyCreatorIfNecessary
-
+  
   > NamespaceHandler是Spring定义的解析XML的namespace处理器（也就是xml文件头那一串schema）
-
+  
   - AopConfigUtils#registerAspectJAnnotationAutoProxyCreatorIfNecessary 注册 internalAutoProxyCreator的BeanDefinition到BeanDefinitionRegistry
-
+    
     - internalAutoProxyCreator：三种
       - InfrastructureAdvisorAutoProxyCreator
     - AspectJAwareAdvisorAutoProxyCreator
       - AnnotationAwareAspectJAutoProxyCreator 优先级最高
-
+  
   - \#useClassProxyingIfNecessary：
-
-    - proxyTargetClass：true表示强制使用CGLIB代理
-
-    - JDK代理目标类必须实现某个接口：运行时创建该接口的实现类来实现代理逻辑
     
+    - proxyTargetClass：true表示强制使用CGLIB代理
+    
+    - JDK代理目标类必须实现某个接口：运行时创建该接口的实现类来实现代理逻辑
+  
   - CGLIB通过创建目标类子类来实现代理逻辑，基于ASM字节码编辑类库，性能好
     
     - exposeProxy：**有时候目标对象内部的自我调用将无法实现切面中的增强**
-
+      
       - ```java
         public interface Aservice {
           void a();
@@ -55,59 +47,62 @@
         
         public class AserviceImpl implements Aservice {
           @Transactional
-        	public void a() { this.b() }
+            public void a() { this.b() }
         
-        	@Transactional
-        	public void b() {}
-      }
+            @Transactional
+            public void b() {}
+        }
         ```
-  ```java
-      
+        
+        ```java
+        
+        ```
+  
   如上代码，默认情况下，a() 调 b() 时，b方法的事务会失效。
-      
+  
     如果exposeProxy=true，然后将以上代码中的 this.b() 修改为如下，则事务不会失效
-      
+  
         ```java
         public class AserviceImpl implements Aservice {
           @Transactional
-        	public void a() { (AService)AopContext.currentProxy().b() }
-        
-        	@Transactional
-        	public void b() {}
-      }
-  ```
-
-  - AnnotationAwareAspectJAutoProxyCreator：
-
-    - 核心代理逻辑在这个类里面的父类**AbstractAutoProxyCreator**中
-
-    - Step1：通过实现SpringBean生命周期中的SmartInstantiationAwareBeanPostProcessor的#postProcessBeforeInstantiation方法
+            public void a() { (AService)AopContext.currentProxy().b() }
       
+            @Transactional
+            public void b() {}
+      }
+  
+  ```
+  - AnnotationAwareAspectJAutoProxyCreator：
+  
+    - 核心代理逻辑在这个类里面的父类**AbstractAutoProxyCreator**中
+  
+    - Step1：通过实现SpringBean生命周期中的SmartInstantiationAwareBeanPostProcessor的#postProcessBeforeInstantiation方法
+  
       - createProxy来打乱Bean实例化 | **前提：我们有一个 通用的 custom TargetSource ？？？**
       - shouldSkip(beanClass, beanName)：会预先实例化一波Advisor，并标记跳过不需要执行代理增强的类，在后续初始化后回调可以跳过
-      
+  
     - Step2：通过实现SpringBean生命周期中的SmartInstantiationAwareBeanPostProcessor的#postProcessAfterInitialization方法
-
+  
     - 在Spring创建Bean时AbstractAutowireCapableBeanFactory#doCreateBean会默认为允许**循环引用**的每个单例Bean创建一个由CGLIB代理的引用，会放入每个SmartInstantiationAwareBeanPostProcessor的earlyProxyReferences缓存中
-
+  
     - postProcessAfterInitialization初始化后，执行时会从当前earlyProxyReferences获取并判断是否需要进行代理createProxy
-
+  
       - wrapIfNecessary#getAdvicesAndAdvisorsForBean：// Create proxy if we have advice. 表示这个方法会扫描所有advice
       - getAdvicesAndAdvisorsForBean#findEligibleAdvisors
-
+  
       ```java
       // AbstractAdvisorAutoProxyCreator.class
       protected Object[] getAdvicesAndAdvisorsForBean(
             Class<?> beanClass, String beanName, @Nullable TargetSource targetSource) {
-      	 // 参考下面代码
+           // 参考下面代码
          List<Advisor> advisors = findEligibleAdvisors(beanClass, beanName);
          if (advisors.isEmpty()) {
             return DO_NOT_PROXY;   // 表示系统未配置任何advisor（advisor:advice+pointcut ：切面（增强器））
          }
          return advisors.toArray();
       }
-      
-      
+  ```
+
       protected List<Advisor> findEligibleAdvisors(Class<?> beanClass, String beanName) {
         // 先找到所有Advisor 有缓存 参考下面
         List<Advisor> candidateAdvisors = findCandidateAdvisors();
@@ -122,14 +117,14 @@
         return eligibleAdvisors;
       }
       ```
-
+    
       - AnnotationAwareAspectJAutoProxyCreator.class # findCandidateAdvisors
-
+    
       ```java
       @Override
       protected List<Advisor> findCandidateAdvisors() {
         // Add all the Spring advisors found according to superclass rules.
-      	// 在BeanFactory中查找所有符合Spring的 Advisor.class 类型的BeanName，并调用getBean进行实例化成Advisor
+          // 在BeanFactory中查找所有符合Spring的 Advisor.class 类型的BeanName，并调用getBean进行实例化成Advisor
         // String[] advisorNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, Advisor.class, true, false);
         List<Advisor> advisors = super.findCandidateAdvisors();
         // Build Advisors for all AspectJ aspects in the bean factory.
@@ -144,9 +139,9 @@
         return advisors;
       }
       ```
-
+    
       - findAdvisorsThatCanApply#AopUtils.findAdvisorsThatCanApply#canApply
-
+    
       ```java
       public static boolean canApply(Advisor advisor, Class<?> targetClass, boolean hasIntroductions) {
         // 分为基础设施的Advisor
@@ -179,36 +174,36 @@
     * 方法过滤器
       */
       MethodMatcher getMethodMatcher();
-      
+    
       /**
       * 增强表达式
       */
       @Nullable
       String getExpression();
-      
+    
     ```
-
+    
       说明：已经有类过滤器了，为什么还需要方法过滤器？
-
+    
       答：可复用相同方法匹配的场景
-
+    
       如何处理类过滤器+方法过滤器：
-
+    
       - 创建过滤器：AspectJExpressionPointcut# 
-
+    
     ```java
       @Override
     public ClassFilter getClassFilter() {  // 获取时，会去创建 PointcutExpression ；基于 PointcutParser
       obtainPointcutExpression();
       return this;
       }
-      
+    
       @Override
       public MethodMatcher getMethodMatcher() {
     obtainPointcutExpression();
       return this;
       }
-      
+    
       // 获得 PointcutExpression
       private PointcutExpression obtainPointcutExpression() {
         if (getExpression() == null) {
@@ -220,7 +215,7 @@
         }
         return this.pointcutExpression;
       }
-      
+    
       // 构建 PointcutExpression
       private PointcutExpression buildPointcutExpression(@Nullable ClassLoader classLoader) {
         // 初始化 PointcutParser  核心的解析表达式逻辑就在这里了，包含注解的表达式解析
@@ -234,20 +229,20 @@
                                               this.pointcutDeclarationScope, pointcutParameters);
       }
     ```
-
-      
-
+    
+    
+    
     - wrapIfNecessary#createProxy
-
+    
     ```java
     // specificInterceptors 就是 所有匹配的 Advisor
     Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
     Object proxy = createProxy(
-    					bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
+                        bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
     ```
-
+    
     - AbstractAutoProxyCreator#createProxy
-
+    
     ```java
     // AopProxyFactory#DefaultAopProxyFactory
     public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
@@ -274,9 +269,9 @@
     Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy)
     
     ```
-
+    
     - Aop多重代理（代理链 - 责任链）：原理可参考[使用 Cglib 实现多重代理](https://www.jianshu.com/p/9ba77d8f200b)
-
+    
     ```java
     // Get the interception chain for this method.
     List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
@@ -302,48 +297,42 @@
       retVal = invocation.proceed();
     }
     ```
-
+    
     - 自调用暴露代理原理
-
+    
     ```java
     // 有时候目标对象内部的自我调用将无法实施切面中的增强则需要通过此属性暴露代理
     if (this.advised.exposeProxy) {
-    		// Make invocation available if necessary.
-      	// 将当前的代理对象暴露到 ThreadLocal中，使得方法内自调用时可以使用
-      	// 最好的方式是不要出现自调用逻辑
-    		oldProxy = AopContext.setCurrentProxy(proxy);
-    		setProxyContext = true;
+            // Make invocation available if necessary.
+          // 将当前的代理对象暴露到 ThreadLocal中，使得方法内自调用时可以使用
+          // 最好的方式是不要出现自调用逻辑
+            oldProxy = AopContext.setCurrentProxy(proxy);
+            setProxyContext = true;
     }
     ```
 
-    
-
-  
-
-  - ScopedProxyFactoryBean#AopInfrastructureBean
-
-
+- ScopedProxyFactoryBean#AopInfrastructureBean
 
 - 构建流程
-
+  
   - BeanFactoryAspectJAdvisorsBuilder#buildAspectJAdvisors()：构建
-
+  
   - 从BeanFactroy中获取所有的beanNames：
-
+    
     ```java
     String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-    							this.beanFactory, Object.class, true, false);
+                                this.beanFactory, Object.class, true, false);
     
     // 用工厂进行 Advisor 的创建+获取
     MetadataAwareAspectInstanceFactory factory =
-    										new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
+                                            new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
     List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
     ```
-
+  
   - ReflectiveAspectJAdvisorFactory核心Advisor解析类：即AspectJAdvisorFactory是 this.advisorFactory的具体实现类
-
+  
   - 迭代获取所有 非 @PointCut 注解的方法：getAdvisorMethods
-
+  
   ```java
   // ReflectiveAspectJAdvisorFactory#getAdvisors()
   for (Method method : getAdvisorMethods(aspectClass)) { // 参考下面
@@ -409,23 +398,23 @@
     }
     return ajexp;
   }
-  
-  
+  ```
+
   // 构建 Advice
   @Override
   @Nullable
   public Advice getAdvice(Method candidateAdviceMethod, AspectJExpressionPointcut expressionPointcut,
                           MetadataAwareAspectInstanceFactory aspectInstanceFactory, int declarationOrder, String aspectName) {
-  
+
     Class<?> candidateAspectClass = aspectInstanceFactory.getAspectMetadata().getAspectClass();
     validate(candidateAspectClass);
-  
+    
     AspectJAnnotation<?> aspectJAnnotation =
       AbstractAspectJAdvisorFactory.findAspectJAnnotationOnMethod(candidateAdviceMethod);
     if (aspectJAnnotation == null) {
       return null;
     }
-  
+    
     // If we get here, we know we have an AspectJ method.
     // Check that it's an AspectJ-annotated class
     if (!isAspect(candidateAspectClass)) {
@@ -433,13 +422,13 @@
                                    "Offending method '" + candidateAdviceMethod + "' in class [" +
                                    candidateAspectClass.getName() + "]");
     }
-  
+    
     if (logger.isDebugEnabled()) {
       logger.debug("Found AspectJ method: " + candidateAdviceMethod);
     }
-  
+    
     AbstractAspectJAdvice springAdvice;
-  
+    
     switch (aspectJAnnotation.getAnnotationType()) {
       case AtPointcut: // 跳过
         if (logger.isDebugEnabled()) {
@@ -478,7 +467,7 @@
         throw new UnsupportedOperationException(
           "Unsupported advice type on method: " + candidateAdviceMethod);
     }
-  
+    
     // Now to configure the advice...
     springAdvice.setAspectName(aspectName);
     springAdvice.setDeclarationOrder(declarationOrder);
@@ -487,16 +476,16 @@
       springAdvice.setArgumentNamesFromStringArray(argNames);
     }
     springAdvice.calculateArgumentBindings();
-  
+    
     return springAdvice;
-  }
-  
-  ```
 
-  - AspectJExpressionPointcut会解析注解中的表达式，并以此匹配类型和方法以绝对是否进行拦截并增强 
-    - 问题：什么时候触发解析？？？
-    - 答：第一调用 findAdvisorsThatCanApply 时
-  - AOP CGLib代理源码分析(**https://blog.csdn.net/v123411739/article/details/106065775**)
+  }
+
+```
+- AspectJExpressionPointcut会解析注解中的表达式，并以此匹配类型和方法以绝对是否进行拦截并增强 
+  - 问题：什么时候触发解析？？？
+  - 答：第一调用 findAdvisorsThatCanApply 时
+- AOP CGLib代理源码分析(**https://blog.csdn.net/v123411739/article/details/106065775**)
 
 
 
@@ -506,27 +495,27 @@
 
 - Other
 
-  - 比较高阶
+- 比较高阶
 
-  ```java
-  private static final Comparator<Method> METHOD_COMPARATOR;
+```java
+private static final Comparator<Method> METHOD_COMPARATOR;
+
+    static {
+        Comparator<Method> adviceKindComparator = new ConvertingComparator<>(
+                new InstanceComparator<>(
+                        Around.class, Before.class, After.class, AfterReturning.class, AfterThrowing.class),
+                (Converter<Method, Annotation>) method -> {
+                    AspectJAnnotation<?> annotation =
+                        AbstractAspectJAdvisorFactory.findAspectJAnnotationOnMethod(method);
+                    return (annotation != null ? annotation.getAnnotation() : null);
+                });
+        Comparator<Method> methodNameComparator = new ConvertingComparator<>(Method::getName);
+        METHOD_COMPARATOR = adviceKindComparator.thenComparing(methodNameComparator);
+    }
+```
+
+- SpringBoot  | TODO  @Import 注解的执行逻辑，它也是Spring提供的，应该是和@Configuration在同一生命周期中
   
-  	static {
-  		Comparator<Method> adviceKindComparator = new ConvertingComparator<>(
-  				new InstanceComparator<>(
-  						Around.class, Before.class, After.class, AfterReturning.class, AfterThrowing.class),
-  				(Converter<Method, Annotation>) method -> {
-  					AspectJAnnotation<?> annotation =
-  						AbstractAspectJAdvisorFactory.findAspectJAnnotationOnMethod(method);
-  					return (annotation != null ? annotation.getAnnotation() : null);
-  				});
-  		Comparator<Method> methodNameComparator = new ConvertingComparator<>(Method::getName);
-  		METHOD_COMPARATOR = adviceKindComparator.thenComparing(methodNameComparator);
-  	}
-  ```
-
-  - SpringBoot  | TODO  @Import 注解的执行逻辑，它也是Spring提供的，应该是和@Configuration在同一生命周期中
-
   ```java
   @Target(ElementType.TYPE)
   @Retention(RetentionPolicy.RUNTIME)
@@ -534,53 +523,51 @@
   @Import(AspectJAutoProxyRegistrar.class)
   public @interface EnableAspectJAutoProxy {
   
-  	/**
-  	 * Indicate whether subclass-based (CGLIB) proxies are to be created as opposed
-  	 * to standard Java interface-based proxies. The default is {@code false}.
-  	 */
-  	boolean proxyTargetClass() default false;
+    /**
+     * Indicate whether subclass-based (CGLIB) proxies are to be created as opposed
+     * to standard Java interface-based proxies. The default is {@code false}.
+     */
+    boolean proxyTargetClass() default false;
   
-  	/**
-  	 * Indicate that the proxy should be exposed by the AOP framework as a {@code ThreadLocal}
-  	 * for retrieval via the {@link org.springframework.aop.framework.AopContext} class.
-  	 * Off by default, i.e. no guarantees that {@code AopContext} access will work.
-  	 * @since 4.3.1
-  	 */
-  	boolean exposeProxy() default false;
+    /**
+     * Indicate that the proxy should be exposed by the AOP framework as a {@code ThreadLocal}
+     * for retrieval via the {@link org.springframework.aop.framework.AopContext} class.
+     * Off by default, i.e. no guarantees that {@code AopContext} access will work.
+     * @since 4.3.1
+     */
+    boolean exposeProxy() default false;
   
   }
   ```
 
-  - 优秀文章
-    
-    - https://joonwhee.blog.csdn.net/article/details/106065748
-    - https://blog.csdn.net/qq_20597727/article/details/84800176
-    
-  - 代码流程：
+- 优秀文章
   
-    ```
-    AnnotationAwareAspectJAutoProxyCreator
-    AbstractAutoProxyCreator#postProcessAfterInitialization
-    代码块1：wrapIfNecessary
-    代码块2：getAdvicesAndAdvisorsForBean
-    代码块3：findEligibleAdvisors
-    代码块4：findAdvisorBeans
-    代码块5：findCandidateAdvisors
-    代码块6：buildAspectJAdvisors
-    代码块7：getAdvisors
-    代码块8：getAdvisor
-    代码块9：getPointcut
-    代码块10：findAspectJAnnotationOnMethod
-    代码块11：new InstantiationModelAwarePointcutAdvisorImpl
-    代码块12：instantiateAdvice
-    代码块13：findAdvisorsThatCanApply
-    代码块14：createProxy
-    代码块15：getProxy
-    代码块16：createAopProxy
-    代码块17：JDK 动态代理、CBLIB 代理构造函数
-    代码块18：JdkDynamicAopProxy#getProxy
-    代码块19：CglibAopProxy#getProxy
-    代码块20：getCallbacks
-    ```
+  - https://joonwhee.blog.csdn.net/article/details/106065748
+  - https://blog.csdn.net/qq_20597727/article/details/84800176
+
+- 代码流程：
   
-    
+  ```
+  AnnotationAwareAspectJAutoProxyCreator
+  AbstractAutoProxyCreator#postProcessAfterInitialization
+  代码块1：wrapIfNecessary
+  代码块2：getAdvicesAndAdvisorsForBean
+  代码块3：findEligibleAdvisors
+  代码块4：findAdvisorBeans
+  代码块5：findCandidateAdvisors
+  代码块6：buildAspectJAdvisors
+  代码块7：getAdvisors
+  代码块8：getAdvisor
+  代码块9：getPointcut
+  代码块10：findAspectJAnnotationOnMethod
+  代码块11：new InstantiationModelAwarePointcutAdvisorImpl
+  代码块12：instantiateAdvice
+  代码块13：findAdvisorsThatCanApply
+  代码块14：createProxy
+  代码块15：getProxy
+  代码块16：createAopProxy
+  代码块17：JDK 动态代理、CBLIB 代理构造函数
+  代码块18：JdkDynamicAopProxy#getProxy
+  代码块19：CglibAopProxy#getProxy
+  代码块20：getCallbacks
+  ```

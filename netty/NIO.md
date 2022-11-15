@@ -37,7 +37,7 @@
 
 > * capacity 读/写：缓冲区容量
 > * position 写： 当前写的位置， 范围为 0 ~ (capacity-1)
-    读： position被重置为0,随着读的index增加
+>     读： position被重置为0,随着读的index增加
 > * limit 写： 缓冲区最大容量 等于 capacity 读： 将写模式下的position位置变成limit（即缓冲区实际数据大小）
 
 ### 3. Buffer类型
@@ -51,7 +51,7 @@ CharBuffer DoubleBuffer FloatBuffer IntBuffer LongBuffer ShortBuffer
 ### 4. simple use
 
 > * 初始化capacity:
-    CharBuffer buf = CharBuffer.allocate(1024);
+>     CharBuffer buf = CharBuffer.allocate(1024);
 > * Channel写到Buffer的例子 int bytesRead = inChannel.read(buf); //read into buffer.
 > * 通过put方法写Buffer的例子： buf.put(127); put方法有很多版本，允许你以不同的方式把数据写入到Buffer中。例如， 写到一个指定的位置，或者把一个字节数组写入到Buffer。 更多Buffer实现的细节参考JavaDoc。
 > * Buffer读取数据到Channel的例子： int bytesWritten = inChannel.write(buf);
@@ -64,7 +64,7 @@ CharBuffer DoubleBuffer FloatBuffer IntBuffer LongBuffer ShortBuffer
 ### 6 equals() and compareTo()
 
 > * equals():
-    当满足下列条件，表示两个buffer相等：
+>     当满足下列条件，表示两个buffer相等：
 
 * 有相同的类型（byte、char、int）
 * buffer内元素个数相等（Buffer中剩余的byte、char等的个数相等）
@@ -73,7 +73,7 @@ CharBuffer DoubleBuffer FloatBuffer IntBuffer LongBuffer ShortBuffer
 如你所见，equals只是比较Buffer的一部分，不是每一个在它里面的元素都比较。实际上，它只比较Buffer中的剩余元素。
 
 > * compareTo():
-    比较两个Buffer的剩余元素(byte、char等)， 如果满足下列条件，则认为一个Buffer“小于”另一个Buffer：
+>     比较两个Buffer的剩余元素(byte、char等)， 如果满足下列条件，则认为一个Buffer“小于”另一个Buffer：
 
 * 第一个不相等的元素小于另一个Buffer中对应的元素 。
 * 所有元素都相等，但第一个Buffer比另一个先耗尽(第一个Buffer的元素个数比另一个少)。
@@ -81,7 +81,7 @@ CharBuffer DoubleBuffer FloatBuffer IntBuffer LongBuffer ShortBuffer
 ## 三、Scatter and Gather
 
 > * Scatter（分散）:
-    指读channel时，将数据分散到多个buffer中。
+>     指读channel时，将数据分散到多个buffer中。
 
 ```java
 ByteBuffer header = ByteBuffer.allocate(128);
@@ -93,7 +93,7 @@ channel.read(bufferArray);
 ```
 
 > * Gather（聚集）:
-    指写channel时，将多个buffer中的数据写入同一个channel
+>     指写channel时，将多个buffer中的数据写入同一个channel
 
 ```java
 ByteBuffer header = ByteBuffer.allocate(128);
@@ -122,7 +122,6 @@ toChannel.transferFrom(position, count, fromChannel);
 // transferTo()
 fromChannel.transferTo(position, count, toChannel);
 // 此外要注意，在SoketChannel的实现中，SocketChannel只会传输此刻准备好的数据（可能不足count字节）。因此，SocketChannel可能不会将请求的所有数据(count个字节)全部传输到FileChannel中。
-
 ```
 
 ## 五、Selector
@@ -146,11 +145,12 @@ SelectionKey key = channel.register(selector, SelectionKey.OP_READ);
 ```
 
 **注：**
+
 > * 与Selector一个使用时，channel必须处于非阻塞状态。 这意味着不能将FileChannel与Selector一起使用，因为FileChannel不能切换到非阻塞模式下，SocketChannel是可以的
 > * register() 第二个参数是一个 “interest集合” , 表示通过Selector监听Channel时对什么事件感兴趣:(可选项)
-    **1.Connect(连接就绪) ： SelectionKey.OP_CONNECT 2.Accept(接收就绪) ： SelectionKey.OP_ACCEPT 3.Read(读就绪) ： SelectionKey.OP_READ 4.Write(写就绪) ： SelectionKey.OP_WRITE**
-    如果你对不止一种事件感兴趣，那么可以用“位或”操作符将常量连接起来，如下：
-    **int interestSet = SelectionKey.OP_READ | SelectionKey.OP_WRITE;**
+>     **1.Connect(连接就绪) ： SelectionKey.OP_CONNECT 2.Accept(接收就绪) ： SelectionKey.OP_ACCEPT 3.Read(读就绪) ： SelectionKey.OP_READ 4.Write(写就绪) ： SelectionKey.OP_WRITE**
+>     如果你对不止一种事件感兴趣，那么可以用“位或”操作符将常量连接起来，如下：
+>     **int interestSet = SelectionKey.OP_READ | SelectionKey.OP_WRITE;**
 
 - SelectionKey register()方法返回一个SelectionKey对象，该对象包含一些你感兴趣的属性：
 
@@ -161,12 +161,15 @@ SelectionKey key = channel.register(selector, SelectionKey.OP_READ);
 > * 附加的对象（可选）
 
 1. Interest集合 你所感兴趣的事件集合：
-    ```java
+   
+   ```java
+   
+   ```
 
 int interestSet = selectionKey.interestOps(); // 位与 操作 boolean isInterestedInAccept = (interestSet &
 SelectionKey.OP_ACCEPT) == SelectionKey.OP_ACCEPT； ...
-```
 
+```
 2. Ready集合 通道已经准备就绪 的操作的集合：（一次Selection，首先访问这个集合）
     ```java
 
@@ -175,16 +178,18 @@ selectionKey.isConnectable(); selectionKey.isReadable(); selectionKey.isWritable
 ```
 
 3. Channel and Selector
-    ```java
-    Channel  channel  = selectionKey.channel();
-    Selector selector = selectionKey.selector();
-    ```
-4. 附加对象 可以将一个对象或者更多信息附着在SelectionKey上，这样就能方便的识别某个给定通道，例如，可以附加 与通道一起使用的Buffer，或是包含聚集数据的某个对象。
+   
    ```java
-// 使用方法如下： selectionKey.attach(theObject); Object attachedObj = selectionKey.attachment(); // 还可以： SelectionKey key =
-channel.register(selector, SelectionKey.OP_READ, theObject);
-```
+   Channel  channel  = selectionKey.channel();
+   Selector selector = selectionKey.selector();
+   ```
 
+4. 附加对象 可以将一个对象或者更多信息附着在SelectionKey上，这样就能方便的识别某个给定通道，例如，可以附加 与通道一起使用的Buffer，或是包含聚集数据的某个对象。
+   
+   ```java
+   // 使用方法如下： selectionKey.attach(theObject); Object attachedObj = selectionKey.attachment(); // 还可以： SelectionKey key =
+   channel.register(selector, SelectionKey.OP_READ, theObject);
+   ```
 - 通过Selector选择通道 一旦向Selector注册了一个或多个通道，就可以使用重载的 select()方法，返回 你所感兴趣的（事件） 已经准备就绪的那些通道：
 
 ```java
@@ -354,14 +359,17 @@ socketChannel.close();
 - 非阻塞模式 可设置 SocketChannel为非阻塞模式（non-blocking mode）,设置后，可在异步模式下调用 connect()、read()、write();
 
 - connect(): 确保连接以建立：
-   ```java 
-   socketChannel.configureBlocking(false);
-   socketChannel.connect(new InetSocketAddress("http://jenkov.com", 80)); // 未等连接完成就已经返回
-   while(!sockectChannel.finishConnect()) {
-       // do wait or do something else 
-   }
-   ```
+  
+  ```java
+  socketChannel.configureBlocking(false);
+  socketChannel.connect(new InetSocketAddress("http://jenkov.com", 80)); // 未等连接完成就已经返回
+  while(!sockectChannel.finishConnect()) {
+      // do wait or do something else 
+  }
+  ```
+
 - write(): 尚未真正写入，该方法就已经返回，所以需要利用循环while，如前面；
+
 - read(): 非阻塞模式下,read()方法在尚未读取到任何数据时可能就返回了。所以需要关注它的int返回值，它会告诉你读取了多少字节。(关注 -1 节点)
 
 - 非阻塞模式搭配选择器使用：非阻塞模式与选择器搭配会工作的更好，通过将一或多个SocketChannel注册到Selector，可以询问选择器哪个通道已经准备好了读取，写入等。
@@ -419,6 +427,7 @@ datagramChannel.receive(buf);
 ```
 
 Importance:
+
 > * receive() 方法将接收到的内容复制到Buffer中，如果Buffer容不下，多出部分数据则丢弃！！！
 
 - 发送数据
@@ -433,16 +442,18 @@ int bytesSent = datagramChannel.send(buf, new InetSocketAddress("jenkov.com", 80
 ```
 
 - 连接到特定的地址 可以将DatagramChannel“连接”到网络中的特定地址的。由于UDP是无连接的，连接到特定地址并不会像TCP通道那样创建一个真正的连接。而是锁住DatagramChannel ，让其只能从特定地址收发数据。
-
-    ```java
+  
+  ```java
   // 注意这里的 uri 并非 基于 TCP协议的HTTP
   datagramChannel.connect(new InetSocketAddress("jenkov.com", 80));
-    ```
+  ```
+  
   当连接后，也可以使用read()和write()方法，就像在用传统的通道一样。只是在数据传送方面没有任何保证。
-    ```java
+  
+  ```java
   int bytesRead = datagramChannel.read(buf);
   int bytesWritten = datagramChannel.write(buf);
-    ```
+  ```
 
 ## 十、Pipe 管道
 
@@ -500,15 +511,15 @@ Paths工具类包含了两个返回Path对象的静态方法。
 
 - copy(...) 拷贝文件，有3个重载方法，通常需要跟Path结合使用
 - 操作文件
-    - createDirectory(...) 创建目录
-    - createFile(...) 创建文件
-    - delete(Path path) 删除文件
+  - createDirectory(...) 创建目录
+  - createFile(...) 创建文件
+  - delete(Path path) 删除文件
 - 判断属性
-    - isHidden(Path path)
-    - isReadable(Path path)
-    - isDirectory(...)
+  - isHidden(Path path)
+  - isReadable(Path path)
+  - isDirectory(...)
 - 读写文件
-    - lines(Path path) 使用默认编码读文件所有行进数组
-    - readAlllines(path ,cs) 使用指定编码读所有行到数组
-    - write(...) 写文件，可以批量将数组中的数据写入文件，也可以指定编码
-    - walkFileTree() 遍历路径
+  - lines(Path path) 使用默认编码读文件所有行进数组
+  - readAlllines(path ,cs) 使用指定编码读所有行到数组
+  - write(...) 写文件，可以批量将数组中的数据写入文件，也可以指定编码
+  - walkFileTree() 遍历路径

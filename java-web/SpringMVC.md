@@ -2,24 +2,24 @@
 
 ![SpringMVC](./assets/SpringMVC.png)
 
-
-
 #### Init
 
 Tomcat/Jetty启动，对于每个WebApp，依次进行初始化工作：
 
 1. 对每个WebApp，都有一个WebApp **ClassLoader**，和一个 **ServletContext**，其为后面的Spring容器提供宿主环境。
+
 2. ServletContext启动时，会扫描web.xml配置文件，找到Filter、Listener和Servlet配置
+
 3. 如果Listener中配有spring的**ContextLoaderListener**
+   
    - ContextLoaderListener就会收到webapp的各种状态信息。
    - 在ServletContext初始化时，会触发容器初始化事件，Spring的ContextLoaderListener会监听到这个事件，它的contextInitialized方法会被调用，在这个方法中，Spring会初始化全局的Spring根容器，这个就是Spring的IoC容器
    - IoC容器初始化完毕后，Spring将其存储到ServletContext中，便于以后来获取。
 
 4. 如果Servlet中配有SpringMVC的**DispatcherServlet**
+   
    - Tomcat&Jetty在启动过程中还会扫描Servlet
    - Servlet一般会延迟加载，当第一个请求达到时，Tomcat&Jetty发现DispatcherServlet还没有被实例化，就调用DispatcherServlet的init方法，在初始化的时候会建立自己的容器，叫做SpringMVC 容器，用来持有Spring MVC相关的Bean。同时，Spring MVC还会通过ServletContext拿到Spring根容器，并将Spring根容器设为SpringMVC容器的父容器，请注意，Spring MVC容器可以访问父容器中的Bean，但是父容器不能访问子容器的Bean， 也就是说Spring根容器不能访问SpringMVC容器里的Bean。说的通俗点就是，在Controller里可以访问Service对象，但是在Service里不可以访问Controller对象。
-
-
 
 容器：
 
@@ -32,13 +32,7 @@ Tomcat/Jetty启动，对于每个WebApp，依次进行初始化工作：
 *SpringBoot中只有一个Spring上下文：*
 *org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext*
 
-
-
 ***执行流程 todo 画图***
-
-
-
-
 
 #### DispatcherServlet
 
@@ -54,8 +48,6 @@ DispatcherServlet中的成员变量都是初始化好后就不会被改变了，
 private synchronized void initServlet(Servlet servlet)
 {...}
 ```
-
-
 
 #### ContextLoaderListener
 
@@ -75,35 +67,17 @@ public void contextInitialized(ServletContextEvent event) {
 
 SpringBootContextLoaderListener
 
-
-
-
-
-
-
 **ApplicationContextInitializer**
-
-
 
 **WebApplicationInitializer**
 
 - SpringBootServletInitializer
 
-
-
-
-
 ##### SpringServletContainerInitializer
 
 Spring Web SPI注入
 
-
-
 **WebServer**
-
-
-
-
 
 ##### HandlerMapping：
 
@@ -113,28 +87,27 @@ Spring Web SPI注入
   HandlerExecutionChain getHandler(HttpServletRequest request);
   ```
 
-
-
 ##### HandlerExecutionChain：
 
 - Handler执行链
 - 组合了 适配的 HandlerInterceptor 列表
 
-
-
 ##### HandlerInterceptor：
 
 - HandlerMethod拦截器
+
 - 前置判断 - preHandle
+  
   - 当且仅当方法返回 true 时，执行 HandlerMethod
+
 - 后置处理 - postHandle
+  
   - HandlerMethod 已经被执行，其执行结果为ModelAndView，当 ModelAndView 参数为空，说明是非视图渲染， 即 REST 场景(@since 2.5) 否则，就是视图渲染
 
 - 完成回调 - afterCompletion
+  
   - 正常 preHandle -> handle -> postHandle -> afterCompletion
   - preHandle 失败 -> afterCompletion
-
-
 
 ##### HandlerAdapter：
 
@@ -146,27 +119,17 @@ Spring Web SPI注入
 
 - HandlerMethod 与 Servlet API 做适配，利用 HandlerMethod 中的执行结果，去控制适配 ServletRequest 和 ServletResponse。
 
-
+- 最常见的：**RequestMappingHandlerAdapter**
 
 ##### HandlerMethod：
 
-
-
 ##### Validation
 
-
-
 ##### Converter
-
-
 
 ##### LocaleResolver：
 
 全球化支持
-
-
-
-
 
 ##### WebMvcConfigurer
 
@@ -175,6 +138,7 @@ Spring Web SPI注入
 - Spring Framework 留给应用程序扩展 Web MVC 特性的， WebMvcConfigurer Bean 不是必须
 
 - **WebMvcConfigurer** **引导类** **- DelegatingWebMvcConfiguration**
+  
   - DelegatingWebMvcConfiguration (@Configuration Class)会被 @EnableWebMvc 引导
   - DelegatingWebMvcConfiguration 继承了 WebMvcConfigurationSupport，其中 WebMvcConfigurationSupport 定义了
     - HandlerAdapter Bean - RequestMappingHandlerAdapter
@@ -182,13 +146,9 @@ Spring Web SPI注入
       - RequestMappingHandlerMapping
       - BeanNameUrlHandlerMapping
 
-
-
 ##### Servlet 引擎静态资源 Servlet 处理器
 
 - org.springframework.web.servlet.r esource.DefaultServletHttpRequestHandler
-
-
 
 ##### HandlerMethodArgumentResolver
 
@@ -200,11 +160,7 @@ Spring Web SPI注入
     - 获取参数名称 - Parameter[] getParameters()
 - 实现 - org.springframework.web.method.annotation.**RequestParamMethodArgumentResolver**
 
-
-
 ##### HttpMessageConverter
-
-
 
 ##### HandlerExceptionResolver
 
@@ -213,8 +169,6 @@ Spring Web SPI注入
 - org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver
 - org.springframework.web.servlet.mvc.annotation.ResponseStatusExceptionResolver
 - org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver
-
-
 
 #### FAQ：
 
@@ -231,4 +185,3 @@ DispatcherServlet 渲染视图
 HandlerInterceptor.afterCompletion();
 Filter.doFilter(); Servlet方法返回
 ```
-
