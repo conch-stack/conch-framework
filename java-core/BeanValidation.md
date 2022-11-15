@@ -2,15 +2,11 @@
 
 Bean Validation
 
-
-
 ### 核心API
 
 **元注解 - @javax.validation.Constraint   （约束、规范）**
 
 - 标注在目标校验注解上，来指定Bean Validation 校验器的实现
-
-
 
 **校验器接口：ConstraintValidator**
 
@@ -21,11 +17,7 @@ Bean Validation
   - 校验方法： #isValid
     - 通过对象传入，并且控制 ConstraintValidatorContext （**校验器上下文**）
 
-
-
 内建注解校验器
-
-
 
 自定义注解校验器
 
@@ -74,15 +66,9 @@ public class UserValidAnnotationValidator implements ConstraintValidator<UserVal
 }
 ```
 
-
-
 **文案解析器 - javax.validation.MessageInterpolator**
 
-
-
 **校验分组**
-
-
 
 **引导** **Bean Validation** （启动）
 

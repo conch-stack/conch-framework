@@ -2,19 +2,9 @@
 
 Java Management Extensions
 
-
-
 ##### 自定义 MBean
 
-
-
 ##### OpenType
-
-
-
-
-
-
 
 ##### todo
 

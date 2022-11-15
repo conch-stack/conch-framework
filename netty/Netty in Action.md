@@ -1,7 +1,5 @@
 ## Netty实战
 
-
-
 #### 数据结构设计
 
 <img src="assets/image-20220120195745360.png" alt="image-20220120195745360" style="zoom:50%;" />
@@ -16,4 +14,3 @@
     - Message Body（Json/Protobuf）
       - operation
       - operation result
-

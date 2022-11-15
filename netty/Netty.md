@@ -4,12 +4,6 @@
 
 todo
 
-
-
-
-
-
-
 ### 水平触发 VS 边缘触发
 
 在非阻塞IO中，通过Selector选出准备好的fd进行操作。有两种模式，一是水平触发（LT），二是边缘触发（ET）
@@ -25,15 +19,15 @@ todo
 Netty开启TCP Keepalive 和 Idle 检测
 
 - 开启Keepalive
-
-    - Server端开启Keepalive
-
-      ```java
-      // 方式一
-      bootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);
-      // 方式二
-      bootstrap.childOption(NioChannelOption.of(StandardSocketOptions.SO_KEEPALIVE), true);
-      ```
+  
+  - Server端开启Keepalive
+    
+    ```java
+    // 方式一
+    bootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);
+    // 方式二
+    bootstrap.childOption(NioChannelOption.of(StandardSocketOptions.SO_KEEPALIVE), true);
+    ```
 
 - 开启Idle
 
@@ -44,8 +38,6 @@ ch.pipline().addList("idleCheckHandler", new IdleStateHandler(0, 20, 0, TimeUnit
 // 0 - allIdleTime
 // 0表示用 
 ```
-
-
 
 目标：
 
