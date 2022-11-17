@@ -26,14 +26,15 @@
     </properties>
 
     <modules>
-        <module>beihu-core</module>
-        <module>beihu-mybatis</module>
-        <module>thinking-in-spring</module>
-        <module>thinking-in-dubbo</module>
         <module>beihu-akka</module>
+        <module>beihu-core</module>
         <module>beihu-microprofile</module>
+        <module>beihu-mybatis</module>
         <module>beihu-sample</module>
+        <module>beihu-servlet</module>
         <module>netty</module>
+        <module>thinking-in-dubbo</module>
+        <module>thinking-in-spring</module>
     </modules>
 
     <dependencyManagement>
