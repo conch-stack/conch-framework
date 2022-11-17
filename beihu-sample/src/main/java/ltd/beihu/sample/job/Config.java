@@ -11,6 +11,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
@@ -41,6 +42,8 @@ public class Config implements ApplicationContextAware, BeanFactoryAware, Initia
             Object bean = beanFactory.getBean(name);
             Class<?> beanClassType = BeanDefinitionUtil.resolveBeanClassType(beanFactory.getBeanDefinition(name));
             Service service = beanClassType.getAnnotation(Service.class);
+            System.out.println("==============================================" + beanClassType.isAnnotationPresent(Service.class));
+            System.out.println("==============================================" + beanClassType.isAnnotationPresent(Component.class));
             if (Objects.nonNull(service)) {
                 Method[] allDeclaredMethods = ReflectionHelper.getAllDeclaredMethods(beanClassType);
                 Arrays.stream(allDeclaredMethods).forEach(target -> {
