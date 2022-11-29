@@ -1,7 +1,9 @@
 package ltd.beihu.sample.timelimit;
 
-import java.time.LocalDateTime;
-import java.util.Set;
+import com.alibaba.ttl.TtlRunnable;
+
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author Adam
@@ -9,39 +11,59 @@ import java.util.Set;
  */
 public class TestConsumer {
 
-    private Consumer consumer;
     private Thread thread;
+    private EventTask task;
 
-    private LocalDateTime timeout;
+    private TestConsumer() {
+    }
 
-    private Set<String> prodConsumerSet;
+    public void start() {
+        this.thread.start();
+    }
 
-    public TestConsumer(Consumer consumer, LocalDateTime timeout, Set<String> prodConsumerSet) {
-        this.prodConsumerSet = prodConsumerSet;
-        this.consumer = consumer;
-        this.timeout = timeout;
-        this.thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        if (timeout.isBefore(LocalDateTime.now())) {
-                            System.out.println("我超时了，退出循环");
-                            throw new InterruptedException();
-                        }
-                        if (Thread.interrupted()) {
-                            System.out.println("已经是停止状态了，我要退出了！");
-                            throw new InterruptedException();
-                        }
-                        consumer.consume(); // 具体的consumer可用池进行管理
-                    } catch (InterruptedException e) {
-                        consumer.stop(); // todo 销毁
-                        prodConsumerSet.remove(consumer.getKey());
-                        break;
-                    }
+    public void stop() {
+        this.task.stop();
+    }
+
+    public static Optional<TestConsumer> getInstance(String key) {
+        TestConsumer rs = new TestConsumer();
+        try {
+            Consumer consumer = new Consumer(key);
+            rs.task = new EventTask(consumer);
+            TtlRunnable ttlRunnable = TtlRunnable.get(rs.task);
+            rs.thread = new Thread(ttlRunnable);
+            return Optional.of(rs);
+        } catch (Exception e) {
+            if (Objects.nonNull(rs.thread) && Objects.nonNull(rs.task)) {
+                rs.task.stop();
+            }
+            return Optional.empty();
+        }
+    }
+
+    static class EventTask implements Runnable {
+
+        private Consumer consumer;
+        private volatile boolean stop = false;
+
+        public EventTask(Consumer consumer) {
+            this.consumer = consumer;
+        }
+
+        @Override
+        public void run() {
+            while (!stop) {
+                try {
+                    consumer.consume(); // 具体的consumer可用池进行管理
+                } catch (Exception e) {
+                    break;
                 }
             }
-        });
-        thread.start();
+            System.err.println("我被销毁了" + consumer.getKey());
+        }
+
+        public void stop() {
+            this.stop = true;
+        }
     }
 }

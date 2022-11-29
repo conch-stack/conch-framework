@@ -2,8 +2,10 @@ package ltd.beihu.sample.timelimit;
 
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -13,17 +15,12 @@ import java.util.Set;
 @Component
 public class TestTimeLimit {
 
-    private static final Set<String> prodConsumerSet = new HashSet<>();
+    @Resource
+    private TestConsumerManager testConsumerManager;
 
-    public void test(String key, int timeout) {
-        if (prodConsumerSet.contains(key)) {
-            return;
-        }
-        prodConsumerSet.add(key);
+    public void test(String key, int targetTimeout) {
         System.out.println("创建对象"+key);
-
-        Consumer consumer = new Consumer(key);
-        new TestConsumer(consumer, LocalDateTime.now().plusSeconds(timeout), prodConsumerSet);
+        testConsumerManager.addNewDynamicQmqTestConsumer(key, targetTimeout);
     }
 
 }
