@@ -74,10 +74,18 @@ public class TestJvmType {
             System.out.println(aClass.getTypeName());
             for (Type genericInterface : aClass.getGenericInterfaces()) {
                 if (genericInterface instanceof ParameterizedType) {
-                    System.out.println("ParameterizedType ActualTypeArguments：" + genericInterface.getTypeName());
+                    System.out.println("ParameterizedType 1 ActualTypeArguments：" + genericInterface.getTypeName());
                     ParameterizedType pType = (ParameterizedType) genericInterface;
                     for (Type actualTypeArgument : pType.getActualTypeArguments()) {
                         System.out.println("\t类型：" + actualTypeArgument.getTypeName());
+
+                      if (actualTypeArgument instanceof ParameterizedType) {
+                        System.out.println("ParameterizedType 2 ActualTypeArguments：" + actualTypeArgument.getTypeName());
+                        ParameterizedType pType2 = (ParameterizedType) actualTypeArgument;
+                        for (Type actualTypeArgument2 : pType2.getActualTypeArguments()) {
+                          System.out.println("\t类型：" + actualTypeArgument2.getTypeName());
+                        }
+                      }
                     }
                     System.out.println("===============================================");
                 }
