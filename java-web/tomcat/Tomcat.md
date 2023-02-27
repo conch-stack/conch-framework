@@ -105,7 +105,7 @@ Coyote 是Tomcat 中连接器的组件名称 , 是对外的接口。客户端通
 
 **可扩展性：**
 
-- **LifeCycle事件**：保证可扩展性；生命周期会触发事件，并通知改监听器（观察者模式）
+- **LifeCycle事件**：保证可扩展性；生命周期会触发事件，并通知给监听器（观察者模式）
 
   - LifeCycle接口里加入两个方法：添加监听器和删除监听器
 
@@ -153,7 +153,42 @@ Coyote 是Tomcat 中连接器的组件名称 , 是对外的接口。客户端通
 
 #### FAQ
 
-- Tomcat 的 Context 是一个 Web 应用; Servlet 的 ServletContext 是 Web 应用上下文, 是 Context 的一个成员变量; Spring 的 ApplicationContext 是 spring 容器, 是 Servlet 的一个属性.
+- Tomcat 的 Context 是一个 Web 应用; 
+- Servlet 的 ServletContext 是 Web 应用上下文, 是 Context 的一个成员变量（StandardContext-**>org.apache.catalina.core.ApplicationContext**）; 
+- Spring 的 **org.springframework.context.ApplicationContext** 是 spring 容器上下文, 其实现类 org.springframework.web.context.**WebApplicationContext** 是 Servlet（Servlet->GenericServlet->javax.servlet.http.HttpServlet->org.springframework.web.servlet.HttpServletBean -> FrameworkServlet -> **DispatcherServlet**） 的一个属性.
+- Tomcat的 Container -> **Wrapper** -> StandardWrapper 中添加了对 Servlet 的支持
+
+
+
+Spring MVC的加载过程：
+
+- Servlet.init() -> DispatcherServlet.WebApplicationContext.onRefresh()->initStrategies() 里面是处理MVC相关的，比如HandlerMappings
+- *这个 onRefresh() 可由Servlet初始化调用，也可以通过监听Spring的ApplicatonEvent进行初始化ContextRefreshedEvent，这样可以支持内嵌Tomcat的启动？需要考究，因为Spring本生还实现了Servlet的 javax.servlet.ServletContainerInitializer 相关的逻辑，包括Servlet的启动启动后的监听Hook等。*
+
+SpringBoot -> SpringApplicaton.run() ：
+
+- 创建Spring上下文 ：createApplicationContext
+- prepareContext
+- refreshContext ： 触发Spring的 **refresh()** 方法
+  - refresh中的onRefresh() 方法会触发 createWebServer() 创建内嵌Tomcat
+    - new 一个 Tomcat 实例
+    - 初始化Tomcat上下文，Context->TomcatEmbeddedContext
+    - 上下文里面封装一个 **TomcatStarter** 实现了 **javax.servlet.ServletContainerInitializer**，是用来在Tomcat启动的生命周期中进行一些Spring的Initializer的初始化，它被添加到了 Tomcat的Context中 context.addServletContainerInitializer(starter, NO_CLASSES);，后续Tomcat.start() 后，会触发初始化。
+    - 将TomcatEmbeddedContext放入Tomcat的Host中
+    - 创建：org.springframework.boot.web.embedded.tomcat.TomcatWebServer，持有 Tomcat 对象，并 initialize()，启动Tomcat
+
+
+非嵌入式SpringWeb的启动：
+
+- **SpringServletContainerInitializer？**
+
+
+
+Tomcat 的抽象出了全局的Container，提供了抽象的 ContainerBase ，其持有一个 Container parent 属性，用于其所有存在嵌套关系的子容器模块能够互相关联
+
+![image-20230224015753090](/Users/zhengjinzhou/project/beihu-framework/java-web/tomcat/assets/image-20230224015753090.png)
+
+
 
 ```
 <Server>
