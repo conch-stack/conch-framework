@@ -163,7 +163,7 @@ Coyote 是Tomcat 中连接器的组件名称 , 是对外的接口。客户端通
 Spring MVC的加载过程：
 
 - Servlet.init() -> DispatcherServlet.WebApplicationContext.onRefresh()->initStrategies() 里面是处理MVC相关的，比如HandlerMappings
-- *这个 onRefresh() 可由Servlet初始化调用，也可以通过监听Spring的ApplicatonEvent进行初始化ContextRefreshedEvent，这样可以支持内嵌Tomcat的启动？需要考究，因为Spring本生还实现了Servlet的 javax.servlet.ServletContainerInitializer 相关的逻辑，包括Servlet的启动启动后的监听Hook等。*
+- 此处的*这个 onRefresh() 可由Servlet初始化调用*
 
 SpringBoot -> SpringApplicaton.run() ：
 
@@ -173,14 +173,33 @@ SpringBoot -> SpringApplicaton.run() ：
   - refresh中的onRefresh() 方法会触发 createWebServer() 创建内嵌Tomcat
     - new 一个 Tomcat 实例
     - 初始化Tomcat上下文，Context->TomcatEmbeddedContext
-    - 上下文里面封装一个 **TomcatStarter** 实现了 **javax.servlet.ServletContainerInitializer**，是用来在Tomcat启动的生命周期中进行一些Spring的Initializer的初始化，它被添加到了 Tomcat的Context中 context.addServletContainerInitializer(starter, NO_CLASSES);，后续Tomcat.start() 后，会触发初始化。
+    - 上下文里面封装一个 **TomcatStarter** 实现了 **javax.servlet.ServletContainerInitializer**，是用来在Tomcat启动的生命周期中进行一些Spring的Initializer的初始化，它被添加到了 Tomcat的Context中 context.addServletContainerInitializer(starter, NO_CLASSES);，后续Tomcat.start() 后，会触发初始化。**我们可以实现 Spring队友的Initializer来介入Servlet启动初始化阶段。**
+      - org.springframework.boot.web.servlet.ServletContextInitializer
     - 将TomcatEmbeddedContext放入Tomcat的Host中
     - 创建：org.springframework.boot.web.embedded.tomcat.TomcatWebServer，持有 Tomcat 对象，并 initialize()，启动Tomcat
 
 
 非嵌入式SpringWeb的启动：
 
-- **SpringServletContainerInitializer？**
+- SpringMVC: **ContextLoaderListener** - 初始化Spring核心refresh，SpringMVC相关的 由 DispatcherServlet 的 Servlet 进行初始化
+- SpringBoot: **SpringBootContextLoaderListener**
+  - War包方式启动 SpringBoot：WebApplicationInitializer -> SpringBootServletInitializer
+
+Spring自己上下文初始化的 介入口子：
+
+- org.springframework.context.ApplicationContextInitializer
+
+- 在refresh之前会被调用
+
+  - ```java
+    // SpringBoot 的 War包方式
+    customizeContext(sc, wac);
+    wac.refresh();
+    
+    // SpringBoot方式
+    SpringApplicaton.run() -> createApplicationContext -> prepareContext -> applyInitializers(context) -> refreshContext(context)
+    ```
+
 
 
 
