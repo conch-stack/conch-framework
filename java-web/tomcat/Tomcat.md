@@ -162,8 +162,9 @@ Coyote 是Tomcat 中连接器的组件名称 , 是对外的接口。客户端通
 
 Spring MVC的加载过程：
 
-- Servlet.init() -> DispatcherServlet.WebApplicationContext.onRefresh()->initStrategies() 里面是处理MVC相关的，比如HandlerMappings
+- Servlet.init() -> FrameworkServlet.initServletBean() -> FrameworkServlet.initWebApplicationContext() 如果Spring容器没有起来，会优先加载Spring，但是一般Spring都已经起来了，因为SpringMVC会在容器初始化的时候就开始初始化Spring -> DispatcherServlet.onRefresh()->initStrategies() 里面是处理MVC相关的，比如HandlerMappings
 - 此处的*这个 onRefresh() 可由Servlet初始化调用*
+- Servlet一般会延迟加载，当第一个请求达到时，Tomcat&Jetty发现DispatcherServlet还没有被实例化，就调用DispatcherServlet的init方法，在初始化的时候会建立自己的容器，叫做SpringMVC 容器，用来持有Spring MVC相关的Bean
 
 SpringBoot -> SpringApplicaton.run() ：
 
