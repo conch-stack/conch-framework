@@ -80,7 +80,7 @@
   - @PostConstruct标注的方法
   - 实现InitializingBean接口的 afterPropertiesSet() 方法
   - 自定义初始化方法
-    - XML: <bean init-method="initXXX" ../>
+    - XML: <bean init-method="initXXX" ../> 
     - Java注解：@Bean(initMethod="initXXX")
     - JavaAPI方法：AbstractBeanDefinition#setInitMethodName(String)
   

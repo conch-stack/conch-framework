@@ -224,7 +224,7 @@
   - 使用API ObjectProvider延迟注入（推荐）
     - 单一类型
     - 集合类型
-  - 在依赖处理过程中，会被DefaultListableBeanFactory处理为一个CGLib代理对应，并不会进行实例化，当用到时才会实例化
+  - 在依赖处理过程中，会被DefaultListableBeanFactory处理为一个CGLib代理对象，并不会进行实例化，当用到时才会实例化
 
 
 
@@ -323,8 +323,8 @@
 
 
 
-### TODO
+### 
 
-- BeanPostProcessor
+- BeanPostProcessor：针对某个Bean进行实例化前后的操作
 
-- BeanFactoryPostProcessor
+- BeanFactoryPostProcessor：针对整个BeanFactroy进行容器的一些操作
