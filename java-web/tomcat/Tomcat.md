@@ -206,7 +206,7 @@ Spring自己上下文初始化的 介入口子：
 
 Tomcat 的抽象出了全局的Container，提供了抽象的 ContainerBase ，其持有一个 Container parent 属性，用于其所有存在嵌套关系的子容器模块能够互相关联
 
-![image-20230224015753090](/Users/zhengjinzhou/project/beihu-framework/java-web/tomcat/assets/image-20230224015753090.png)
+![image-20230224015753090](./assets/image-20230224015753090.png)
 
 
 
