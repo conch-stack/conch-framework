@@ -30,12 +30,12 @@
 - request 作用域
   
   - @RequestScope 
-  - 前端渲染时，会新生成对象，类似原型对象，但是后端生成的对象时CGLib代理的对象，是不变的
+  - 前端渲染时，会新生成对象，类似原型对象，但是后端生成的对象是CGLib代理的对象，是不变的
   
 - session 作用域
 
   - @SessionScope
-  - 浏览器待cookie请求后端时，一个cookie只会对应一个对象，同一cookie多次清除，不会生成新对象
+  - 浏览器带cookie请求后端时，一个cookie只会对应一个对象，同一cookie多次清除，不会生成新对象
   - 会有同步操作：多个request请求来时，作用域不共享，为保证并发session一致，会进行同步块加锁
 
   ```java

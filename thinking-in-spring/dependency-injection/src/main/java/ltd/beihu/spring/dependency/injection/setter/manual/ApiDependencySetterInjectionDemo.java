@@ -7,6 +7,8 @@ import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
+ * Api 注入方式
+ *
  * @author Adam
  * @date 2020/4/10
  */

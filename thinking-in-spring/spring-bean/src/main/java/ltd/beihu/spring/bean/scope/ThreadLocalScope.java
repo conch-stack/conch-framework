@@ -47,7 +47,7 @@ public class ThreadLocalScope implements Scope {
 
     @Override
     public void registerDestructionCallback(String name, Runnable callback) {
-        // todo 注册回调
+        // todo 注册毁灭回调
     }
 
     @Override

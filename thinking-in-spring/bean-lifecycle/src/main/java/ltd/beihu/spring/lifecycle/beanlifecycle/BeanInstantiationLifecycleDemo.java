@@ -47,10 +47,10 @@ public class BeanInstantiationLifecycleDemo {
 
         @Override
         public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
-            if (ObjectUtils.nullSafeEquals("user", beanName) && User.class.equals(bean.getClass())) {
-                // 不赋值
-                return false;
-            }
+//            if (ObjectUtils.nullSafeEquals("user", beanName) && User.class.equals(bean.getClass())) {
+//                // 不赋值
+//                return false;
+//            }
             return true;
         }
 
@@ -59,9 +59,9 @@ public class BeanInstantiationLifecycleDemo {
             // 可回调处理属性赋值 在 Populate Bean 阶段
             if (pvs instanceof MutablePropertyValues) {
                 MutablePropertyValues mutablePropertyValues = (MutablePropertyValues) pvs;
-                mutablePropertyValues.addPropertyValue("name", "test");
+//                mutablePropertyValues.addPropertyValue("name", "test");
                 // PropertyValue 对象中持有的对象是 final 的   | propertyValue 默认是 TypedStringValue
-                mutablePropertyValues.removePropertyValue("age");
+//                mutablePropertyValues.removePropertyValue("age");
                 mutablePropertyValues.addPropertyValue("age", "11");
             }
             return pvs;

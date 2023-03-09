@@ -152,7 +152,7 @@
 
   - 构造器注入是按照类型进行注入的：resolveDependency
 
-    - ·按照类型进行注入
+    - 按照类型进行注入
     - BeanDefinition#ConstructorArgumentValues
 
 

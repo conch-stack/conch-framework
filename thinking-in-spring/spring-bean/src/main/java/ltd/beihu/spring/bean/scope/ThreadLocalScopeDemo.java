@@ -41,7 +41,7 @@ public class ThreadLocalScopeDemo {
 
         // demo
         scopedBeanByLookupOnThread(applicationContext);
-        scopedBeanByLookupMultThread(applicationContext);
+        scopedBeanByLookupMultiThread(applicationContext);
 
         applicationContext.close();
     }
@@ -59,7 +59,7 @@ public class ThreadLocalScopeDemo {
     /**
      * 多个线程
      */
-    public static void scopedBeanByLookupMultThread(AnnotationConfigApplicationContext applicationContext) {
+    public static void scopedBeanByLookupMultiThread(AnnotationConfigApplicationContext applicationContext) {
         for (int i = 0; i < 3; i++) {
             Thread thread = new Thread(() -> {
                 User user = applicationContext.getBean("user", User.class);
