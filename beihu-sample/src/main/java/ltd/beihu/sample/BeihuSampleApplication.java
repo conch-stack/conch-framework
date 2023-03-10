@@ -12,6 +12,7 @@ public class BeihuSampleApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(BeihuSampleApplication.class, args);
+        System.out.println("end-container-1");
     }
 
 }
