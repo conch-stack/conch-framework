@@ -7,14 +7,48 @@
 Tomcat定制版线程池
 
 ```java
-//定制版的任务队列
-taskqueue = new TaskQueue(maxQueueSize);
+// 默认情况下，Tomcat的所有工作线程都是守护线程
+protected boolean daemon = true;
 
-//定制版的线程工厂
-TaskThreadFactory tf = new TaskThreadFactory(namePrefix,daemon,getThreadPriority());
+/**
+ * max number of threads
+ */
+protected int maxThreads = 200;
 
-//定制版的线程池
-executor = new ThreadPoolExecutor(getMinSpareThreads(), getMaxThreads(), maxIdleTime, TimeUnit.MILLISECONDS,taskqueue, tf);
+/**
+ * min number of threads
+ */
+protected int minSpareThreads = 25;
+
+/**
+ * idle time in milliseconds
+ */
+protected int maxIdleTime = 60000;
+
+/**
+ * The maximum number of elements that can queue up before we reject them
+ */
+protected int maxQueueSize = Integer.MAX_VALUE;
+```
+
+```java
+
+
+protected void startInternal() throws LifecycleException {
+    //定制版的任务队列
+    taskqueue = new TaskQueue(maxQueueSize);
+    //定制版的线程工厂
+    TaskThreadFactory tf = new TaskThreadFactory(namePrefix,daemon,getThreadPriority());
+    //定制版的线程池
+    executor = new ThreadPoolExecutor(getMinSpareThreads(), getMaxThreads(), maxIdleTime, TimeUnit.MILLISECONDS, taskqueue, tf);
+    executor.setThreadRenewalDelay(threadRenewalDelay);
+    if (prestartminSpareThreads) {
+        executor.prestartAllCoreThreads();
+    }
+    taskqueue.setParent(executor);
+
+    setState(LifecycleState.STARTING);
+}
 ```
 
 
@@ -67,3 +101,72 @@ public class TaskQueue extends LinkedBlockingQueue<Runnable> {
 }
 ```
 
+
+
+### 问题：
+
+Spring如何修改内嵌Tomcat的Executor线程配置？
+
+答：可以的，参考：org.springframework.boot.autoconfigure.web.ServerProperties
+
+```java
+@ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
+public class ServerProperties {
+
+    // 可支持优雅关闭 - Shutdown.GRACEFUL
+    private Shutdown shutdown = Shutdown.IMMEDIATE;
+
+   	private final Tomcat tomcat = new Tomcat();
+    
+    // ...
+    
+    /**
+	 * Tomcat properties.
+	 */
+	public static class Tomcat {
+    
+		/**
+		 * Thread related configuration.
+		 */
+		private final Threads threads = new Threads();
+        
+        /**
+		 * Maximum number of connections that the server accepts and processes at any
+		 * given time. Once the limit has been reached, the operating system may still
+		 * accept connections based on the "acceptCount" property.
+		 */
+		private int maxConnections = 8192;
+
+		/**
+		 * Maximum queue length for incoming connection requests when all possible request
+		 * processing threads are in use.
+		 */
+		private int acceptCount = 100;
+
+		/**
+		 * Maximum number of idle processors that will be retained in the cache and reused
+		 * with a subsequent request. When set to -1 the cache will be unlimited with a
+		 * theoretical maximum size equal to the maximum number of connections.
+		 */
+		private int processorCache = 200;
+        
+        // ...
+        
+        /**
+		 * Tomcat thread properties.
+		 */
+		public static class Threads {
+
+			/**
+			 * Maximum amount of worker threads.
+			 */
+			private int max = 200;
+
+			/**
+			 * Minimum amount of worker threads.
+			 */
+			private int minSpare = 10;
+        }
+    }
+}
+```
