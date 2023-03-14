@@ -77,6 +77,10 @@ public void registerComponent(Object bean, ObjectName oname, String type) throws
 
 
 
+
+
+
+
 ##### TODO
 
 - 自定义 MBean

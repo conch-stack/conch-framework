@@ -21,6 +21,7 @@
         <module>dependency-lookup</module>
         <module>dependency-injection</module>
         <module>bean-lifecycle</module>
+        <module>aop-overview</module>
     </modules>
 
     <properties>
