@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Adam
  * @since 2023/3/13
  */
-public class TashThreadFactory implements ThreadFactory {
+public class TaskThreadFactory implements ThreadFactory {
 
     private final ThreadGroup group;
 
@@ -21,8 +21,19 @@ public class TashThreadFactory implements ThreadFactory {
 
     private final int threadPriority;
 
+    public TaskThreadFactory(String prefix, boolean daemon, int priority) {
+        SecurityManager s = System.getSecurityManager();
+        this.group = (s == null) ? Thread.currentThread().getThreadGroup(): s.getThreadGroup();
+        this.prefix = prefix;
+        this.daemon = daemon;
+        this.threadPriority = priority;
+    }
+
     @Override
     public Thread newThread(Runnable r) {
-        return null;
+        TaskThread taskThread = new TaskThread(group, r, prefix + threadNumber.getAndIncrement());
+        taskThread.setDaemon(daemon);
+        taskThread.setPriority(threadPriority);
+        return taskThread;
     }
 }
