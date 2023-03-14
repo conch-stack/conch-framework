@@ -62,116 +62,111 @@
   
     如果exposeProxy=true，然后将以上代码中的 this.b() 修改为如下，则事务不会失效
   
-        ```java
-        public class AserviceImpl implements Aservice {
-          @Transactional
-            public void a() { (AService)AopContext.currentProxy().b() }
-      
-            @Transactional
-            public void b() {}
-      }
+  ```java
+  public class AserviceImpl implements Aservice {
+        @Transactional
+        public void a() { (AService)AopContext.currentProxy().b() }
   
+        @Transactional
+        public void b() {}
+  }
   ```
+  
+  
+  
   - AnnotationAwareAspectJAutoProxyCreator：
-  
     - 核心代理逻辑在这个类里面的父类**AbstractAutoProxyCreator**中
-  
-    - Step1：通过实现SpringBean生命周期中的SmartInstantiationAwareBeanPostProcessor的#postProcessBeforeInstantiation方法
-  
+    - Step1：通过实现SpringBean生命周期中的SmartInstantiationAwareBeanPostProcessor的**#postProcessBeforeInstantiation**方法
+      - **ProxyProcessorSupport 中设置了 该 BeanPostProcessor的优先级最低**，这很重要，不会影响别的BeanPostProcessor的执行，因为Spring在调用所有BeanPostProcessor的地方，发现如果postProcessBeforeInstantiation方法返回了非null对象，则跳出循环
       - createProxy来打乱Bean实例化 | **前提：我们有一个 通用的 custom TargetSource ？？？**
       - shouldSkip(beanClass, beanName)：会预先实例化一波Advisor，并标记跳过不需要执行代理增强的类，在后续初始化后回调可以跳过
-  
-    - Step2：通过实现SpringBean生命周期中的SmartInstantiationAwareBeanPostProcessor的#postProcessAfterInitialization方法
-  
-    - 在Spring创建Bean时AbstractAutowireCapableBeanFactory#doCreateBean会默认为允许**循环引用**的每个单例Bean创建一个由CGLIB代理的引用，会放入每个SmartInstantiationAwareBeanPostProcessor的earlyProxyReferences缓存中
-  
-    - postProcessAfterInitialization初始化后，执行时会从当前earlyProxyReferences获取并判断是否需要进行代理createProxy
-  
+    - Step2：通过实现SpringBean生命周期中的SmartInstantiationAwareBeanPostProcessor的**#postProcessAfterInitialization**方法
+      - 在Spring创建Bean时AbstractAutowireCapableBeanFactory#doCreateBean会默认为允许**循环引用**的每个单例Bean创建一个由CGLIB代理的引用，会放入每个SmartInstantiationAwareBeanPostProcessor的earlyProxyReferences缓存中
+      - postProcessAfterInitialization初始化后，执行时会从当前earlyProxyReferences获取并判断是否需要进行代理createProxy
       - wrapIfNecessary#getAdvicesAndAdvisorsForBean：// Create proxy if we have advice. 表示这个方法会扫描所有advice
       - getAdvicesAndAdvisorsForBean#findEligibleAdvisors
   
-      ```java
-      // AbstractAdvisorAutoProxyCreator.class
-      protected Object[] getAdvicesAndAdvisorsForBean(
-            Class<?> beanClass, String beanName, @Nullable TargetSource targetSource) {
-           // 参考下面代码
-         List<Advisor> advisors = findEligibleAdvisors(beanClass, beanName);
-         if (advisors.isEmpty()) {
-            return DO_NOT_PROXY;   // 表示系统未配置任何advisor（advisor:advice+pointcut ：切面（增强器））
-         }
-         return advisors.toArray();
-      }
+  ```java
+  // AbstractAdvisorAutoProxyCreator.class
+  protected Object[] getAdvicesAndAdvisorsForBean(
+        Class<?> beanClass, String beanName, @Nullable TargetSource targetSource) {
+       // 参考下面代码
+     List<Advisor> advisors = findEligibleAdvisors(beanClass, beanName);
+     if (advisors.isEmpty()) {
+        return DO_NOT_PROXY;   // 表示系统未配置任何advisor（advisor:advice+pointcut ：切面（增强器））
+     }
+     return advisors.toArray();
+  }
   ```
-
-      protected List<Advisor> findEligibleAdvisors(Class<?> beanClass, String beanName) {
-        // 先找到所有Advisor 有缓存 参考下面
-        List<Advisor> candidateAdvisors = findCandidateAdvisors();
-        // 从所有Advisor中查找匹配当前beanClass的切面增强 参考下面
-        List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
-        // 扩展 判断是否需要组合 Advisor Chain
-        // AspectJProxyUtils.makeAdvisorChainAspectJCapableIfNecessary(candidateAdvisors);
-        extendAdvisors(eligibleAdvisors);
-        if (!eligibleAdvisors.isEmpty()) {
-          eligibleAdvisors = sortAdvisors(eligibleAdvisors);
-        }
-        return eligibleAdvisors;
-      }
-      ```
-    
-      - AnnotationAwareAspectJAutoProxyCreator.class # findCandidateAdvisors
-    
-      ```java
-      @Override
-      protected List<Advisor> findCandidateAdvisors() {
-        // Add all the Spring advisors found according to superclass rules.
-          // 在BeanFactory中查找所有符合Spring的 Advisor.class 类型的BeanName，并调用getBean进行实例化成Advisor
-        // String[] advisorNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, Advisor.class, true, false);
-        List<Advisor> advisors = super.findCandidateAdvisors();
-        // Build Advisors for all AspectJ aspects in the bean factory.
-        // 查找所有 AspectJ 定义的 Advisor 
-        // 通过 aspectJAdvisorsBuilder.buildAspectJAdvisors() 这个Builder去构建
-        // String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, Object.class, true, false);
-        // 在BeanFactory中查找所有 Object.class ，获取所有BeanDefinition的beanNames，获取其beanType，判断是否为 isAspect 
-        // 最后调用工厂去构建 advisorFactory.getAdvisors(factory) 具体流程参考后面：构建流程
-        if (this.aspectJAdvisorsBuilder != null) {
-          advisors.addAll(this.aspectJAdvisorsBuilder.buildAspectJAdvisors());
-        }
-        return advisors;
-      }
-      ```
-    
-      - findAdvisorsThatCanApply#AopUtils.findAdvisorsThatCanApply#canApply
-    
-      ```java
-      public static boolean canApply(Advisor advisor, Class<?> targetClass, boolean hasIntroductions) {
-        // 分为基础设施的Advisor
-        if (advisor instanceof IntroductionAdvisor) {
-          // 使用类过滤器进行匹配当前目标类
-          return ((IntroductionAdvisor) advisor).getClassFilter().matches(targetClass);
-        }
-        // 和基于Pointcut的Advisor
-        else if (advisor instanceof PointcutAdvisor) {
-          PointcutAdvisor pca = (PointcutAdvisor) advisor;
-          return canApply(pca.getPointcut(), targetClass, hasIntroductions);
-        }
-        else {
-          // It doesn't have a pointcut so we assume it applies.
-          return true;
-        }
-      }
-      ```
-    ```
-    
-    - AspectJExpressionPointcut：Pointcut封装，包含
-    
-      ```java
-      /**
+  
+  ```java
+  protected List<Advisor> findEligibleAdvisors(Class<?> beanClass, String beanName) {
+    // 先找到所有Advisor 有缓存 参考下面
+    List<Advisor> candidateAdvisors = findCandidateAdvisors();
+    // 从所有Advisor中查找匹配当前beanClass的切面增强 参考下面
+    List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
+    // 扩展 判断是否需要组合 Advisor Chain
+    // AspectJProxyUtils.makeAdvisorChainAspectJCapableIfNecessary(candidateAdvisors);
+    extendAdvisors(eligibleAdvisors);
+    if (!eligibleAdvisors.isEmpty()) {
+      eligibleAdvisors = sortAdvisors(eligibleAdvisors);
+    }
+    return eligibleAdvisors;
+  }
+  ```
+  
+  - AnnotationAwareAspectJAutoProxyCreator.class # findCandidateAdvisors
+  
+  ```java
+  @Override
+  protected List<Advisor> findCandidateAdvisors() {
+    // Add all the Spring advisors found according to superclass rules.
+      // 在BeanFactory中查找所有符合Spring的 Advisor.class 类型的BeanName，并调用getBean进行实例化成Advisor
+    // String[] advisorNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, Advisor.class, true, false);
+    List<Advisor> advisors = super.findCandidateAdvisors();
+    // Build Advisors for all AspectJ aspects in the bean factory.
+    // 查找所有 AspectJ 定义的 Advisor 
+    // 通过 aspectJAdvisorsBuilder.buildAspectJAdvisors() 这个Builder去构建
+    // String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, Object.class, true, false);
+    // 在BeanFactory中查找所有 Object.class ，获取所有BeanDefinition的beanNames，获取其beanType，判断是否为 isAspect 
+    // 最后调用工厂去构建 advisorFactory.getAdvisors(factory) 具体流程参考后面：构建流程
+    if (this.aspectJAdvisorsBuilder != null) {
+      advisors.addAll(this.aspectJAdvisorsBuilder.buildAspectJAdvisors());
+    }
+    return advisors;
+  }
+  ```
+  
+  - findAdvisorsThatCanApply#AopUtils.findAdvisorsThatCanApply#canApply
+  
+  ```java
+  public static boolean canApply(Advisor advisor, Class<?> targetClass, boolean hasIntroductions) {
+    // 分为基础设施的Advisor
+    if (advisor instanceof IntroductionAdvisor) {
+      // 使用类过滤器进行匹配当前目标类
+      return ((IntroductionAdvisor) advisor).getClassFilter().matches(targetClass);
+    }
+    // 和基于Pointcut的Advisor
+    else if (advisor instanceof PointcutAdvisor) {
+      PointcutAdvisor pca = (PointcutAdvisor) advisor;
+      return canApply(pca.getPointcut(), targetClass, hasIntroductions);
+    }
+    else {
+      // It doesn't have a pointcut so we assume it applies.
+      return true;
+    }
+  }
+  ```
+  - AspectJExpressionPointcut：Pointcut封装，包含
+  
+    ```java
+     /**
       * 类过滤器
       */
       ClassFilter getClassFilter();
     
       /**
-    * 方法过滤器
+      * 方法过滤器
       */
       MethodMatcher getMethodMatcher();
     
@@ -180,32 +175,28 @@
       */
       @Nullable
       String getExpression();
-    
     ```
-    
-      说明：已经有类过滤器了，为什么还需要方法过滤器？
-    
-      答：可复用相同方法匹配的场景
-    
-      如何处理类过滤器+方法过滤器：
-    
-      - 创建过滤器：AspectJExpressionPointcut# 
-    
+  
+  - 说明：已经有类过滤器了，为什么还需要方法过滤器？
+    - 答：可复用相同方法匹配的场景
+  - 如何处理类过滤器+方法过滤器
+    - 创建过滤器：AspectJExpressionPointcut
+  
     ```java
-      @Override
+    @Override
     public ClassFilter getClassFilter() {  // 获取时，会去创建 PointcutExpression ；基于 PointcutParser
-      obtainPointcutExpression();
-      return this;
-      }
+    	obtainPointcutExpression();
+    	return this;
+    }
     
-      @Override
-      public MethodMatcher getMethodMatcher() {
-    obtainPointcutExpression();
-      return this;
-      }
+    @Override
+    public MethodMatcher getMethodMatcher() {
+    	obtainPointcutExpression();
+    	return this;
+    }
     
-      // 获得 PointcutExpression
-      private PointcutExpression obtainPointcutExpression() {
+    // 获得 PointcutExpression
+    private PointcutExpression obtainPointcutExpression() {
         if (getExpression() == null) {
           throw new IllegalStateException("Must set property 'expression' before attempting to match");
         }
@@ -214,10 +205,10 @@
           this.pointcutExpression = buildPointcutExpression(this.pointcutClassLoader);
         }
         return this.pointcutExpression;
-      }
+    }
     
-      // 构建 PointcutExpression
-      private PointcutExpression buildPointcutExpression(@Nullable ClassLoader classLoader) {
+    // 构建 PointcutExpression
+    private PointcutExpression buildPointcutExpression(@Nullable ClassLoader classLoader) {
         // 初始化 PointcutParser  核心的解析表达式逻辑就在这里了，包含注解的表达式解析
         PointcutParser parser = initializePointcutParser(classLoader);
         PointcutParameter[] pointcutParameters = new PointcutParameter[this.pointcutParameterNames.length];
@@ -227,22 +218,20 @@
         }
         return parser.parsePointcutExpression(replaceBooleanOperators(resolveExpression()),
                                               this.pointcutDeclarationScope, pointcutParameters);
-      }
+    }
     ```
-    
-    
-    
+  
     - wrapIfNecessary#createProxy
-    
+  
     ```java
     // specificInterceptors 就是 所有匹配的 Advisor
     Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
     Object proxy = createProxy(
                         bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
     ```
-    
+  
     - AbstractAutoProxyCreator#createProxy
-    
+  
     ```java
     // AopProxyFactory#DefaultAopProxyFactory
     public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
@@ -269,9 +258,9 @@
     Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy)
     
     ```
-    
+  
     - Aop多重代理（代理链 - 责任链）：原理可参考[使用 Cglib 实现多重代理](https://www.jianshu.com/p/9ba77d8f200b)
-    
+  
     ```java
     // Get the interception chain for this method.
     List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
@@ -297,9 +286,9 @@
       retVal = invocation.proceed();
     }
     ```
-    
+  
     - 自调用暴露代理原理
-    
+  
     ```java
     // 有时候目标对象内部的自我调用将无法实施切面中的增强则需要通过此属性暴露代理
     if (this.advised.exposeProxy) {
@@ -310,7 +299,7 @@
             setProxyContext = true;
     }
     ```
-
+  
 - ScopedProxyFactoryBean#AopInfrastructureBean
 
 - 构建流程
@@ -398,23 +387,22 @@
     }
     return ajexp;
   }
-  ```
-
+  
   // 构建 Advice
   @Override
   @Nullable
   public Advice getAdvice(Method candidateAdviceMethod, AspectJExpressionPointcut expressionPointcut,
                           MetadataAwareAspectInstanceFactory aspectInstanceFactory, int declarationOrder, String aspectName) {
-
+  
     Class<?> candidateAspectClass = aspectInstanceFactory.getAspectMetadata().getAspectClass();
     validate(candidateAspectClass);
-    
+  
     AspectJAnnotation<?> aspectJAnnotation =
       AbstractAspectJAdvisorFactory.findAspectJAnnotationOnMethod(candidateAdviceMethod);
     if (aspectJAnnotation == null) {
       return null;
     }
-    
+  
     // If we get here, we know we have an AspectJ method.
     // Check that it's an AspectJ-annotated class
     if (!isAspect(candidateAspectClass)) {
@@ -422,13 +410,13 @@
                                    "Offending method '" + candidateAdviceMethod + "' in class [" +
                                    candidateAspectClass.getName() + "]");
     }
-    
+  
     if (logger.isDebugEnabled()) {
       logger.debug("Found AspectJ method: " + candidateAdviceMethod);
     }
-    
+  
     AbstractAspectJAdvice springAdvice;
-    
+  
     switch (aspectJAnnotation.getAnnotationType()) {
       case AtPointcut: // 跳过
         if (logger.isDebugEnabled()) {
@@ -467,7 +455,7 @@
         throw new UnsupportedOperationException(
           "Unsupported advice type on method: " + candidateAdviceMethod);
     }
-    
+  
     // Now to configure the advice...
     springAdvice.setAspectName(aspectName);
     springAdvice.setDeclarationOrder(declarationOrder);
@@ -476,26 +464,21 @@
       springAdvice.setArgumentNamesFromStringArray(argNames);
     }
     springAdvice.calculateArgumentBindings();
-    
+  
     return springAdvice;
-
+  
   }
+  ```
+  
 
-```
+
+
 - AspectJExpressionPointcut会解析注解中的表达式，并以此匹配类型和方法以绝对是否进行拦截并增强 
   - 问题：什么时候触发解析？？？
   - 答：第一调用 findAdvisorsThatCanApply 时
 - AOP CGLib代理源码分析(**https://blog.csdn.net/v123411739/article/details/106065775**)
-
-
-
-
-
-
-
-- Other
-
-- 比较高阶
+-  Other
+  - 比较高阶
 
 ```java
 private static final Comparator<Method> METHOD_COMPARATOR;
@@ -514,7 +497,7 @@ private static final Comparator<Method> METHOD_COMPARATOR;
     }
 ```
 
-- SpringBoot  | TODO  @Import 注解的执行逻辑，它也是Spring提供的，应该是和@Configuration在同一生命周期中
+- SpringBoot  | @Import 注解的执行逻辑，它也是Spring提供的，应该是和@Configuration在同一生命周期中
   
   ```java
   @Target(ElementType.TYPE)

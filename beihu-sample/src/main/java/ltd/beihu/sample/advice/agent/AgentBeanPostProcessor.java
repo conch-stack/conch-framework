@@ -6,6 +6,8 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 
 /**
  * 通过自定义BeanPostProcessor，实现项目中agent模块统一切面
+ * <p>
+ * Spring 的AOP走的 实例化阶段；这边是在 初始化后阶段进行 手动 代理 切入支持
  */
 public class AgentBeanPostProcessor implements BeanPostProcessor {
     /**
@@ -40,6 +42,8 @@ public class AgentBeanPostProcessor implements BeanPostProcessor {
     /**
      * 实例化、依赖注入、初始化完毕时执行
      * 注意：方法返回值不能为null
+     * <p>
+     * Spring 的AOP走的 实例化阶段；这边是在 初始化后阶段进行 手动 代理 切入支持
      */
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
