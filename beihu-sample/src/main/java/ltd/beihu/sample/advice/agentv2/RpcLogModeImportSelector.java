@@ -38,7 +38,7 @@ public abstract class RpcLogModeImportSelector<A extends Annotation> implements 
         Class<?> annType = GenericTypeResolver.resolveTypeArgument(getClass(), RpcLogModeImportSelector.class);
         Assert.state(annType != null, "Unresolvable type argument for RpcLogModeImportSelector");
 
-        AnnotationAttributes attributes =  AnnotationAttributes.fromMap(importingClassMetadata.getAnnotationAttributes(annType.getName(), false));
+        AnnotationAttributes attributes = AnnotationAttributes.fromMap(importingClassMetadata.getAnnotationAttributes(annType.getName(), false));
         if (attributes == null) {
             throw new IllegalArgumentException(String.format(
                     "@%s is not present on importing class '%s' as expected",

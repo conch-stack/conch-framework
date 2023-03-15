@@ -29,9 +29,11 @@ public class TaskThread extends Thread {
 
     private static class ErrorSupportRunnable implements Runnable {
         private final Runnable wrappedRunnable;
+
         ErrorSupportRunnable(Runnable wrappedRunnable) {
             this.wrappedRunnable = wrappedRunnable;
         }
+
         @Override
         public void run() {
             try {

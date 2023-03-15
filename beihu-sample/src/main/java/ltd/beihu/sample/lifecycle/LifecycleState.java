@@ -40,7 +40,7 @@ public enum LifecycleState {
      * </ul>
      *
      * @return <code>true</code> if the component is available for use,
-     *         otherwise <code>false</code>
+     * otherwise <code>false</code>
      */
     public boolean isAvailable() {
         return available;

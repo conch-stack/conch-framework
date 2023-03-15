@@ -15,9 +15,9 @@ public class RpcLogConfigurationSelector extends RpcLogModeImportSelector<Enable
     protected String[] selectImports(RpcLogMode rpcLogMode) {
         switch (rpcLogMode) {
             case V1:
-                return new String[] {AgentBeanDefinitionRegistrarDelegator.class.getName()};
+                return new String[]{AgentBeanDefinitionRegistrarDelegator.class.getName()};
             case V2:
-                return new String[] {RpcLogConfiguration.class.getName()};
+                return new String[]{RpcLogConfiguration.class.getName()};
             default:
                 return null;
         }

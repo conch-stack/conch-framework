@@ -1,6 +1,5 @@
 package ltd.beihu.sample.advice.agentv2.old;
 
-import ltd.beihu.sample.advice.EnableRpcLog;
 import ltd.beihu.sample.advice.EnableRpcLogV2;
 import ltd.beihu.sample.advice.agent.AgentBeanPostProcessor;
 import org.apache.commons.lang3.StringUtils;

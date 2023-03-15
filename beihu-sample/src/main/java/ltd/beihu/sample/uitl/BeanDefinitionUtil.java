@@ -17,26 +17,26 @@ public class BeanDefinitionUtil {
         if (beanDefinition instanceof AnnotatedBeanDefinition) {
             String className;
             if (isFromConfigurationSource(beanDefinition)) {
-                MethodMetadata methodMetadata = ((AnnotatedBeanDefinition)beanDefinition).getFactoryMethodMetadata();
+                MethodMetadata methodMetadata = ((AnnotatedBeanDefinition) beanDefinition).getFactoryMethodMetadata();
                 className = methodMetadata.getReturnTypeName();
             } else {
-                AnnotationMetadata annotationMetadata = ((AnnotatedBeanDefinition)beanDefinition).getMetadata();
+                AnnotationMetadata annotationMetadata = ((AnnotatedBeanDefinition) beanDefinition).getMetadata();
                 className = annotationMetadata.getClassName();
             }
 
             try {
-                clazz = StringUtils.isEmpty(className) ? null : ClassUtils.forName(className, (ClassLoader)null);
+                clazz = StringUtils.isEmpty(className) ? null : ClassUtils.forName(className, (ClassLoader) null);
             } catch (Throwable var6) {
             }
         }
 
         if (clazz == null) {
             try {
-                clazz = ((AbstractBeanDefinition)beanDefinition).getBeanClass();
+                clazz = ((AbstractBeanDefinition) beanDefinition).getBeanClass();
             } catch (IllegalStateException var5) {
                 try {
                     String className = beanDefinition.getBeanClassName();
-                    clazz = StringUtils.isEmpty(className) ? null : ClassUtils.forName(className, (ClassLoader)null);
+                    clazz = StringUtils.isEmpty(className) ? null : ClassUtils.forName(className, (ClassLoader) null);
                 } catch (Throwable var4) {
                 }
             }

@@ -1,7 +1,6 @@
 package ltd.beihu.sample.advice.agentv2;
 
 import ltd.beihu.sample.advice.EnableRpcLogV2;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportAware;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;

@@ -1,14 +1,9 @@
 package ltd.beihu.sample;
 
-import ltd.beihu.sample.advice.EnableRpcLog;
 import ltd.beihu.sample.advice.EnableRpcLogV2;
-import ltd.beihu.sample.advice.agentv2.RpcLogMode;
-import ltd.beihu.sample.advice.agentv2.SelfRpcLog;
 import ltd.beihu.sample.job.ConfigurationConfigSupport;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.AdviceMode;
-import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @ConfigurationConfigSupport

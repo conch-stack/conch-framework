@@ -23,7 +23,7 @@ public class TaskThreadFactory implements ThreadFactory {
 
     public TaskThreadFactory(String prefix, boolean daemon, int priority) {
         SecurityManager s = System.getSecurityManager();
-        this.group = (s == null) ? Thread.currentThread().getThreadGroup(): s.getThreadGroup();
+        this.group = (s == null) ? Thread.currentThread().getThreadGroup() : s.getThreadGroup();
         this.prefix = prefix;
         this.daemon = daemon;
         this.threadPriority = priority;

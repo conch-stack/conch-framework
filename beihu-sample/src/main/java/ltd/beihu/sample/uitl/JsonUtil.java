@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -56,7 +55,7 @@ public class JsonUtil {
      */
     public static <T> T json2Object(String jsonStr, Class<T> targetClz) {
         try {
-            return objectMapper.readValue(jsonStr,targetClz);
+            return objectMapper.readValue(jsonStr, targetClz);
         } catch (Exception ex) {
             return null;
         }
@@ -92,8 +91,7 @@ public class JsonUtil {
             JavaType javaType = objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, valueType);
 
             return objectMapper.readValue(value, javaType);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             return null;
         }
     }

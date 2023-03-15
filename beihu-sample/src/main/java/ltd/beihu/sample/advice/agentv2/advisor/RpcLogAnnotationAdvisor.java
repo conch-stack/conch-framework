@@ -91,8 +91,7 @@ public class RpcLogAnnotationAdvisor extends AbstractPointcutAdvisor implements 
             Pointcut mpc = new AnnotationMatchingPointcut(null, selfAnnotationType, true);
             if (result == null) {
                 result = new ComposablePointcut(cpc);
-            }
-            else {
+            } else {
                 result.union(cpc);
             }
             result = result.union(mpc);
