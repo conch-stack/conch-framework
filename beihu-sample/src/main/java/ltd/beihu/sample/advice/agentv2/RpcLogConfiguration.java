@@ -1,0 +1,49 @@
+package ltd.beihu.sample.advice.agentv2;
+
+import ltd.beihu.sample.advice.EnableRpcLogV2;
+import ltd.beihu.sample.advice.agentv2.processor.AgentPackageBeanPostProcessor;
+import ltd.beihu.sample.advice.agentv2.processor.RpcLogAnnotationBeanPostProcessor;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportAware;
+import org.springframework.context.annotation.Role;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
+import java.lang.annotation.Annotation;
+
+/**
+ * RpcLogConfiguration
+ *
+ * @author Adam
+ * @since 2023/3/15
+ */
+public class RpcLogConfiguration extends AbstractRpcConfigurationConfiguration {
+
+    @Bean
+    public RpcLogAnnotationBeanPostProcessor rpcLogAdvisor() {
+        Assert.notNull(this.enableRpcLogV2, "@EnableRpcLogV2 annotation metadata was not injected");
+        RpcLogAnnotationBeanPostProcessor bpp = new RpcLogAnnotationBeanPostProcessor(this.enableRpcLogV2);
+        // 支持 指定注解类 以替换 默认注解类
+        Class<? extends Annotation> customAsyncAnnotation = this.enableRpcLogV2.getClass("annotation");
+        if (customAsyncAnnotation != AnnotationUtils.getDefaultValue(EnableRpcLogV2.class, "annotation")) {
+            bpp.setSelfAnnotationType(customAsyncAnnotation);
+        }
+        bpp.setOrder(Ordered.LOWEST_PRECEDENCE);
+        return bpp;
+    }
+
+    @Bean
+    public AgentPackageBeanPostProcessor agentPackageAdvisor() {
+        Assert.notNull(this.enableRpcLogV2, "@EnableRpcLogV2 annotation metadata was not injected");
+        AgentPackageBeanPostProcessor bpp = new AgentPackageBeanPostProcessor(this.enableRpcLogV2);
+        bpp.setOrder(Ordered.LOWEST_PRECEDENCE);
+        return bpp;
+    }
+
+}

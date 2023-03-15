@@ -6,6 +6,19 @@
 - advisor:advice+pointcut ：切面（增强器）
 - AutoProxyCreator：用于创建代理对象
 
+
+
+##### 一些Spring的继承结构：
+
+```java
+Advisor : Advice getAdvice();
+Advisor -> PointcutAdvisor : Pointcut getPointcut();
+Advisor -> PointcutAdvisor -> AbstractPointcutAdvisor : 业务通过基础它来实现自己的与AOP整合
+
+```
+
+
+
 ##### 关键点：
 
 - Spring AOP也是对目标类增强，生成代理类。但是与AspectJ的最大区别在于---Spring AOP的运行时增强，而AspectJ是编译时增强。

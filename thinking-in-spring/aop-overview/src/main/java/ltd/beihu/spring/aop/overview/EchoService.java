@@ -6,6 +6,8 @@ package ltd.beihu.spring.aop.overview;
  */
 public interface EchoService {
 
-    void echo(String info);
-//    void echo(String info) throws NullPointerException;
+//    void echo(String info);
+    void echo(String info) throws NullPointerException;
+
+    String echo();
 }

@@ -11,4 +11,9 @@ public class ProxyEchoService implements EchoService {
     public void echo(String info) {
         System.out.println("ProxyEchoService" + info);
     }
+
+    @Override
+    public String echo() {
+        return "Proxy Echo";
+    }
 }

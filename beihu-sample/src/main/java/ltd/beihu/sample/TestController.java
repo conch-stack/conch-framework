@@ -1,8 +1,12 @@
 package ltd.beihu.sample;
 
+import ltd.beihu.sample.advice.agentv2.RpcLog;
+import ltd.beihu.sample.advice.agentv2.SelfRpcLog;
 import ltd.beihu.sample.dynamic.DynamicSpringBeanFactory;
 import ltd.beihu.sample.job.Config;
 import ltd.beihu.sample.job.ConfigBean;
+import ltd.beihu.sample.job.TestService;
+import ltd.beihu.sample.test.AgentTestService;
 import ltd.beihu.sample.timelimit.TestTimeLimit;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,7 +34,11 @@ public class TestController {
     @Resource
     private DynamicSpringBeanFactory dynamicSpringBeanFactory;
 
+    @Resource
+    private AgentTestService agentTestService;
+
     @RequestMapping("/test")
+    @RpcLog
     public void test(@RequestParam String topic, @RequestParam String message) throws InvocationTargetException, IllegalAccessException {
         System.out.println("test start");
         Map<String, ConfigBean> configMap = config.getConfigMap();
@@ -41,6 +49,7 @@ public class TestController {
     }
 
     @RequestMapping("/testTimeLimit")
+    @SelfRpcLog
     public void testTimeLimit(@RequestParam String key, @RequestParam Integer timeout) throws InvocationTargetException, IllegalAccessException {
         System.out.println("testTimeLimit start");
         testTimeLimit.test(key, timeout);
@@ -61,6 +70,20 @@ public class TestController {
         Collection<User> users = dynamicSpringBeanFactory.getUsers();
         System.out.println("getDynamic end");
         return users;
+    }
+
+    @RequestMapping("/testVoid")
+    public void testVoid() throws InvocationTargetException, IllegalAccessException {
+        System.out.println("testVoid start");
+        dynamicSpringBeanFactory.testVoid();
+        System.out.println("testVoid end");
+    }
+
+    @RequestMapping("/testAgentAop")
+    public void testAgentAop() throws InvocationTargetException, IllegalAccessException {
+        System.out.println("testAgentAop start");
+        agentTestService.testAgentPackageAop();
+        System.out.println("testAgentAop end");
     }
 
 }

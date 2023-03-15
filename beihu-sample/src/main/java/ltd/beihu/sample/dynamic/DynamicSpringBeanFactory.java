@@ -1,10 +1,13 @@
 package ltd.beihu.sample.dynamic;
 
 import ltd.beihu.sample.User;
+import ltd.beihu.sample.advice.agentv2.RpcLog;
+import ltd.beihu.sample.advice.agentv2.SelfRpcLog;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -15,6 +18,8 @@ import java.util.Map;
  * @since 2023/3/3
  */
 @Component
+@RpcLog
+@SelfRpcLog
 public class DynamicSpringBeanFactory implements BeanFactoryAware {
 
     private ConfigurableListableBeanFactory beanFactory;
@@ -34,4 +39,7 @@ public class DynamicSpringBeanFactory implements BeanFactoryAware {
         return beansOfType.values();
     }
 
+    public void testVoid() {
+        System.out.println("我的void方法");
+    }
 }
