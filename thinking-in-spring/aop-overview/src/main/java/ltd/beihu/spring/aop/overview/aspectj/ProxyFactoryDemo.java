@@ -14,12 +14,11 @@ public class ProxyFactoryDemo {
     public static void main(String[] args) {
         DefaultEchoService defaultEchoService = new DefaultEchoService();
         ProxyFactory proxyFactory = new ProxyFactory(defaultEchoService);
-        proxyFactory.setTargetClass(DefaultEchoService.class);
         proxyFactory.addAdvice(new EchoServiceMethodInterceptor());
 
         EchoService echoService = (EchoService) proxyFactory.getProxy();
-//        echoService.echo("来了");
-        echoService.echo();
+        echoService.echo("来了");
+        System.out.println(echoService.echo());
     }
 
 }
