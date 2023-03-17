@@ -4,6 +4,7 @@
 
 - target：被代理类
 - advisor:advice+pointcut ：切面（增强器）
+  - **pointcut定义过滤筛选；advice定义具体行为执行动作**
 - AutoProxyCreator：用于创建代理对象
 
 
