@@ -51,3 +51,29 @@ MethodInvocation实现
 - ProxyMethodInvocation -> ReflectiveMethodInvocation
 - ProxyMethodInvocation -> ReflectiveMethodInvocation -> CglibMethodInvocation
 
+
+
+##### Advisor
+
+Advice的容器接口
+
+
+
+##### PointcutAdvisor
+
+Pointcut和Advice的连接器
+
+
+
+##### IntroductionAdvisor
+
+Introduction与Advice的连接器
+
+
+
+##### AdvisorAdapter
+
+Advisor与Interceptor适配器
+
+- 
+
