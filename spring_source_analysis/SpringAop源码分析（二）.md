@@ -16,3 +16,38 @@
 
 - 可使用 Ordered 控制 Advice的执行顺序
 
+
+
+##### 自动动态代理
+
+- org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator
+- org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator
+- **org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator**
+
+
+
+##### TargetSource
+
+Spring用于跟踪保持目标源的类
+
+- org.springframework.aop.target.HotSwappableTargetSource
+- org.springframework.aop.target.AbstractPoolingTargetSource
+- org.springframework.aop.target.PrototypeTargetSource
+- org.springframework.aop.target.ThreadLocalTargetSource
+- org.springframework.aop.target.SingletonTargetSource
+- org.springframework.aop.target.LazyInitTargetSource
+
+
+
+##### Joinpoint
+
+Interceptor 执行上下文： Invocation
+
+- MethodInvocation : 方法级别
+- *ConstructorInvocation：构造器级别* - Spring未支持，AspectJ支持
+
+MethodInvocation实现
+
+- ProxyMethodInvocation -> ReflectiveMethodInvocation
+- ProxyMethodInvocation -> ReflectiveMethodInvocation -> CglibMethodInvocation
+

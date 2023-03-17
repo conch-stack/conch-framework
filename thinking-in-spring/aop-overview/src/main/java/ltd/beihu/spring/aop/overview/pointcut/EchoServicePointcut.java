@@ -21,10 +21,6 @@ import org.springframework.aop.support.StaticMethodMatcherPointcut;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
-/**
- * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
- * @since
- */
 public class EchoServicePointcut extends StaticMethodMatcherPointcut {
 
     private String methodName;
