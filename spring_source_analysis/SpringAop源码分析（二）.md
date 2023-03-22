@@ -1,5 +1,9 @@
 ## SpringAop源码分析（二）
 
+
+
+![SpringAOP](./assets/SpringAOP.png)
+
 ##### 问题：为什么Spring不需要实现 Around Advice
 
 线索：
@@ -129,3 +133,4 @@ org.springframework.aop.framework.AdvisedSupportListener
   - 这部分添加的 advisor 与 Spring内部方式的 独立开来的
   - 可参考本项目自定义实现的：**@EnableRpcLogV2** 来熟悉定制方案
     - **RpcLogAnnotationBeanPostProcessor**
+
