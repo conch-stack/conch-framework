@@ -335,7 +335,7 @@ public class ScheduledCache implements Cache {
 
   @Override
   public void putObject(Object key, Object object) {
-    clearWhenStale(); // 先检测是否需要情况缓存
+    clearWhenStale(); // 先检测是否需要清除缓存
     delegate.putObject(key, object);
   }
 
