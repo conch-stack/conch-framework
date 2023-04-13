@@ -133,7 +133,7 @@ Coyote 是Tomcat 中连接器的组件名称 , 是对外的接口。客户端通
 
 
 
-
+<img src="./assets/image-20230409220436154.png" alt="image-20230409220436154" style="zoom: 33%;" />
 
 
 

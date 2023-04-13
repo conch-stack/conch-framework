@@ -96,6 +96,10 @@ ALTER TABLE tbl_name WAIT N add column ...
 select blocking_pid from sys.schema_table_lock_waits
 ```
 
+补充：在 MySQL 5.5 版本中引入了 MDL，当对一个表做增删改查操作的时候，加 MDL 读 锁;当要对表做结构变更操作的时候，加 MDL 写锁
+
+比较理想的机制是，在 alter table 语句 里面设定等待时间，如果在这个指定的等待时间里面能够拿到 MDL 写锁最好，拿不到也不要阻 塞后面的业务语句，先放弃。之后开发人员或者 DBA 再通过重试命令重复这个过程
+
 
 
 #### 两阶段锁协议
@@ -114,7 +118,7 @@ select blocking_pid from sys.schema_table_lock_waits
 
 - **控制并发度**：这个并发控制要做在数据库服务端。如果你有中间件，可以考虑在中间件实现;如果你的 团队有能修改 MySQL 源码的人，也可以做在 MySQL 里面。基本思路就是，对于相同行的更 新，在进入引擎之前排队。这样在 InnoDB 内部就不会有大量的死锁检测工作了。
 
-
+ 
 
 #### 索引
 
@@ -142,7 +146,12 @@ select blocking_pid from sys.schema_table_lock_waits
   mysql> select * from trade_detail where CONVERT(traideid USING utf8mb4)=$L2.tradeid.value;
   ```
 
-  
+
+唯一索引的原理是：
+
+MySQL 在创建唯一索引时，会在索引的 B+ 树结构中建立一个哈希表，用于存储索引的键值。当向表中插入一行数据时，MySQL 会先在哈希表中查询是否存在相同的键值，如果不存在则插入数据，否则返回错误。
+
+
 
 #### 脏页
 
@@ -188,7 +197,7 @@ select @a/@b;
 
 单看这两个用法的差别的话，你能对比出来，count(1) 执行得要比 count(主键 id) 快。因为从 引擎返回 id 会涉及到解析数据行，以及拷贝字段值的操作。
 
-所以结论是:按照效率排序的话，count(字段)<count(主键 id)<count(1)≈count(\*)，所以我 建议你，尽量使用 count(*)。
+所以结论是:按照效率排序的话，count(字段)<count(主键 id)<count(1)≈count(\*)，所以我 建议你，尽量使用 **count(*)**
 
 
 
@@ -231,6 +240,8 @@ Join的驱动表要选择：**小表**
 - 可以是在同样数据量的情况下，需要查询的表的字段少的，比如 select  t1.id , t2.* ........  
 
 **在决定哪个表做驱动表的时候，应该是两个表按照各自的条件过滤， 过滤完成之后，计算参与 join 的各个字段的总数据量，数据量小的那个表，就是“小 表”，应该作为驱动表。**
+
+
 
 ##### 优化：
 
