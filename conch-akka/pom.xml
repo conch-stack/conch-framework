@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>beihu-akka</artifactId>
+    <artifactId>conch-akka</artifactId>
 
     <dependencies>
         <!-- 配置管理 -->

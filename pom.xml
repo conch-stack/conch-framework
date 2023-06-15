@@ -25,13 +25,11 @@
     </properties>
 
     <modules>
-        <module>beihu-akka</module>
-        <module>beihu-core</module>
-        <module>beihu-microprofile</module>
-        <module>beihu-mybatis</module>
-        <module>beihu-sample</module>
-        <module>beihu-servlet</module>
-        <module>netty</module>
+        <module>conch-akka</module>
+        <module>conch-core</module>
+        <module>conch-microprofile</module>
+        <module>conch-sample</module>
+        <module>conch-netty</module>
         <module>thinking-in-dubbo</module>
         <module>thinking-in-spring</module>
     </modules>

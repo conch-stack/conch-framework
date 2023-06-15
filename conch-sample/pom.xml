@@ -8,7 +8,7 @@
         <version>0.0.1</version>
     </parent>
 
-    <artifactId>beihu-sample</artifactId>
+    <artifactId>conch-sample</artifactId>
 
     <properties>
         <main.user.dir>${basedir}/..</main.user.dir>

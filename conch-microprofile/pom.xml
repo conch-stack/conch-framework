@@ -8,7 +8,7 @@
         <version>0.0.1</version>
     </parent>
     <groupId>ltd.beihu.core.microprofile</groupId>
-    <artifactId>beihu-microprofile</artifactId>
+    <artifactId>conch-microprofile</artifactId>
     <packaging>pom</packaging>
 
     <modules>
