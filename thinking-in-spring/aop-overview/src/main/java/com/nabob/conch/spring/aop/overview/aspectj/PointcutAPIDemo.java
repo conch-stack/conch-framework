@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ltd.beihu.spring.aop.overview.aspectj;
+package com.nabob.conch.spring.aop.overview.aspectj;
 
-import ltd.beihu.spring.aop.overview.DefaultEchoService;
-import ltd.beihu.spring.aop.overview.EchoService;
-import ltd.beihu.spring.aop.overview.aspectj.interceptor.EchoServiceMethodInterceptor;
-import ltd.beihu.spring.aop.overview.pointcut.EchoServiceEchoMethodPointcut;
-import ltd.beihu.spring.aop.overview.pointcut.EchoServicePointcut;
+import com.nabob.conch.spring.aop.overview.aspectj.interceptor.EchoServiceMethodInterceptor;
+import com.nabob.conch.spring.aop.overview.DefaultEchoService;
+import com.nabob.conch.spring.aop.overview.EchoService;
+import com.nabob.conch.spring.aop.overview.pointcut.EchoServiceEchoMethodPointcut;
+import com.nabob.conch.spring.aop.overview.pointcut.EchoServicePointcut;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.support.ComposablePointcut;
 import org.springframework.aop.support.DefaultPointcutAdvisor;

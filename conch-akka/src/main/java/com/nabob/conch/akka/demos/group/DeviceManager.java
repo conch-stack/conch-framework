@@ -1,4 +1,4 @@
-package ltd.beihu.akka.demos.group;
+package com.nabob.conch.akka.demos.group;
 
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
@@ -7,7 +7,7 @@ import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
-import ltd.beihu.akka.demos.group.state.DeviceGroupQuery;
+import com.nabob.conch.akka.demos.group.state.DeviceGroupQuery;
 
 import java.util.Collections;
 import java.util.HashMap;

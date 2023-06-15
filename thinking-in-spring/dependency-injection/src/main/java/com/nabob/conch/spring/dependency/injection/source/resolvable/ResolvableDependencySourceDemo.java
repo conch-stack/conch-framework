@@ -1,4 +1,4 @@
-package ltd.beihu.spring.dependency.injection.source.resolvable;
+package com.nabob.conch.spring.dependency.injection.source.resolvable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

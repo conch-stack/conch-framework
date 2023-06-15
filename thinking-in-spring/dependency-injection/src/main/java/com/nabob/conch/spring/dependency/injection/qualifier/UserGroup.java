@@ -1,4 +1,4 @@
-package ltd.beihu.spring.dependency.injection.qualifier;
+package com.nabob.conch.spring.dependency.injection.qualifier;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 

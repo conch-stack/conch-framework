@@ -1,4 +1,4 @@
-package ltd.beihu.spring.dependency.injection.selfannotation;
+package com.nabob.conch.spring.dependency.injection.selfannotation;
 
 import java.lang.annotation.*;
 

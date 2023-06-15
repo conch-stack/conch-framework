@@ -1,4 +1,4 @@
-package ltd.beihu.spring.ioc.overview.domain;
+package com.nabob.conch.spring.ioc.overview.domain;
 
 /**
  * @author Adam

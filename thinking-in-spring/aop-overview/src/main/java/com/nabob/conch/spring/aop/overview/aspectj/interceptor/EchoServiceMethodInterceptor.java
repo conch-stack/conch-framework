@@ -1,4 +1,4 @@
-package ltd.beihu.spring.aop.overview.aspectj.interceptor;
+package com.nabob.conch.spring.aop.overview.aspectj.interceptor;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;

@@ -1,6 +1,6 @@
-package ltd.beihu.spring.aop.overview.proxy;
+package com.nabob.conch.spring.aop.overview.proxy;
 
-import ltd.beihu.spring.aop.overview.EchoService;
+import com.nabob.conch.spring.aop.overview.EchoService;
 
 /**
  * @author Adam

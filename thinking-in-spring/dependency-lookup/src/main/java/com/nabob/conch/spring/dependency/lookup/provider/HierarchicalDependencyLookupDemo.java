@@ -1,6 +1,6 @@
-package ltd.beihu.spring.dependency.lookup.provider;
+package com.nabob.conch.spring.dependency.lookup.provider;
 
-import ltd.beihu.spring.ioc.overview.domain.User;
+import com.nabob.conch.spring.ioc.overview.domain.User;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.HierarchicalBeanFactory;

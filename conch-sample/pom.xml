@@ -3,8 +3,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>ltd.beihu.core</groupId>
-        <artifactId>beihu-framework</artifactId>
+        <groupId>com.nabob.conch</groupId>
+        <artifactId>conch-framework</artifactId>
         <version>0.0.1</version>
     </parent>
 
@@ -20,12 +20,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>
-        </dependency>
-        <!--ttl本地线程增强-->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>transmittable-thread-local</artifactId>
-            <version>2.12.6</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>

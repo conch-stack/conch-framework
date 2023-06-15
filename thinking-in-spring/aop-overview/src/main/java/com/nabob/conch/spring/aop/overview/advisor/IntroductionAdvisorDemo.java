@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ltd.beihu.spring.aop.overview.advisor;
+package com.nabob.conch.spring.aop.overview.advisor;
 
-import ltd.beihu.spring.aop.overview.EchoService;
+import com.nabob.conch.spring.aop.overview.EchoService;
 import org.springframework.aop.IntroductionInfo;
 import org.springframework.aop.MethodBeforeAdvice;
 import org.springframework.aop.framework.ProxyFactory;

@@ -1,6 +1,6 @@
-package ltd.beihu.spring.dependency.injection.event;
+package com.nabob.conch.spring.dependency.injection.event;
 
-import ltd.beihu.spring.ioc.overview.domain.User;
+import com.nabob.conch.spring.ioc.overview.domain.User;
 import org.springframework.context.ApplicationEvent;
 
 /**

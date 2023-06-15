@@ -1,4 +1,4 @@
-package ltd.beihu.core.netty.util;
+package com.nabob.conch.netty.util;
 
 import com.google.gson.Gson;
 

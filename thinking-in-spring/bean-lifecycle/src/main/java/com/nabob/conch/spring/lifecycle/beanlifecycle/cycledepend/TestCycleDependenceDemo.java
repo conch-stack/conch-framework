@@ -1,4 +1,4 @@
-package ltd.beihu.spring.lifecycle.beanlifecycle.cycledepend;
+package com.nabob.conch.spring.lifecycle.beanlifecycle.cycledepend;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;

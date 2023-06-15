@@ -1,6 +1,6 @@
-package ltd.beihu.spring.dependency.injection.qualifier;
+package com.nabob.conch.spring.dependency.injection.qualifier;
 
-import ltd.beihu.spring.ioc.overview.domain.User;
+import com.nabob.conch.spring.ioc.overview.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;

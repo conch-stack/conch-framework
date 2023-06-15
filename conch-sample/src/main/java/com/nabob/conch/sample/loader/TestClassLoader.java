@@ -113,7 +113,7 @@ public class TestClassLoader extends URLClassLoader {
             try {
                 System.out.println(name);
                 String namePath = name.replaceAll("\\.", "\\\\");
-                String classFile = "D:\\project\\beihu-framework\\beihu-sample\\src\\main\\resources\\" + namePath + ".class";
+                String classFile = "D:\\project\\conch-framework\\conch-sample\\src\\main\\resources\\" + namePath + ".class";
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 FileInputStream fis = new FileInputStream(new File(classFile));
                 byte[] bytes = new byte[1024];
@@ -315,7 +315,7 @@ public class TestClassLoader extends URLClassLoader {
         System.out.println("TestClassLoader的父类加载器：" + testClassLoader.getParent() + "\r\n");
 
         // 加载 自己的
-        load(testClassLoader, "ltd.beihu.sample.uitl.ClassHelper", "加载 自己的");
+        load(testClassLoader, "com.nabob.conch.sample.uitl.ClassHelper", "加载 自己的");
 
         // 加载 JRE 的
         load(testClassLoader, "java.util.ArrayList", "加载 JRE 的");

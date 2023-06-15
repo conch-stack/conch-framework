@@ -1,6 +1,6 @@
-package ltd.beihu.spring.dependency.injection.setter.manual;
+package com.nabob.conch.spring.dependency.injection.setter.manual;
 
-import ltd.beihu.spring.dependency.injection.setter.UserHolderApi;
+import com.nabob.conch.spring.dependency.injection.setter.UserHolderApi;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;

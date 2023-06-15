@@ -1,10 +1,10 @@
-package ltd.beihu.core.netty.common.auth;
+package com.nabob.conch.netty.common.auth;
 
+import com.nabob.conch.netty.common.Operation;
+import com.nabob.conch.netty.common.OperationResult;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.java.Log;
-import ltd.beihu.core.netty.common.Operation;
-import ltd.beihu.core.netty.common.OperationResult;
 
 /**
  * @author Adam

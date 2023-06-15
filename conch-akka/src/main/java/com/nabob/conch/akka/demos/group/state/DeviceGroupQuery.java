@@ -1,4 +1,4 @@
-package ltd.beihu.akka.demos.group.state;
+package com.nabob.conch.akka.demos.group.state;
 
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
@@ -7,8 +7,8 @@ import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import akka.actor.typed.javadsl.TimerScheduler;
-import ltd.beihu.akka.demos.group.Device;
-import ltd.beihu.akka.demos.group.DeviceManager;
+import com.nabob.conch.akka.demos.group.Device;
+import com.nabob.conch.akka.demos.group.DeviceManager;
 
 import java.time.Duration;
 import java.util.HashMap;

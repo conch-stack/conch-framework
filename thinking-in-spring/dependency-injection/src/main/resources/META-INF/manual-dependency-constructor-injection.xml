@@ -8,7 +8,7 @@
 
     <import resource="dependency-lookup-context.xml"/>
 
-    <bean name="userHolder" class="ltd.beihu.spring.dependency.injection.setter.UserHolder">
+    <bean name="userHolder" class="com.nabob.conch.spring.dependency.injection.setter.UserHolder">
         <constructor-arg name="user" ref="user" />
     </bean>
 

@@ -1,4 +1,4 @@
-package ltd.beihu.spring.lifecycle.beanlifecycle.cycledepend;
+package com.nabob.conch.spring.lifecycle.beanlifecycle.cycledepend;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

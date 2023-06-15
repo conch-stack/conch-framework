@@ -1,2 +1,2 @@
-optimusPrime=ltd.beihu.core.dubbo.server.spi.OptimusPrime
-bumblebee=ltd.beihu.core.dubbo.server.spi.Bumblebee
+optimusPrime=spi.com.nabob.conch.dubbo.server.OptimusPrime
+bumblebee=spi.com.nabob.conch.dubbo.server.Bumblebee

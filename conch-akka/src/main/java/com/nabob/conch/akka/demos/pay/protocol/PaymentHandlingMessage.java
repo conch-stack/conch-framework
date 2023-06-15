@@ -1,6 +1,6 @@
-package ltd.beihu.akka.demos.pay.protocol;
+package com.nabob.conch.akka.demos.pay.protocol;
 
-import ltd.beihu.akka.demos.pay.expend.MerchantId;
+import com.nabob.conch.akka.demos.pay.expend.MerchantId;
 
 import java.math.BigDecimal;
 

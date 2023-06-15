@@ -8,10 +8,10 @@
 
     <import resource="dependency-lookup-context.xml"/>
 
-    <bean name="userHolder" class="ltd.beihu.spring.dependency.injection.setter.UserHolder" autowire="byName">
+    <bean name="userHolder" class="com.nabob.conch.spring.dependency.injection.setter.UserHolder" autowire="byName">
     </bean>
 
-    <bean name="userHolderBytype" class="ltd.beihu.spring.dependency.injection.setter.UserHolder" autowire="byType">
+    <bean name="userHolderBytype" class="com.nabob.conch.spring.dependency.injection.setter.UserHolder" autowire="byType">
     </bean>
 
 </beans>

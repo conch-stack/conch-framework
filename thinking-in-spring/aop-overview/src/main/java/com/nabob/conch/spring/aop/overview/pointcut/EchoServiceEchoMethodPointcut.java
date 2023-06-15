@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ltd.beihu.spring.aop.overview.pointcut;
+package com.nabob.conch.spring.aop.overview.pointcut;
 
-import ltd.beihu.spring.aop.overview.EchoService;
+import com.nabob.conch.spring.aop.overview.EchoService;
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.MethodMatcher;
 import org.springframework.aop.Pointcut;

@@ -1,6 +1,6 @@
-package ltd.beihu.spring.ioc.overview.container;
+package com.nabob.conch.spring.ioc.overview.container;
 
-import ltd.beihu.spring.ioc.overview.domain.User;
+import com.nabob.conch.spring.ioc.overview.domain.User;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;

@@ -1,4 +1,4 @@
-package ltd.beihu.spring.dependency.injection.basictype;
+package com.nabob.conch.spring.dependency.injection.basictype;
 
 /**
  * @author Adam

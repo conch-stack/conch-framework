@@ -1,4 +1,4 @@
-package ltd.beihu.core.netty.client.codec;
+package com.nabob.conch.netty.client.codec;
 
 import io.netty.handler.codec.LengthFieldPrepender;
 

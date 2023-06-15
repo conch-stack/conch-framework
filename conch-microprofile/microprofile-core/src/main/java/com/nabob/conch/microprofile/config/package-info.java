@@ -4,4 +4,4 @@
  * @author Adam
  * @since 2021/7/29
  */
-package ltd.beihu.core.microprofile.config;
+package com.nabob.conch.microprofile.config;

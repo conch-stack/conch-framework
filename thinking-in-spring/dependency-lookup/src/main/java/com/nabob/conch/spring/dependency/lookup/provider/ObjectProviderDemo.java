@@ -1,4 +1,4 @@
-package ltd.beihu.spring.dependency.lookup.provider;
+package com.nabob.conch.spring.dependency.lookup.provider;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

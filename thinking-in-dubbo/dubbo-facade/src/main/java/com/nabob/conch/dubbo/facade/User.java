@@ -1,4 +1,4 @@
-package ltd.beihu.core.dubbo.facade;
+package com.nabob.conch.dubbo.facade;
 
 import java.io.Serializable;
 

@@ -1,4 +1,4 @@
-package ltd.beihu.spring.dependency.injection.collectiontype;
+package com.nabob.conch.spring.dependency.injection.collectiontype;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;

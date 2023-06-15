@@ -1,10 +1,9 @@
-package ltd.beihu.spring.aop.overview.autoproxy;
+package com.nabob.conch.spring.aop.overview.autoproxy;
 
-import ltd.beihu.spring.aop.overview.DefaultEchoService;
-import ltd.beihu.spring.aop.overview.EchoService;
-import ltd.beihu.spring.aop.overview.aspectj.interceptor.EchoServiceMethodInterceptor;
-import ltd.beihu.spring.aop.overview.pointcut.EchoServicePointcut;
-import org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator;
+import com.nabob.conch.spring.aop.overview.aspectj.interceptor.EchoServiceMethodInterceptor;
+import com.nabob.conch.spring.aop.overview.DefaultEchoService;
+import com.nabob.conch.spring.aop.overview.EchoService;
+import com.nabob.conch.spring.aop.overview.pointcut.EchoServicePointcut;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

@@ -1,6 +1,6 @@
-package ltd.beihu.spring.ioc.overview.domain;
+package com.nabob.conch.spring.ioc.overview.domain;
 
-import ltd.beihu.spring.ioc.overview.annotation.Super;
+import com.nabob.conch.spring.ioc.overview.annotation.Super;
 
 /**
  * @author Adam

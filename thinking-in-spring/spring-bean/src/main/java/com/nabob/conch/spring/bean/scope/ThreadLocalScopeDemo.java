@@ -1,6 +1,6 @@
-package ltd.beihu.spring.bean.scope;
+package com.nabob.conch.spring.bean.scope;
 
-import ltd.beihu.spring.ioc.overview.domain.User;
+import com.nabob.conch.spring.ioc.overview.domain.User;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;

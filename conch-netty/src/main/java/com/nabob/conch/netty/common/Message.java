@@ -1,8 +1,8 @@
-package ltd.beihu.core.netty.common;
+package com.nabob.conch.netty.common;
 
 import io.netty.buffer.ByteBuf;
 import lombok.Data;
-import ltd.beihu.core.netty.util.JsonUtil;
+import com.nabob.conch.netty.util.JsonUtil;
 
 import java.nio.charset.StandardCharsets;
 

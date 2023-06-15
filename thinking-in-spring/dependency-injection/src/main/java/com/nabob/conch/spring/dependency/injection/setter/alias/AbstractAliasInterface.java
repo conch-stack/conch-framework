@@ -1,4 +1,4 @@
-package ltd.beihu.spring.dependency.injection.setter.alias;
+package com.nabob.conch.spring.dependency.injection.setter.alias;
 
 /**
  * @author Adam

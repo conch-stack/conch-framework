@@ -1,4 +1,4 @@
-package ltd.beihu.core.dubbo.server.spi;
+package com.nabob.conch.dubbo.server.spi;
 
 import org.apache.dubbo.common.extension.ExtensionLoader;
 

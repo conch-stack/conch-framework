@@ -172,4 +172,4 @@ OSGi实现模块化热部署的关键则是它自定义的类加载器机制的�
 
 **4.实现：测试代码 - 模仿Tomcat**
 
-> 参考：ltd.beihu.sample.loader.TestClassLoader
+> 参考：loader.com.nabob.conch.sample.TestClassLoader

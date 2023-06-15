@@ -1,4 +1,4 @@
-package ltd.beihu.spring.bean.scope;
+package com.nabob.conch.spring.bean.scope;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;

@@ -1,4 +1,4 @@
-package ltd.beihu.spring.ioc.overview.annotation;
+package com.nabob.conch.spring.ioc.overview.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

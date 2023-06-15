@@ -1,7 +1,7 @@
-package ltd.beihu.akka.demos.pay.protocol;
+package com.nabob.conch.akka.demos.pay.protocol;
 
 import akka.actor.typed.ActorRef;
-import ltd.beihu.akka.demos.pay.expend.MerchantId;
+import com.nabob.conch.akka.demos.pay.expend.MerchantId;
 
 /**
  * 配置协议接口

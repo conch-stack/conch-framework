@@ -3,11 +3,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>ltd.beihu.core</groupId>
-        <artifactId>beihu-framework</artifactId>
+        <groupId>com.nabob.conch</groupId>
+        <artifactId>conch-framework</artifactId>
         <version>0.0.1</version>
     </parent>
-    <groupId>ltd.beihu.core.dubbo</groupId>
+
     <artifactId>thinking-in-dubbo</artifactId>
     <packaging>pom</packaging>
 
@@ -35,7 +35,7 @@
             </dependency>
 
             <dependency>
-                <groupId>ltd.beihu.core.dubbo</groupId>
+                <groupId>com.nabob.conch</groupId>
                 <artifactId>dubbo-facade</artifactId>
                 <version>${project.version}</version>
             </dependency>

@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Beihu ConfigProviderResolver
+ * Conch ConfigProviderResolver
  *
  * @author Adam
  * @since 2021/7/29

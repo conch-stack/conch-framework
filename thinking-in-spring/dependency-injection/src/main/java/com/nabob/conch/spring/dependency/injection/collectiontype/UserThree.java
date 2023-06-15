@@ -1,6 +1,6 @@
-package ltd.beihu.spring.dependency.injection.collectiontype;
+package com.nabob.conch.spring.dependency.injection.collectiontype;
 
-import ltd.beihu.spring.dependency.injection.basictype.City;
+import com.nabob.conch.spring.dependency.injection.basictype.City;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,7 +1,7 @@
-package ltd.beihu.spring.lifecycle.beanlifecycle;
+package com.nabob.conch.spring.lifecycle.beanlifecycle;
 
-import ltd.beihu.spring.ioc.overview.domain.SuperUser;
-import ltd.beihu.spring.ioc.overview.domain.User;
+import com.nabob.conch.spring.ioc.overview.domain.SuperUser;
+import com.nabob.conch.spring.ioc.overview.domain.User;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValues;

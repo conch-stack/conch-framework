@@ -1,8 +1,8 @@
-package ltd.beihu.core.netty.common.auth;
+package com.nabob.conch.netty.common.auth;
 
+import com.nabob.conch.netty.common.OperationResult;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import ltd.beihu.core.netty.common.OperationResult;
 
 /**
  * @author Adam

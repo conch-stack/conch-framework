@@ -50,7 +50,7 @@
     - XML：
 
       ```xml
-      <bean name="userHolder" class="ltd.beihu.spring.dependency.injection.setter.UserHolder">
+      <bean name="userHolder" class="com.nabob.conch.spring.dependency.injection.setter.UserHolder">
               <property name="user" ref="superUser" />
       </bean>
       ```
@@ -80,14 +80,14 @@
     - byName：
   
       ```xml
-      <bean name="userHolder" class="ltd.beihu.spring.dependency.injection.setter.UserHolder" autowire="byName">
+      <bean name="userHolder" class="com.nabob.conch.spring.dependency.injection.setter.UserHolder" autowire="byName">
       </bean>
       ```
   
     - byType：
   
       ```xml
-      <bean name="userHolderBytype" class="ltd.beihu.spring.dependency.injection.setter.UserHolder" autowire="byType">
+      <bean name="userHolderBytype" class="com.nabob.conch.spring.dependency.injection.setter.UserHolder" autowire="byType">
       </bean>
       ```
 
@@ -100,7 +100,7 @@
     - XML：
 
       ```xml
-      <bean name="userHolder" class="ltd.beihu.spring.dependency.injection.setter.UserHolder">
+      <bean name="userHolder" class="com.nabob.conch.spring.dependency.injection.setter.UserHolder">
           <constructor-arg name="user" ref="user" />
       </bean>
       ```
@@ -130,7 +130,7 @@
     - constructor：
 
       ```xml
-      <bean name="userHolder" class="ltd.beihu.spring.dependency.injection.setter.UserHolder" autowire="constructor">
+      <bean name="userHolder" class="com.nabob.conch.spring.dependency.injection.setter.UserHolder" autowire="constructor">
       </bean>
       ```
 

@@ -1,7 +1,7 @@
-package ltd.beihu.core.dubbo.server;
+package com.nabob.conch.dubbo.server;
 
-import ltd.beihu.core.dubbo.facade.UserService;
-import ltd.beihu.core.dubbo.server.spring.UserServiceImpl;
+import com.nabob.conch.dubbo.facade.UserService;
+import com.nabob.conch.dubbo.server.spring.UserServiceImpl;
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ProtocolConfig;
 import org.apache.dubbo.config.RegistryConfig;

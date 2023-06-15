@@ -1,7 +1,7 @@
-package ltd.beihu.spring.ioc.overview.injection;
+package com.nabob.conch.spring.ioc.overview.injection;
 
-import ltd.beihu.spring.ioc.overview.domain.User;
-import ltd.beihu.spring.ioc.overview.repository.UserRepository;
+import com.nabob.conch.spring.ioc.overview.domain.User;
+import com.nabob.conch.spring.ioc.overview.repository.UserRepository;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;

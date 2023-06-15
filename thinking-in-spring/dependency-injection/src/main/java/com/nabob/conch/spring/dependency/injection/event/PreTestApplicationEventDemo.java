@@ -1,8 +1,7 @@
-package ltd.beihu.spring.dependency.injection.event;
+package com.nabob.conch.spring.dependency.injection.event;
 
-import com.sun.istack.internal.NotNull;
-import ltd.beihu.spring.dependency.injection.basictype.UserTwo;
-import ltd.beihu.spring.ioc.overview.domain.User;
+import com.nabob.conch.spring.dependency.injection.basictype.UserTwo;
+import com.nabob.conch.spring.ioc.overview.domain.User;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
@@ -20,7 +19,7 @@ public class PreTestApplicationEventDemo implements ApplicationEventPublisherAwa
     private static ApplicationEventPublisher eventPublisher;
 
     @Override
-    public void setApplicationEventPublisher(@NotNull ApplicationEventPublisher applicationEventPublisher) {
+    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
         if (eventPublisher == null) {
             eventPublisher = applicationEventPublisher;
         }

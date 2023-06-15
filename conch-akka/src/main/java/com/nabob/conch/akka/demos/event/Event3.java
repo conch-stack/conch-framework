@@ -1,4 +1,4 @@
-package ltd.beihu.akka.demos.event;
+package com.nabob.conch.akka.demos.event;
 
 import akka.actor.typed.ActorRef;
 

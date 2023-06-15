@@ -1,7 +1,5 @@
-package ltd.beihu.spring.dependency.injection.collectiontype;
+package com.nabob.conch.spring.dependency.injection.collectiontype;
 
-import ltd.beihu.spring.dependency.injection.setter.UserHolder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 

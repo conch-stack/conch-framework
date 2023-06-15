@@ -1,4 +1,4 @@
-package ltd.beihu.akka.demos.sourced;
+package com.nabob.conch.akka.demos.sourced;
 
 import akka.actor.typed.Behavior;
 import akka.persistence.typed.PersistenceId;

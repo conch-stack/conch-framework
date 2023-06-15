@@ -1,4 +1,4 @@
-package ltd.beihu.core.dubbo.server.spihigh;
+package com.nabob.conch.dubbo.server.spihigh;
 
 
 import org.apache.dubbo.common.URL;

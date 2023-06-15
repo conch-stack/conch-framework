@@ -1,4 +1,4 @@
-package ltd.beihu.spring.lifecycle.beanlifecycle;
+package com.nabob.conch.spring.lifecycle.beanlifecycle;
 
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;

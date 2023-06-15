@@ -1,10 +1,9 @@
-package ltd.beihu.core.netty.client.codec;
+package com.nabob.conch.netty.client.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
-import ltd.beihu.core.netty.common.RequestMessage;
-import ltd.beihu.core.netty.common.ResponseMessage;
+import com.nabob.conch.netty.common.ResponseMessage;
 
 import java.util.List;
 

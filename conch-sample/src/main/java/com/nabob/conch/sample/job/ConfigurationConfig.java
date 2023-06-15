@@ -1,4 +1,4 @@
-//package ltd.beihu.sample.job;
+//package com.nabob.conch.sample.job;
 //
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;

@@ -1,8 +1,8 @@
-package ltd.beihu.spring.aop.overview.aspectj;
+package com.nabob.conch.spring.aop.overview.aspectj;
 
-import ltd.beihu.spring.aop.overview.DefaultEchoService;
-import ltd.beihu.spring.aop.overview.EchoService;
-import ltd.beihu.spring.aop.overview.aspectj.interceptor.EchoServiceMethodInterceptor;
+import com.nabob.conch.spring.aop.overview.aspectj.interceptor.EchoServiceMethodInterceptor;
+import com.nabob.conch.spring.aop.overview.DefaultEchoService;
+import com.nabob.conch.spring.aop.overview.EchoService;
 import org.springframework.aop.framework.ProxyFactory;
 
 /**

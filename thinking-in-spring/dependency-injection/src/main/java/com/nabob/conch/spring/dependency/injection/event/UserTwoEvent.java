@@ -1,6 +1,6 @@
-package ltd.beihu.spring.dependency.injection.event;
+package com.nabob.conch.spring.dependency.injection.event;
 
-import ltd.beihu.spring.dependency.injection.basictype.UserTwo;
+import com.nabob.conch.spring.dependency.injection.basictype.UserTwo;
 import org.springframework.context.ApplicationEvent;
 
 /**

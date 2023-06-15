@@ -1,3 +1,3 @@
 ## Dubbo Dump Jvm
-see: ltd.beihu.sample.uitl.JVMUtil
-see: ltd.beihu.sample.executor.TaskAbortPolicyWithReport
+see: uitl.com.nabob.conch.sample.JVMUtil
+see: executor.com.nabob.conch.sample.TaskAbortPolicyWithReport

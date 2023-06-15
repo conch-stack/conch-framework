@@ -4,4 +4,4 @@
  * @author Adam
  * @date 2021/2/20
  */
-package ltd.beihu.akka.demos;
+package com.nabob.conch.akka.demos;

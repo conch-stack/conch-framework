@@ -1,4 +1,4 @@
-package ltd.beihu.spring.dependency.injection.source.external;
+package com.nabob.conch.spring.dependency.injection.source.external;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

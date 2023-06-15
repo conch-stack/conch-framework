@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ltd.beihu.core.microprofile.config.util;
+package com.nabob.conch.microprofile.config.util;
 
 public class StringUtil {
 

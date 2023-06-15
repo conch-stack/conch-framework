@@ -1,7 +1,7 @@
-package ltd.beihu.spring.dependency.injection.method;
+package com.nabob.conch.spring.dependency.injection.method;
 
-import ltd.beihu.spring.dependency.injection.setter.UserHolder;
-import ltd.beihu.spring.ioc.overview.domain.User;
+import com.nabob.conch.spring.dependency.injection.setter.UserHolder;
+import com.nabob.conch.spring.ioc.overview.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

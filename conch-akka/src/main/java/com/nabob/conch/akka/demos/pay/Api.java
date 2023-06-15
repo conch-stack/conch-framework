@@ -1,4 +1,4 @@
-package ltd.beihu.akka.demos.pay;
+package com.nabob.conch.akka.demos.pay;
 
 import akka.actor.typed.ActorSystem;
 

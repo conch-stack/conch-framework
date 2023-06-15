@@ -1,4 +1,4 @@
-package ltd.beihu.spring.dependency.injection.event;
+package com.nabob.conch.spring.dependency.injection.event;
 
 import org.springframework.context.event.EventListener;
 

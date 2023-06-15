@@ -20,7 +20,7 @@ import java.util.Objects;
 import java.util.ServiceLoader;
 
 /**
- * Beihu ConfigBuilder
+ * Conch ConfigBuilder
  *
  * @author Adam
  * @since 2021/7/29

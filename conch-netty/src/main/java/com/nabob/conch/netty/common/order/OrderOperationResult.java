@@ -1,8 +1,8 @@
-package ltd.beihu.core.netty.common.order;
+package com.nabob.conch.netty.common.order;
 
+import com.nabob.conch.netty.common.OperationResult;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import ltd.beihu.core.netty.common.OperationResult;
 
 /**
  * @author Adam

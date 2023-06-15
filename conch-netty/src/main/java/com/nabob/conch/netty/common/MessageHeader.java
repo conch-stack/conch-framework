@@ -1,4 +1,4 @@
-package ltd.beihu.core.netty.common;
+package com.nabob.conch.netty.common;
 
 import lombok.Data;
 

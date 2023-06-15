@@ -1,6 +1,6 @@
 ## Lifecycle
 
-> 参考：ltd.beihu.sample.lifecycle.Lifecycle
+> 参考：lifecycle.com.nabob.conch.sample.Lifecycle
 
 
 

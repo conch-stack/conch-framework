@@ -1,4 +1,4 @@
-package ltd.beihu.core.microprofile.config.source;
+package com.nabob.conch.microprofile.config.source;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.spi.ConfigSource;

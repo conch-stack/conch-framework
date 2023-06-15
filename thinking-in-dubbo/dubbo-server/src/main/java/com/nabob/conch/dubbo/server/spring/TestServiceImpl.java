@@ -1,6 +1,6 @@
-package ltd.beihu.core.dubbo.server.spring;
+package com.nabob.conch.dubbo.server.spring;
 
-import ltd.beihu.core.dubbo.facade.TestService;
+import com.nabob.conch.dubbo.facade.TestService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.stereotype.Component;
 

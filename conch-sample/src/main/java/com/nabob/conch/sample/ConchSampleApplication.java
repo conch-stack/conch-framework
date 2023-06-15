@@ -18,10 +18,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 //@EnableRpcLogV2(annotation = SelfRpcLog.class)
 //第二版 - 第二版AgentPackage拦截 - 测试
 @EnableRpcLogV2(agentPackage = "com.nabob.conch.sample.test")
-public class BeihuSampleApplication {
+public class ConchSampleApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BeihuSampleApplication.class, args);
+        SpringApplication.run(ConchSampleApplication.class, args);
         System.out.println("end-container-1");
 
 //        String test = TestClassLoader.test();

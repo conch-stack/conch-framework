@@ -1,10 +1,10 @@
-package ltd.beihu.core.netty.common.keepalive;
+package com.nabob.conch.netty.common.keepalive;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.java.Log;
-import ltd.beihu.core.netty.common.Operation;
-import ltd.beihu.core.netty.common.OperationResult;
+import com.nabob.conch.netty.common.Operation;
+import com.nabob.conch.netty.common.OperationResult;
 
 /**
  * @author Adam

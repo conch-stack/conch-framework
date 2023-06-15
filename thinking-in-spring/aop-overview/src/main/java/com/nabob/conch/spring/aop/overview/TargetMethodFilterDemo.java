@@ -1,4 +1,4 @@
-package ltd.beihu.spring.aop.overview;
+package com.nabob.conch.spring.aop.overview;
 
 import org.springframework.util.ReflectionUtils;
 
@@ -16,7 +16,7 @@ public class TargetMethodFilterDemo {
 
     public static void main(String[] args) throws ClassNotFoundException {
 
-        String targetClassName = "ltd.beihu.spring.aop.overview.EchoService";
+        String targetClassName = "com.nabob.conch.spring.aop.overview.EchoService";
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 

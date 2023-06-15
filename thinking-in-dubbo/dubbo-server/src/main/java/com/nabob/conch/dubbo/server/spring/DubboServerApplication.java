@@ -1,4 +1,4 @@
-package ltd.beihu.core.dubbo.server.spring;
+package com.nabob.conch.dubbo.server.spring;
 
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.boot.SpringApplication;
@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Adam
  * @date 2021/4/4
  */
-@EnableDubbo(scanBasePackages = "ltd.beihu.core.dubbo")
+@EnableDubbo(scanBasePackages = "com.nabob.conch.dubbo")
 @SpringBootApplication
 public class DubboServerApplication {
 

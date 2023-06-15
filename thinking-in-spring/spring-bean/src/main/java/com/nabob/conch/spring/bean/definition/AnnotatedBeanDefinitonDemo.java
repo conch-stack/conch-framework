@@ -1,9 +1,9 @@
-package ltd.beihu.spring.bean.definition;
+package com.nabob.conch.spring.bean.definition;
 
-import ltd.beihu.spring.bean.destory.DestoryBean;
-import ltd.beihu.spring.bean.factory.UserFactoryBean;
-import ltd.beihu.spring.bean.initialization.InitializationBean;
-import ltd.beihu.spring.ioc.overview.domain.User;
+import com.nabob.conch.spring.bean.destory.DestoryBean;
+import com.nabob.conch.spring.bean.factory.UserFactoryBean;
+import com.nabob.conch.spring.bean.initialization.InitializationBean;
+import com.nabob.conch.spring.ioc.overview.domain.User;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;

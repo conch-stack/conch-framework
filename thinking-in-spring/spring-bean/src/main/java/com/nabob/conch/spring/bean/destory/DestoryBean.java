@@ -1,4 +1,4 @@
-package ltd.beihu.spring.bean.destory;
+package com.nabob.conch.spring.bean.destory;
 
 import org.springframework.beans.factory.DisposableBean;
 

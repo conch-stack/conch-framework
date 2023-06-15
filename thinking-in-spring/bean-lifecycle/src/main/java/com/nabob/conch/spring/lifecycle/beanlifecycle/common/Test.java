@@ -1,4 +1,4 @@
-package ltd.beihu.spring.lifecycle.beanlifecycle.common;
+package com.nabob.conch.spring.lifecycle.beanlifecycle.common;
 
 import org.springframework.core.ResolvableType;
 

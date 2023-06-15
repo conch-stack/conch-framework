@@ -3,14 +3,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>ltd.beihu.core</groupId>
-        <artifactId>beihu-framework</artifactId>
+        <groupId>com.nabob.conch</groupId>
+        <artifactId>conch-framework</artifactId>
         <version>0.0.1</version>
     </parent>
     <artifactId>conch-core</artifactId>
 
-    <name>beihu-core</name>
-    <description>beihu-core</description>
+    <name>conch-core</name>
+    <description>conch-core</description>
 
     <properties>
         <main.user.dir>${basedir}/..</main.user.dir>

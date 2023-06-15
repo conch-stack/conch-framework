@@ -1,4 +1,4 @@
-package ltd.beihu.akka.demos.group;
+package com.nabob.conch.akka.demos.group;
 
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;

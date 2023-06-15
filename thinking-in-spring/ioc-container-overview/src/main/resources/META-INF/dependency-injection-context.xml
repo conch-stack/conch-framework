@@ -8,11 +8,11 @@
 
     <import resource="dependency-lookup-context.xml"/>
 
-    <bean id="userRepository" class="ltd.beihu.spring.ioc.overview.repository.UserRepository"
+    <bean id="userRepository" class="com.nabob.conch.spring.ioc.overview.repository.UserRepository"
           autowire="byType"> <!-- Auto-Wiring -->
     </bean>
 
-    <bean id="userRepository1" class="ltd.beihu.spring.ioc.overview.repository.UserRepository">
+    <bean id="userRepository1" class="com.nabob.conch.spring.ioc.overview.repository.UserRepository">
         <property name="users">
             <util:list>
                 <ref bean="superUser"/>

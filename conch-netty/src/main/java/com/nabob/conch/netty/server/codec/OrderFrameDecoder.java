@@ -1,4 +1,4 @@
-package ltd.beihu.core.netty.server.codec;
+package com.nabob.conch.netty.server.codec;
 
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 

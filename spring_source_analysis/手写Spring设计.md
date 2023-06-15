@@ -127,8 +127,8 @@ TODO：
 
 完整的需要的是一个：方法签名
 
-- com.beihu.zjz.Test.testMethod(Boy, Time)
-- com.beihu.zjz.Test.testMethod(Boy, Girl, Time)
+- com.nabob.conch.zjz.Test.testMethod(Boy, Time)
+- com.nabob.conch.zjz.Test.testMethod(Boy, Girl, Time)
 
 需要一个表达式：能够描述多个方法，模糊匹配
 
@@ -142,7 +142,7 @@ TODO：
 - 正则表达式  - yes
 - Ant Path表达式
 - AspectJ的pointcut表达式  - yes
-  - execution(* com.beihu.zjz.service.AccountService.*(..))
+  - execution(* com.nabob.conch.zjz.service.AccountService.*(..))
 
 匹配类、匹配方法
 

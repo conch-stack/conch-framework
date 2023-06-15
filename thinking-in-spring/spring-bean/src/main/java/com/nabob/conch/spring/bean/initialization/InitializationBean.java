@@ -1,4 +1,4 @@
-package ltd.beihu.spring.bean.initialization;
+package com.nabob.conch.spring.bean.initialization;
 
 import org.springframework.beans.factory.InitializingBean;
 

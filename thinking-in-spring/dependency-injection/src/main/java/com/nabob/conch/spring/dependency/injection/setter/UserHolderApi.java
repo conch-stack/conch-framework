@@ -1,6 +1,6 @@
-package ltd.beihu.spring.dependency.injection.setter;
+package com.nabob.conch.spring.dependency.injection.setter;
 
-import ltd.beihu.spring.ioc.overview.domain.User;
+import com.nabob.conch.spring.ioc.overview.domain.User;
 
 /**
  * @author Adam

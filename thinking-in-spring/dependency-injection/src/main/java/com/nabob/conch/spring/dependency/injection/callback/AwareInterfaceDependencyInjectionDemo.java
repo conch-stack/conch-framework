@@ -1,4 +1,4 @@
-package ltd.beihu.spring.dependency.injection.callback;
+package com.nabob.conch.spring.dependency.injection.callback;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;

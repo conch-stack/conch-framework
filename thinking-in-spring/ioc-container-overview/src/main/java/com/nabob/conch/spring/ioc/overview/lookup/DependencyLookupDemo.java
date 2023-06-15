@@ -1,7 +1,7 @@
-package ltd.beihu.spring.ioc.overview.lookup;
+package com.nabob.conch.spring.ioc.overview.lookup;
 
-import ltd.beihu.spring.ioc.overview.annotation.Super;
-import ltd.beihu.spring.ioc.overview.domain.User;
+import com.nabob.conch.spring.ioc.overview.domain.User;
+import com.nabob.conch.spring.ioc.overview.annotation.Super;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectFactory;

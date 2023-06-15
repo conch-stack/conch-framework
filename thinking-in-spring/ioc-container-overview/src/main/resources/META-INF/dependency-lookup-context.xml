@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         https://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="user" class="ltd.beihu.spring.ioc.overview.domain.User">
+    <bean id="user" class="com.nabob.conch.spring.ioc.overview.domain.User">
         <property name="name" value="郑飞飞"/>
         <property name="age" value="18"/>
     </bean>
@@ -14,7 +14,7 @@
         <property name="targetBeanName" value="user"/>
     </bean>
 
-    <bean id="superUser" class="ltd.beihu.spring.ioc.overview.domain.SuperUser" parent="user" primary="true">
+    <bean id="superUser" class="com.nabob.conch.spring.ioc.overview.domain.SuperUser" parent="user" primary="true">
         <property name="address" value="上海"/>
     </bean>
 </beans>

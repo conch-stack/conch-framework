@@ -1,11 +1,11 @@
-package ltd.beihu.core.netty.common;
+package com.nabob.conch.netty.common;
 
-import ltd.beihu.core.netty.common.auth.AuthOperation;
-import ltd.beihu.core.netty.common.auth.AuthOperationResult;
-import ltd.beihu.core.netty.common.keepalive.KeepaliveOperation;
-import ltd.beihu.core.netty.common.keepalive.KeepaliveOperationResult;
-import ltd.beihu.core.netty.common.order.OrderOperation;
-import ltd.beihu.core.netty.common.order.OrderOperationResult;
+import com.nabob.conch.netty.common.auth.AuthOperation;
+import com.nabob.conch.netty.common.keepalive.KeepaliveOperation;
+import com.nabob.conch.netty.common.keepalive.KeepaliveOperationResult;
+import com.nabob.conch.netty.common.order.OrderOperation;
+import com.nabob.conch.netty.common.order.OrderOperationResult;
+import com.nabob.conch.netty.common.auth.AuthOperationResult;
 
 import java.util.Arrays;
 import java.util.Objects;

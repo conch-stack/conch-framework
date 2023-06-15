@@ -1,7 +1,7 @@
-package ltd.beihu.akka.demos.pay.protocol;
+package com.nabob.conch.akka.demos.pay.protocol;
 
-import ltd.beihu.akka.demos.pay.expend.MerchantConfiguration;
-import ltd.beihu.akka.demos.pay.expend.MerchantId;
+import com.nabob.conch.akka.demos.pay.expend.MerchantConfiguration;
+import com.nabob.conch.akka.demos.pay.expend.MerchantId;
 
 /**
  * 配置返回协议接口

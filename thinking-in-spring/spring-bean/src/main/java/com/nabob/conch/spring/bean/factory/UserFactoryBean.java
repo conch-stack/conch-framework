@@ -1,6 +1,6 @@
-package ltd.beihu.spring.bean.factory;
+package com.nabob.conch.spring.bean.factory;
 
-import ltd.beihu.spring.ioc.overview.domain.User;
+import com.nabob.conch.spring.ioc.overview.domain.User;
 import org.springframework.beans.factory.FactoryBean;
 
 /**

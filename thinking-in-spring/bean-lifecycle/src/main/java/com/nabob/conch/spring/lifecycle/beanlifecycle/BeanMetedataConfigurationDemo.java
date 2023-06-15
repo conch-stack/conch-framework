@@ -1,6 +1,6 @@
-package ltd.beihu.spring.lifecycle.beanlifecycle;
+package com.nabob.conch.spring.lifecycle.beanlifecycle;
 
-import ltd.beihu.spring.ioc.overview.domain.User;
+import com.nabob.conch.spring.ioc.overview.domain.User;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.support.PropertiesBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
