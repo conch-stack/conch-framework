@@ -11,10 +11,6 @@
     <artifactId>conch-microprofile</artifactId>
     <packaging>pom</packaging>
 
-    <modules>
-        <module>microprofile-core</module>
-    </modules>
-
     <properties>
         <java.version>1.8</java.version>
         <main.user.dir>${basedir}/..</main.user.dir>
