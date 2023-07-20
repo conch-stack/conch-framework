@@ -2,6 +2,9 @@ package com.nabob.conch.sample;
 
 import com.nabob.conch.sample.advice.agentv2.RpcLog;
 import com.nabob.conch.sample.advice.agentv2.SelfRpcLog;
+import com.nabob.conch.sample.dynamic.DynamicConfig;
+import com.nabob.conch.sample.dynamic.DynamicConfigLoader;
+import com.nabob.conch.sample.dynamic.DynamicService;
 import com.nabob.conch.sample.dynamic.DynamicSpringBeanFactory;
 import com.nabob.conch.sample.job.Config;
 import com.nabob.conch.sample.job.ConfigBean;
@@ -34,6 +37,11 @@ public class TestController {
     private DynamicSpringBeanFactory dynamicSpringBeanFactory;
 
     @Resource
+    private DynamicConfigLoader dynamicConfigLoader;
+
+    @Resource
+    private DynamicService dynamicService;
+    @Resource
     private AgentTestService agentTestService;
 
     @RequestMapping("/test")
@@ -60,6 +68,16 @@ public class TestController {
         System.out.println("testDynamic start");
         dynamicSpringBeanFactory.createBean(name);
         System.out.println("testDynamic end");
+    }
+
+    @RequestMapping("/testDynamic2")
+    @ResponseBody
+    public Collection<User> testDynamic2() throws InvocationTargetException, IllegalAccessException {
+        System.out.println("testDynamic2 start");
+        dynamicConfigLoader.register("dynamicConfig", DynamicConfig.class);
+        Collection<User> users = dynamicService.getUsers();
+        System.out.println("testDynamic2 end");
+        return users;
     }
 
     @RequestMapping("/getDynamic")
