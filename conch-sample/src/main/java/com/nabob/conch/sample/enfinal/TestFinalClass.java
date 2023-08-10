@@ -10,4 +10,7 @@ public final class TestFinalClass {
         return "sss";
     }
 
+    public String getOid1() {
+        return "sss";
+    }
 }
