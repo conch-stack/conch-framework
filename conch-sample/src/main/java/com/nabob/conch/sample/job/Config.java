@@ -41,8 +41,8 @@ public class Config implements ApplicationContextAware, BeanFactoryAware, Initia
             Object bean = beanFactory.getBean(name);
             Class<?> beanClassType = BeanDefinitionUtil.resolveBeanClassType(beanFactory.getBeanDefinition(name));
             Service service = beanClassType.getAnnotation(Service.class);
-            System.out.println("==============================================" + beanClassType.isAnnotationPresent(Service.class));
-            System.out.println("==============================================" + beanClassType.isAnnotationPresent(Component.class));
+//            System.out.println("==============================================" + beanClassType.isAnnotationPresent(Service.class));
+//            System.out.println("==============================================" + beanClassType.isAnnotationPresent(Component.class));
             if (Objects.nonNull(service)) {
                 Method[] allDeclaredMethods = ReflectionHelper.getAllDeclaredMethods(beanClassType);
                 Arrays.stream(allDeclaredMethods).forEach(target -> {

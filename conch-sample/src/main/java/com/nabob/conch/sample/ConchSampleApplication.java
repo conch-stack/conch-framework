@@ -27,9 +27,8 @@ public class ConchSampleApplication {
     @PostConstruct
     public void test() {
         try {
-            EnhanceAbTest.enhance(ABClientCache.class);
-
-            ABClientCache.getInstance();
+//            EnhanceAbTest.enhance(ABClientCache.class);
+//            ABClientCache.getInstance();
 
         } catch (Throwable e) {
             e.printStackTrace();
