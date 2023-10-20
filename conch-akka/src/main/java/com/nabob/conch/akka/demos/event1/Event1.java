@@ -1,4 +1,4 @@
-package com.nabob.conch.akka.demos;
+package com.nabob.conch.akka.demos.event1;
 
 /**
  * 事件主体1
