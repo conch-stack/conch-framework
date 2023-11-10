@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.nabob.conch</groupId>
+        <artifactId>conch-framework</artifactId>
+        <version>0.0.1</version>
+    </parent>
+
+    <artifactId>conch-lombok</artifactId>
+
+    <packaging>jar</packaging>
+
+    <properties>
+        <main.user.dir>${basedir}/..</main.user.dir>
+        <java.version>1.8</java.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin}</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                    <encoding>UTF-8</encoding>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                        <!-- Lombok项目本身要加 编译 参数 ，防止编译处理器无法实例化：-proc:none 关闭 -->
+                        <!-- 在测试的时候 要构建一个新的工程，用一个新的IDEA窗口打开 -->
+                        <arg>-proc:none</arg>
+                        <arg>-XDignore.symbol.file</arg>
+                    </compilerArgs>
+                    <compilerArguments>
+                        <!-- 要添加编译 类路径 bootclasspath： 指定tool.jar -->
+                        <bootclasspath>
+                            ${java.home}/lib/rt.jar${path.separator}${java.home}/lib/jce.jar${path.separator}${java.home}/../lib/tools.jar
+                        </bootclasspath>
+                    </compilerArguments>
+                    <fork>true</fork>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
