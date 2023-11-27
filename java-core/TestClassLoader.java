@@ -1,4 +1,4 @@
-package java.test;
+package java;
 
 /**
  * JVM根本就不会然你RUN起来

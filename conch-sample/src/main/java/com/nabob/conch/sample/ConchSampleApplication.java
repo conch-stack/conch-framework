@@ -35,6 +35,9 @@ public class ConchSampleApplication {
         }
     }
 
+    /**
+     * 支持注解编译时解析：IDEA Compile VM Options: -Djps.track.ap.dependencies=false
+     */
     public static void main(String[] args) {
 
         SpringApplication.run(ConchSampleApplication.class, args);

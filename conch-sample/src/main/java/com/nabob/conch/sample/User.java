@@ -6,8 +6,14 @@ package com.nabob.conch.sample;
  */
 public class User {
 
+    /**
+     * 姓名
+     */
     private String name;
 
+    /**
+     * 年龄
+     */
     private Integer age;
 
     public User() {

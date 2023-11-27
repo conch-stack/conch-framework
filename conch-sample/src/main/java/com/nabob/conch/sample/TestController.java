@@ -103,4 +103,19 @@ public class TestController {
         System.out.println("testAgentAop end");
     }
 
+//    @RequestMapping("/testAA")
+//    public Object testAA() {
+//        return new User("aa", 10);
+//    }
+//
+//    /**
+//     * 测试String
+//     *
+//     * @return response
+//     */
+//    @RequestMapping("/testAS")
+//    public Object testAS() {
+//        return "aaa";
+//    }
+
 }

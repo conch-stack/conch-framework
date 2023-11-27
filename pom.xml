@@ -38,7 +38,7 @@
         <module>thinking-in-dubbo</module>
         <module>thinking-in-spring</module>
         <module>conch-hystrix</module>
-        <module>conch-lombok</module>
+<!--        <module>conch-lombok</module>-->
     </modules>
 
     <dependencies>
@@ -74,11 +74,6 @@
                 <version>${springboot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.nabob.conch</groupId>
-                <artifactId>conch-lombok</artifactId>
-                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

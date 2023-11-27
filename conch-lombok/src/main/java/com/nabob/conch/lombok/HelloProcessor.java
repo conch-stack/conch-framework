@@ -19,7 +19,9 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import java.util.Set;
 
-
+/**
+ * 支持注解编译时解析：IDEA Compile VM Options: -Djps.track.ap.dependencies=false
+ */
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes("com.nabob.conch.lombok.MyHello")
 public class HelloProcessor extends AbstractProcessor {
@@ -29,14 +31,16 @@ public class HelloProcessor extends AbstractProcessor {
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
+        super.init(processingEnv);
+
         System.err.println("这是我的第一人编译注释处理器");
+        System.err.println("支持注解编译时解析：IDEA Compile VM Options: -Djps.track.ap.dependencies=false");
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "这是我的处理器");
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "支持注解编译时解析：IDEA Compile VM Options: -Djps.track.ap.dependencies=false");
         javacTrees = JavacTrees.instance(processingEnv);// 语法树
         Context context = ((JavacProcessingEnvironment) processingEnv).getContext();
         this.treeMaker = TreeMaker.instance(context);
-        super.init(processingEnv);
         this.names = Names.instance(context);
-
     }
 
     @Override
