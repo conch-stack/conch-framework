@@ -26,7 +26,7 @@
 
         一些特殊的项目需要对整个系统进行测试，例如研发操作系统等
 
-![](D:\Users\jz.zheng\AppData\Roaming\marktext\images\2023-02-20-17-21-41-image.png)
+![](assets/2023-02-20-17-21-41-image.png)
 
 |                  | 单元测试  | 集成测试             | 功能测试                    |
 | ---------------- | ----- | ---------------- | ----------------------- |
@@ -50,13 +50,13 @@
 
 **冰淇淋蛋卷模型**
 
-<img src="file:///D:/Users/jz.zheng/AppData/Roaming/marktext/images/2023-02-20-17-39-36-image.png" title="" alt="" data-align="center">
+<img src="assets/2023-02-20-17-39-36-image.png" title="" alt="" data-align="center">
 
 冰淇淋蛋卷的出发点就是从单个测试的覆盖面考虑的，只要一些系统测试，就足以覆盖系统的大部分情况。当然，对于那些系统测试无法覆盖的场景就需要有低层的测试配合，比如，集成测试和单元测试。在冰淇淋蛋卷模型里，主力就是高层测试，低层测试只是作为高层测试的补充。
 
 **测试金字塔模型**
 
-<img src="file:///D:/Users/jz.zheng/AppData/Roaming/marktext/images/2023-02-20-17-41-08-image.png" title="" alt="" data-align="center">
+<img src="assets/2023-02-20-17-41-08-image.png" title="" alt="" data-align="center">
 
 测试金字塔的出发点是低层测试成本低、速度快、整体覆盖面广，所以要多写。因为低层测试覆盖了几乎所有的情况，高层的测试就可以只做一些大面上的覆盖，保证不同组件之间的协作是没有问题的。在这个模型里，主力是单元测试，而高层的测试则是作为补充。
 
@@ -146,7 +146,7 @@
 
 节奏：红 - 绿 - **重构**
 
-<img src="file:///D:/Users/jz.zheng/AppData/Roaming/marktext/images/2023-02-20-21-29-08-image.png" title="" alt="" data-align="center">
+<img src="assets/2023-02-20-21-29-08-image.png" title="" alt="" data-align="center">
 
 先写测试、然后写代码完成功能，**“驱动” 体现在“重构”上**
 
