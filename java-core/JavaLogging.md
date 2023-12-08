@@ -122,3 +122,29 @@ LogManager对象上的所有方法都是多线程安全的。
 LogNode管理：
 
 ![Tomcat LogNode](./assets/Tomcat LogNode.png)
+
+#### 定制LogManager
+
+对于大多数开发者来说，很少有需要定制LogManager的时候，只有是需要单独开发一个产品，需要完全独立的logger机制时才有可能需要定制LogManager，比如：
+
+- 希望自由定制log的输出路径
+- 希望完全定制log的format
+- 希望日志中的国际化信息采用自己定义的一套机制等
+
+定制目标：
+
+- 新增自定义LogManager
+  - 覆盖addLogger方法
+
+- 给Logger新增自定义的Hander
+  - 覆盖publish方法
+- 给Handler新增自定义的Fromatter
+  - 覆盖format方法
+
+定制实现：
+
+- 实现一个继承自java.util.logging.LogManager的类
+- 覆盖java.util.logging.LogManager的addLogger方法
+- addLogger方法调用了子类的internalInitializeLogger方法，internalInitializeLogger方法中先清空logger的所有handler，然后再增加一个自定义的Handler
+- 定制自己的Handler
+- 定制自己的Fromatter
