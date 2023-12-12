@@ -119,7 +119,10 @@ LogManager对象上的所有方法都是多线程安全的。
 
 #### Tomcat LogManager
 
-LogNode管理：
+* Why：
+  - Apache Tomcat 提供了一个可识别类加载器的自定义LogManager。这样做是为了避免日志混淆的问题，即多个 *Web* 应用程序（每个应用程序都有自己的类加载器）创建具有相同名称的记录器。
+
+- LogNode管理：
 
 ![Tomcat LogNode](./assets/Tomcat LogNode.png)
 
@@ -135,7 +138,9 @@ LogNode管理：
 
 - 新增自定义LogManager
   - 覆盖addLogger方法
-
+  - 如果需要的话，也可以定制获取日志配置的方法：readConfiguration(xxx)
+  - 自己管理Logger后，也需要实现reset方法，该方法用于重置日志配置
+  
 - 给Logger新增自定义的Hander
   - 覆盖publish方法
 - 给Handler新增自定义的Fromatter
