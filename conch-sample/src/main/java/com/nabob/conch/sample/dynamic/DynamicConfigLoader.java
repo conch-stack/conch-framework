@@ -1,6 +1,5 @@
 package com.nabob.conch.sample.dynamic;
 
-import com.nabob.conch.sample.dynamic.aop.DynamicAnnotationBeanPostProcessor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -41,10 +40,10 @@ public class DynamicConfigLoader implements ApplicationContextAware, BeanFactory
                 configurationClassPostProcessor.processConfigBeanDefinitions(registry);
 
                 // 手动获取一下
-                System.out.println(beanFactory.getBeanPostProcessorCount());
-//                beanFactory.getBean(DynamicAspect.class);
-                beanFactory.getBean(DynamicAnnotationBeanPostProcessor.class);
-                System.out.println(beanFactory.getBeanPostProcessorCount());
+//                System.out.println(beanFactory.getBeanPostProcessorCount());
+////                beanFactory.getBean(DynamicAspect.class);
+//                beanFactory.getBean(DynamicAnnotationBeanPostProcessor.class);
+//                System.out.println(beanFactory.getBeanPostProcessorCount());
             }
         }
 

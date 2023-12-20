@@ -1,7 +1,6 @@
 package com.nabob.conch.sample.dynamic;
 
 import com.nabob.conch.sample.User;
-import com.nabob.conch.sample.dynamic.aop.Dynamic;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -16,7 +15,6 @@ import java.util.Map;
  * @since 2023/7/20
  */
 @Service
-@Dynamic
 public class DynamicService implements BeanFactoryAware {
 
     private ConfigurableListableBeanFactory beanFactory;
