@@ -39,6 +39,7 @@
         <module>thinking-in-spring</module>
         <module>conch-hystrix</module>
 <!--        <module>conch-lombok</module>-->
+        <module>conch-agent</module>
     </modules>
 
     <dependencies>

@@ -21,6 +21,8 @@ import java.util.Set;
 
 /**
  * 支持注解编译时解析：IDEA Compile VM Options: -Djps.track.ap.dependencies=false
+ * <p>
+ * 编译整个项目须先讲 conch-lombok install 到本地
  */
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes("com.nabob.conch.lombok.MyHello")
