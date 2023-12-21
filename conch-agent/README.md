@@ -14,22 +14,9 @@ java -javaagent:D:\conch\conch-framework\conch-agent\conch-agent-jar\target\conc
 ### Attach Dynamic Load
 > agentmain 在 main 函数开始运行后才启动（依赖于Attach机制）
 
-进入 conch-agent-attach/target 目录下，执行
-Window：Git Shell
-```shell
-# 启动业务程序
-java -jar D:\\conch\\conch-framework\\conch-agent\\conch-agent-test\\target\\conch-agent-test-0.0.1.jar
-```
-获取业务程序PID ${PID}，替换下方Shell中的变量
-```shell
-java -classpath D:\\Users\\jz.zheng\\.jdks\\corretto-1.8.0_392\\lib\\tools.jar -jar conch-agent-attach-launcher-0.0.1.jar 35696 D:\\conch\\conch-framework\\conch-agent\\conch-agent-jar\\target\\conch-agent-jar-0.0.1.jar
-java -Xbootclasspath/a:D:\\Users\\jz.zheng\\.jdks\\corretto-1.8.0_392\\lib\\tools.jar -jar conch-agent-attach-launcher-0.0.1.jar 35696 D:\\conch\\conch-framework\\conch-agent\\conch-agent-jar\\target\\conch-agent-jar-0.0.1.jar
-java -Xbootclasspath/a:D:\\Users\\jz.zheng\\.jdks\\corretto-1.8.0_392\\lib\\tools.jar -jar conch-agent-attach-launcher-0.0.1.jar 35696 D:\conch\conch-framework\conch-agent\conch-agent-jar\target\conch-agent-jar-0.0.1.jar
-
-java -Xbootclasspath/a:D:\\Users\\jz.zheng\\.jdks\\corretto-1.8.0_392\\jre\\lib\\rt.jar;D:\\Users\\jz.zheng\\.jdks\\corretto-1.8.0_392\\jre\\lib\\jce.jar;D:\\Users\\jz.zheng\\.jdks\\corretto-1.8.0_392\\lib\\tools.jar -jar conch-agent-attach-0.0.1.jar 35696 D:\conch\conch-framework\conch-agent\conch-agent-jar\target\conch-agent-jar-0.0.1.jar
-
-D:\Users\jz.zheng\.jdks\corretto-1.8.0_392\bin\java.exe  -Djava.library.path=D:\Users\jz.zheng\.jdks\corretto-1.8.0_392\jre\bin -Xbootclasspath/a:D:\\Users\\jz.zheng\\.jdks\\corretto-1.8.0_392\\lib\\tools.jar  -jar conch-agent-attach-0.0.1.jar 35696
-```
+编译打包
+启动目标程序 conch-agent-test（为基于spring的web程序）
+使用conch-agent-attach-launcher 利用 Idea启动AttachLauncher，添加Run参数启动，传入目标程序的pid，即可（备注：conch-agent-attach-agent agent被硬编码在AttachLauncher的main方法中了）
 
 ### 扩展：
 BootStrap class扩展方案

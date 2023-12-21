@@ -18,6 +18,8 @@
         <module>conch-agent-jar</module>
         <module>conch-agent-attach-agent</module>
         <module>conch-agent-attach-launcher</module>
+        <module>conch-agent-attach-spring-agent</module>
+        <module>conch-agent-attach-spring-support</module>
         <module>conch-agent-test</module>
     </modules>
 

@@ -24,7 +24,8 @@ public class AttachLauncher {
         VirtualMachine vm = VirtualMachine.attach(jvmPid);
         System.out.println("我开始了");
 //        vm.loadAgent(args[1]);
-        vm.loadAgent("D:\\conch\\conch-framework\\conch-agent\\conch-agent-attach-agent\\target\\conch-agent-attach-agent-0.0.1.jar");
+//        vm.loadAgent("D:\\conch\\conch-framework\\conch-agent\\conch-agent-attach-agent\\target\\conch-agent-attach-agent-0.0.1.jar");
+        vm.loadAgent("D:\\conch\\conch-framework\\conch-agent\\conch-agent-attach-spring-agent\\target\\conch-agent-attach-spring-agent-0.0.1.jar");
         System.out.println("我结束了");
         vm.detach();
     }
