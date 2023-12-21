@@ -1,5 +1,7 @@
 package com.nabob.conch.agent.attach.spring.agent;
 
+import com.nabob.conch.agent.attach.spring.support.zookeeper.SpringBeanUtil;
+
 import java.lang.instrument.Instrumentation;
 import java.lang.management.ManagementFactory;
 
@@ -13,8 +15,12 @@ public class MyAgent {
         System.out.println("agentmain getPid = " + getPid());
         System.out.println("agentmain----attach----end");
 
-//        ManagementFactory.get
-
+        /**
+         * 目前 Attach 失败， 因为Attach的线程
+         */
+        Object bean = SpringBeanUtil.getBean("dynamicService");
+        System.out.println(bean.toString());
+        System.out.println(bean.getClass().getSimpleName());
     }
 
     private static String getPid() {

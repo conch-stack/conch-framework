@@ -27,3 +27,15 @@ Java 命令行提供了如何扩展 bootStrap 级别 class 的简单方法。
 
 多个path：分隔符与classpath参数类似，unix使用:号，windows使用;号，这里以unix为例
 
+热加载：
+- https://tech.meituan.com/2022/03/17/java-hotswap-sonic.html
+- https://github.com/dcevm/dcevm
+- https://github.com/HotswapProjects/HotswapAgent/tree/d57efeaf40109edf1877fbaef1d1173e7e1bd0e7
+- http://hotswapagent.org/
+- https://maven.apache.org/plugins/maven-toolchains-plugin/
+
+架构：
+- https://github.com/alibaba/tengine
+- https://github.com/zfoo-project/zfoo
+
+

@@ -28,4 +28,13 @@
         <main.user.dir>${basedir}/..</main.user.dir>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.nabob.conch</groupId>
+                <artifactId>conch-agent-attach-spring-support</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

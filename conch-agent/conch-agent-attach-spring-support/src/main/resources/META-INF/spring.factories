@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.nabob.conch.agent.attach.spring.support.zookeeper.SpringBeanAutoConfiguration
