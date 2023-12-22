@@ -97,7 +97,7 @@
   
     - Type
   
-      - ```
+      - ```java
         Class:
         
         ParameterizedType:参数化类型,List<String>这种带泛型的类型 (代表整个泛型)

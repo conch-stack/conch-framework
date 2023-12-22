@@ -16,6 +16,7 @@ public class TicketUpgradeAppointValve implements Valve<AppointRequestHolder, Bo
     @Override
     public void handle(PipelineContext<AppointRequestHolder, Boolean> ctx) {
         System.out.println("TicketUpgradeAppointValve is called");
+        ctx.setResult(Boolean.TRUE);
         ctx.next();
     }
 
