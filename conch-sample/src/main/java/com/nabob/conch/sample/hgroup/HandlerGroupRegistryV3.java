@@ -45,7 +45,7 @@ public class HandlerGroupRegistryV3 implements ApplicationContextAware {
         Optional<Map<String, Handler>> string = doGet(handlerClass);
         if (string.isPresent()) {
             Map<String, Handler> stringHandlerMap = string.get();
-            return Optional.ofNullable(stringHandlerMap.get(String.valueOf(name)));
+            return Optional.ofNullable(stringHandlerMap.get(formatInt(name)));
         }
         return Optional.empty();
     }
