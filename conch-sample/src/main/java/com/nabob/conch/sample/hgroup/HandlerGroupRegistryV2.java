@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * @since 2023/9/21
  */
 @Component
-public class HandlerGroupRegistry implements ApplicationContextAware {
+public class HandlerGroupRegistryV2 implements ApplicationContextAware {
 
 
     // key=handlerClass; value=Map<groupName, handlerInstance>
@@ -65,11 +65,22 @@ public class HandlerGroupRegistry implements ApplicationContextAware {
 
         Map<String, Handler> valveBeans = this.applicationContext.getBeansOfType(handlerClass);
         if (MapUtils.isNotEmpty(valveBeans)) {
-            Map<String, Handler> result = valveBeans.values().stream().filter(target -> target.getClass().isAnnotationPresent(HandlerGroup.class))
-                    .collect(Collectors.toMap(target -> {
-                        HandlerGroup handlerGroup = Objects.requireNonNull(AnnotationUtils.findAnnotation(target.getClass(), HandlerGroup.class));
-                        return StringUtils.isNotBlank(handlerGroup.groupName()) ? handlerGroup.groupName() : String.valueOf(handlerGroup.groupName2());
-                    }, Function.identity(), (a, b) -> a));
+            Map<String, Handler> result = Maps.newHashMap();
+            for (Handler handler : valveBeans.values()) {
+                HandlerGroupV2 annotation = AnnotationUtils.findAnnotation(handler.getClass(), HandlerGroupV2.class);
+                if (Objects.nonNull(annotation)) {
+                    if (null != annotation.strForList() && annotation.strForList().length > 0) {
+                        for (String s : annotation.strForList()) {
+                            result.put(s, handler);
+                        }
+                    } else if (null != annotation.intForList() && annotation.intForList().length > 0) {
+                        for (int i : annotation.intForList()) {
+                            result.put(String.valueOf(i), handler);
+                        }
+                    }
+                }
+            }
+
             if (MapUtils.isNotEmpty(result)) {
                 CACHE.put(handlerClass, result);
                 return Optional.of(result);

@@ -16,12 +16,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Component
-public @interface HandlerGroup {
+public @interface HandlerGroupV2 {
 
-    /**
-     * group name
-     */
-    String groupName() default "";
+    String[] strForList() default {};
 
-    int groupName2() default Integer.MIN_VALUE;
+    int[] intForList() default {};
 }
