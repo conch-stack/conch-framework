@@ -34,6 +34,10 @@ Java 命令行提供了如何扩展 bootStrap 级别 class 的简单方法。
 - http://hotswapagent.org/
 - https://maven.apache.org/plugins/maven-toolchains-plugin/
 
+字节码：
+https://tech.meituan.com/2019/09/05/java-bytecode-enhancement.html
+https://www.cnblogs.com/chiangchou/p/javassist.html
+
 架构：
 - https://github.com/alibaba/tengine
 - https://github.com/zfoo-project/zfoo

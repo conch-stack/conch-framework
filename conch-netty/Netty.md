@@ -46,3 +46,11 @@ ch.pipline().addList("idleCheckHandler", new IdleStateHandler(0, 20, 0, TimeUnit
 - 客户端加上 write idle check + keepalive - 客户端5s不发送数据，就发送一个keepalive
   - 避免连接被断开
   - 启用不频繁keepalive
+
+
+
+
+
+文档：
+
+https://kkewwei.github.io/elasticsearch_learning/2018/07/20/Netty-PoolChunk%E5%8E%9F%E7%90%86%E6%8E%A2%E7%A9%B6/
