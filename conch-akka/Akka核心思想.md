@@ -9,6 +9,8 @@
 Actor模型：
 
 ![image-20210223172931292](assets/image-20210223172931292.png)
+![image](assets/img.png)
+see: https://www.cnblogs.com/MOBIN/p/7236893.html
 
 Actor生命周期：
 
@@ -32,6 +34,9 @@ Actor生命周期：
 
 
 ##### Akka线程配置（资源配置）
+- 在Actor内部慎用阻塞IO，因为默认他们是跑在DefaultDispatcher进程上的，数量有限，而且和重要的系统分配共用
+- 需要异步IO时指定新的自定义Dispatcher
+
 
 
 
@@ -41,3 +46,6 @@ Actor生命周期：
      1. 发送一条或多条消息给其他的actor
      2. 创建子acotr
      3. 返回一个新的行为，准备接收下一个消息
+
+#### 任务拆分聚合方案
+https://www.jianshu.com/p/669cc13c474f

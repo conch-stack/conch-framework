@@ -12,6 +12,17 @@
     <artifactId>conch-akka</artifactId>
 
     <dependencies>
+
+        <!--  https://github.com/jgrapht/jgrapht
+
+        1.4.x之后 支持JDK 11 or later
+        -->
+        <dependency>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-core</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+
         <!-- 配置管理 -->
         <dependency>
             <groupId>com.typesafe</groupId>
