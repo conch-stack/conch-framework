@@ -1,4 +1,4 @@
-package com.nabob.conch.akka.dag;
+package com.nabob.conch.akka.graph.dag;
 
 public class TaskInstance {
     private String taskInstanceId;

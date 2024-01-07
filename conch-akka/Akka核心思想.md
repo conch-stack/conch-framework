@@ -31,6 +31,11 @@ Actor生命周期：
 - 双向消息
 - 出错恢复策略
 
+#### 事件
+传递消息涉及网络、主机、Actor邮箱、Actor消息处理函数等多个环节，所以非常脆弱。主要的模式有三种（参见RMP-164：确保送达机制）：
+最多一次：消息在发出去就不用管，也不用保存消息传送的状态。所以消息可能会丢失。这是Actor默认采用的方式，简单而高效。
+最少一次：发送后还要保存消息传送状态甚至进行重试，以确保收件人收到消息。所以消息不会丢失，但不能避免重复。
+正好一次：除了发件人，还要在收件人保存消息传送状态，以确保收件人不会接到重复的消息。所以消息既不会丢失，也不会重复。
 
 
 ##### Akka线程配置（资源配置）
@@ -38,7 +43,18 @@ Actor生命周期：
 - 需要异步IO时指定新的自定义Dispatcher
 
 
+#### watch
+使用Dead Watch实现有关Actor停止时的互动。Dead Watch关系不仅限于父子之间，只要知道对方的ActorRef即可。
+当被观察的Actor停止时，观察者Actor将会收到一个Terminated(actorRefOfWatchee)信号。
+由于该信号无法附加其他信息，所以推荐做法是将其再包装成一条消息WatcheeTerminated，
+并在创建被观察者时就用context.watchWith(watcheeActor, WatcheeTerminated(watcheeActor,...))建立观察关系。（WatcheeTerminated会被context自动填充吗？貌似是的。）
 
+#### 读写分离
+遵循CQRS的原则，在Actor里也推荐读写分离，将Query放入单独的Actor，避免对业务Actor的干扰。在示例中，由业务Actor负责创建Query Actor。
+
+#### 查询超时
+Query通常都要设置超时，于是引出Actor内建的调度机制，在工厂的Behaviors.setup中使用Behaviors.withTimers定义timers，
+然后在Actor类里用timers.startSingleTime来调度一条经过给定延时后才发出的消息。
 
 ##### 协议+行为
 
@@ -49,3 +65,10 @@ Actor生命周期：
 
 #### 任务拆分聚合方案
 https://www.jianshu.com/p/669cc13c474f
+
+#### 优秀文档
+https://www.cnblogs.com/Abbey/p/13151813.html
+
+#### 设计点
+- 事件幂等？状态机
+- 
