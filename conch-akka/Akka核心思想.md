@@ -56,6 +56,12 @@ Actor生命周期：
 Query通常都要设置超时，于是引出Actor内建的调度机制，在工厂的Behaviors.setup中使用Behaviors.withTimers定义timers，
 然后在Actor类里用timers.startSingleTime来调度一条经过给定延时后才发出的消息。
 
+#### 妥投
+收件人甄别重复消息并决定丢弃它的检测机制。实现它的第一种方式，是直接采用Akka的妥投模块，改变消息投递模式为最少投递一次。第二种方式，是从业务逻辑的角度，确保消息处理的设计是幂等的。
+
+#### 配置
+https://doc.akka.io/docs/akka/current/general/configuration-reference.html
+
 ##### 协议+行为
 
 一个actor接收到消息之后的行为包含如下3个步骤：
@@ -68,6 +74,8 @@ https://www.jianshu.com/p/669cc13c474f
 
 #### 优秀文档
 https://www.cnblogs.com/Abbey/p/13151813.html
+源码分析：https://www.cnblogs.com/gabry/category/1247326.html
+Dispatchers: https://doc.akka.io/docs/akka/current/typed/dispatchers.html
 
 #### 设计点
 - 事件幂等？状态机

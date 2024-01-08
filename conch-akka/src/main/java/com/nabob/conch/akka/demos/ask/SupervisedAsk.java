@@ -11,6 +11,7 @@ import akka.actor.Scheduler;
 import akka.actor.Status;
 import akka.actor.SupervisorStrategy;
 import akka.actor.Terminated;
+import akka.actor.typed.javadsl.AskPattern;
 import akka.pattern.Patterns;
 
 import java.time.Duration;
@@ -111,6 +112,7 @@ public class SupervisedAsk {
     public static CompletionStage<Object> askOf(
             ActorRef supervisorCreator, Props props, Object message, Duration timeout) {
         AskParam param = new AskParam(props, message, timeout);
+//        AskPattern.ask(supervisorCreator, param, timeout, actorSystem)
         return Patterns.ask(supervisorCreator, param, timeout);
     }
 
