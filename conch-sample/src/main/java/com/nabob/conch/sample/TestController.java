@@ -6,6 +6,7 @@ import com.nabob.conch.sample.dynamic.DynamicConfig;
 import com.nabob.conch.sample.dynamic.DynamicConfigLoader;
 import com.nabob.conch.sample.dynamic.DynamicService;
 import com.nabob.conch.sample.dynamic.DynamicSpringBeanFactory;
+import com.nabob.conch.sample.gc.GarbageCollection;
 import com.nabob.conch.sample.job.Config;
 import com.nabob.conch.sample.job.ConfigBean;
 import com.nabob.conch.sample.test.AgentTestService;
@@ -101,6 +102,13 @@ public class TestController {
         System.out.println("testAgentAop start");
         agentTestService.testAgentPackageAop();
         System.out.println("testAgentAop end");
+    }
+
+    @RequestMapping("/testGC")
+    public void testGC() throws InvocationTargetException, IllegalAccessException {
+        System.out.println("testGC start");
+        GarbageCollection.run();
+        System.out.println("testGC end");
     }
 
 //    @RequestMapping("/testAA")

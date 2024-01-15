@@ -15,7 +15,7 @@
     <properties>
         <main.user.dir>${basedir}/..</main.user.dir>
         <slf4j-api.version>1.7.25</slf4j-api.version>
-        <lombok.version>1.16.20</lombok.version>
+        <lombok.version>1.18.26</lombok.version>
         <cglib.version>3.2.6</cglib.version>
     </properties>
 

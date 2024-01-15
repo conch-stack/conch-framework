@@ -69,6 +69,15 @@ https://doc.akka.io/docs/akka/current/general/configuration-reference.html
      2. 创建子acotr
      3. 返回一个新的行为，准备接收下一个消息
 
+#### FSM 状态机（Finite State Machine）
+- Behaviors.same：在 Actor 处理完一条消息后，复用行为。
+- Behaviors.unhandled：复用行为，同时将本次接受的消息作为死信 ( dead letter ) 记录到日志。
+- Behaviors.empty：后续不处理任何消息。将后续收到的消息作为死信记录到日志。
+- Behaviors.ignore：后续不会处理任何消息。将后续收到的消息直接忽略掉。
+- Behaviors.stopped：销毁当前被创建出的 ActorRef。Actor 生命周期的 PostStop 钩子函数将被触发。
+
+Behaviors.empty 和 Behaviors.ignore 一般用于顶级 Actor，因为它只需守护子 Actors 以维持工作状态，但自身不处理任何消息。
+
 #### 任务拆分聚合方案
 https://www.jianshu.com/p/669cc13c474f
 

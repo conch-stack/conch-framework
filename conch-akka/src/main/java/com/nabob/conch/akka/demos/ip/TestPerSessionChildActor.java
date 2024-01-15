@@ -24,9 +24,15 @@ public class TestPerSessionChildActor {
 
     // dummy data types just for this sample
     public static class Keys {
+        public static void print() {
+            System.out.println("getKey");
+        }
     }
 
     public static class Wallet {
+        public static void print() {
+            System.out.println("getWallet");
+        }
     }
 
     public static class KeyCabinet {
@@ -127,12 +133,7 @@ public class TestPerSessionChildActor {
         private ActorRef<KeyCabinet.GetKeys> keyCabinet;
         private ActorRef<Drawer.GetWallet> drawer;
 
-        public Map<String, ActorRef<Object>> child = new ConcurrentHashMap<>();
-
-        private Home() {
-        }
-
-        public void init(ActorContext<Command> context) {
+        private Home(ActorContext<Command> context) {
             this.context = context;
             this.keyCabinet = context.spawn(KeyCabinet.create(), "key-cabinet");
             this.drawer = context.spawn(Drawer.create(), "drawer");
@@ -146,10 +147,17 @@ public class TestPerSessionChildActor {
 
         private Behavior<Command> onLeaveHome(LeaveHome message) {
             ActorRef<Object> spawn = context.spawn(
-                    PrepareToLeaveHome.create(message.who, message.respondTo, keyCabinet, drawer, this),
+                    PrepareToLeaveHome.create(message.who, message.respondTo, keyCabinet, drawer),
                     "leaving" + message.who);
-            child.put(message.who, spawn);
+
+//            new KeyCabinet.GetKeys(message.who, spawn)
+
             return Behaviors.same();
+        }
+
+        // actor behavior
+        public static Behavior<Command> create() {
+            return Behaviors.setup(context -> new Home(context).behavior());
         }
     }
 
@@ -159,9 +167,9 @@ public class TestPerSessionChildActor {
                 String whoIsLeaving,
                 ActorRef<Home.ReadyToLeaveHome> replyTo,
                 ActorRef<KeyCabinet.GetKeys> keyCabinet,
-                ActorRef<Drawer.GetWallet> drawer, Home home) {
+                ActorRef<Drawer.GetWallet> drawer) {
             return Behaviors.setup(
-                    context -> new PrepareToLeaveHome(context, whoIsLeaving, replyTo, keyCabinet, drawer, home));
+                    context -> new PrepareToLeaveHome(context, whoIsLeaving, replyTo, keyCabinet, drawer));
         }
 
         private final String whoIsLeaving;
@@ -171,21 +179,17 @@ public class TestPerSessionChildActor {
         private Optional<Wallet> wallet = Optional.empty();
         private Optional<Keys> keys = Optional.empty();
 
-        private Home home;
-
         private PrepareToLeaveHome(
                 ActorContext<Object> context,
                 String whoIsLeaving,
                 ActorRef<Home.ReadyToLeaveHome> replyTo,
                 ActorRef<KeyCabinet.GetKeys> keyCabinet,
-                ActorRef<Drawer.GetWallet> drawer,
-                Home home) {
+                ActorRef<Drawer.GetWallet> drawer) {
             super(context);
             this.whoIsLeaving = whoIsLeaving;
             this.replyTo = replyTo;
             this.keyCabinet = keyCabinet;
             this.drawer = drawer;
-            this.home = home;
         }
 
         @Override
@@ -193,14 +197,7 @@ public class TestPerSessionChildActor {
             return newReceiveBuilder()
                     .onMessage(Wallet.class, this::onWallet)
                     .onMessage(Keys.class, this::onKeys)
-                    .onSignal(PostStop.class, signal -> onPostStop())
                     .build();
-        }
-
-        private Behavior<Object> onPostStop() {
-            getContext().getLog().info("PrepareToLeaveHome Stopped");
-            home.child.remove(whoIsLeaving);
-            return this;
         }
 
         private Behavior<Object> onWallet(Wallet wallet) {
@@ -225,16 +222,8 @@ public class TestPerSessionChildActor {
 
     public static void main(String[] args) {
 
-        Home home = new Home();
-
-        // actor behavior
-        Behavior<Home.Command> homeBehavior = Behaviors.setup(context -> {
-            home.init(context);
-            return home.behavior();
-        });
-
         //#actor-system
-        ActorSystem<Home.Command> testPerSessionChildActor = ActorSystem.create(homeBehavior, "TestPerSessionChildActor");
+        ActorSystem<Home.Command> testPerSessionChildActor = ActorSystem.create(Home.create(), "TestPerSessionChildActor");
         //#actor-system
 
         // 拿到多个返回后的Actor
@@ -252,10 +241,6 @@ public class TestPerSessionChildActor {
                 //#main-send-messages
 
                 Thread.sleep(TimeUnit.SECONDS.toMillis(5));
-
-                ActorRef<Object> objectActorRef = home.child.get(who);
-                objectActorRef.tell(new Keys());
-                objectActorRef.tell(new Wallet());
 
                 System.in.read();
                 System.out.println("end " + i);

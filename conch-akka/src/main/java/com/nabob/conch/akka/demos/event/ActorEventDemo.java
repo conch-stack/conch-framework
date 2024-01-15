@@ -16,7 +16,6 @@ public class ActorEventDemo {
 
         ActorSystem<Event1> actorSystemNew = ActorSystem.create(Event1Behavior.create(), "Event1ActorSystem");
         actorSystemNew.tell(new Event1("小明"));
-
         try {
             System.out.println(">>> Press ENTER to exit <<<");
             System.in.read();

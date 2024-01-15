@@ -90,6 +90,9 @@ public class TestClassLoader extends URLClassLoader {
         this.javaseClassLoader = j;
     }
 
+    /**
+     * 重写 findClass ， 目的是为了后续 在loadClass的时候，调用findClass，优先走本地找
+     */
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
         // 1、先自己的路径找
