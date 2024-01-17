@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author Adam
  * @since 2024/1/15
  */
-public class Splitter extends AbstractBehavior<PhotoImage> {
+public class SplitterV2 extends AbstractBehavior<PhotoImage> {
 
     private static AtomicLong globalId = new AtomicLong(0);
 
@@ -27,7 +27,7 @@ public class Splitter extends AbstractBehavior<PhotoImage> {
 
     private final List<ActorRef<PhotoLabel>> workers = new ArrayList<>();
 
-    public Splitter(ActorContext<PhotoImage> context, PipelineContext pipelineContext) {
+    public SplitterV2(ActorContext<PhotoImage> context, PipelineContext pipelineContext) {
         super(context);
         this.pipelineContext = pipelineContext;
 
@@ -46,7 +46,7 @@ public class Splitter extends AbstractBehavior<PhotoImage> {
                     workers.forEach(worker -> worker.tell(PhotoLabel.builder()
                             .id(id)
                             .photoImage(photoImage)
-                            .to(pipelineContext.getAggregator())
+                            .to(pipelineContext.getAggregatorV2())
                             .build()));
 
                     return Behaviors.same();
@@ -55,6 +55,6 @@ public class Splitter extends AbstractBehavior<PhotoImage> {
     }
 
     public static Behavior<PhotoImage> create(final PipelineContext pipelineContext) {
-        return Behaviors.setup(context -> new Splitter(context, pipelineContext));
+        return Behaviors.setup(context -> new SplitterV2(context, pipelineContext));
     }
 }

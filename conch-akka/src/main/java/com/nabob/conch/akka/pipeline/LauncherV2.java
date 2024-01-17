@@ -7,29 +7,59 @@ import akka.actor.typed.javadsl.Behaviors;
 import com.nabob.conch.akka.pipeline.dto.Command;
 import com.nabob.conch.akka.pipeline.dto.Photo;
 import com.nabob.conch.akka.pipeline.dto.PhotoImage;
+import com.nabob.conch.akka.pipeline.dto.PhotoMsg;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author Adam
  * @since 2024/1/15
  */
-public class Launcher {
+public class LauncherV2 {
 
+    /**
+     * ---------------------------------start--------------------------------------------
+     * >>> Press ENTER to run <<<
+     * 1
+     * getPhotoLabelJob2 sleep 2s
+     * Photo(speed=71, license=1314testBytes0)
+     * 1已过期删除
+     * ---------------------------------end--------------------------------------------
+     *
+     *
+     * ---------------------------------start--------------------------------------------
+     * >>> Press ENTER to run <<<
+     * 2
+     * getPhotoLabelJob2 sleep 2s
+     * getPhotoLabelJob2 sleep 2s
+     * Photo(speed=26, license=1314testBytes0)
+     * 2已过期删除
+     * 3已过期删除
+     * ---------------------------------end--------------------------------------------
+     *
+     *
+     * ---------------------------------start--------------------------------------------
+     * >>> Press ENTER to run <<<
+     * 3已过期删除
+     */
     public static void main(String[] args) {
 
-        Launcher launcher = new Launcher();
+        LauncherV2 launcher = new LauncherV2();
 
         PipelineContext pipelineContext = new PipelineContext();
         pipelineContext.setBehaviorHelper(new BehaviorHelper());
 
-        ActorSystem<PhotoImage> photoSystem = ActorSystem.create(Splitter.create(pipelineContext), "photoSystem");
+        // 超时
+        pipelineContext.setTimeout(Duration.ofSeconds(2));
 
-        ActorRef<Command> photoAggSystem = photoSystem.systemActorOf(Aggregator.create(pipelineContext), "photoAggSystem", Props.empty());
-        pipelineContext.setAggregator(photoAggSystem);
+        ActorSystem<PhotoImage> photoSystem = ActorSystem.create(SplitterV2.create(pipelineContext), "photoSystem");
+
+        ActorRef<Command> photoAggSystemV2 = photoSystem.systemActorOf(AggregatorV2.create(pipelineContext), "photoAggSystemV2", Props.empty());
+        pipelineContext.setAggregatorV2(photoAggSystemV2);
 
         ActorRef<Photo> photoResultSystem = photoSystem.systemActorOf(Behaviors.setup(ResultStream::new), "photoResultSystem", Props.empty());
         pipelineContext.setResultStream(photoResultSystem);

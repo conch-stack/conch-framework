@@ -6,7 +6,7 @@ import com.nabob.conch.akka.pipeline.dto.PhotoImage;
 import com.nabob.conch.akka.pipeline.dto.PhotoLabel;
 import com.nabob.conch.akka.pipeline.dto.PhotoMsg;
 
-import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * BehaviorHelper
@@ -24,7 +24,6 @@ public class BehaviorHelper {
             PhotoMsg photoMsg = new PhotoMsg();
             photoMsg.id = photoLabel.id;
             photoMsg.license = license;
-
             // 通知下游
             photoLabel.to.tell(photoMsg);
             return Behaviors.same();
@@ -43,6 +42,9 @@ public class BehaviorHelper {
             PhotoMsg photoMsg = new PhotoMsg();
             photoMsg.id = photoLabel.id;
             photoMsg.speed = speed;
+
+            System.out.println("getPhotoLabelJob2 sleep 2s");
+            Thread.sleep(TimeUnit.SECONDS.toMillis(2));
 
             // 通知下游
             photoLabel.to.tell(photoMsg);

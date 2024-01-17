@@ -16,5 +16,5 @@ public class PhotoLabel {
 
     public PhotoImage photoImage;
 
-    public ActorRef<PhotoMsg> to;
+    public ActorRef<Command> to;
 }

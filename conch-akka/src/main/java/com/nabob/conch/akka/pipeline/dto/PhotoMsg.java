@@ -4,7 +4,7 @@ package com.nabob.conch.akka.pipeline.dto;
  * @author Adam
  * @since 2024/1/14
  */
-public class PhotoMsg {
+public class PhotoMsg implements Command {
 
     public long id;
 
