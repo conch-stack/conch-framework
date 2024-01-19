@@ -109,6 +109,12 @@
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-actor-testkit-typed_${scala.binary.version}</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>scala-library</artifactId>
+                    <groupId>org.scala-lang</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
