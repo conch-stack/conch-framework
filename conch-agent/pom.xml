@@ -21,6 +21,8 @@
         <module>conch-agent-attach-spring-agent</module>
         <module>conch-agent-attach-spring-support</module>
         <module>conch-agent-test</module>
+
+        <module>conch-agent-v2</module>
     </modules>
 
     <properties>
