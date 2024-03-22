@@ -26,7 +26,7 @@
         <!-- apache commons -->
         <commons-lang3.version>3.10</commons-lang3.version>
         <commons-collections4.version>4.4</commons-collections4.version>
-        <commons-configuration2.version>2.8.0</commons-configuration2.version>
+        <commons-configuration2.version>2.10.1</commons-configuration2.version>
     </properties>
 
     <modules>
