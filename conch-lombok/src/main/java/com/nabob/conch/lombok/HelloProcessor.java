@@ -37,8 +37,10 @@ public class HelloProcessor extends AbstractProcessor {
 
         System.err.println("这是我的第一人编译注释处理器");
         System.err.println("支持注解编译时解析：IDEA Compile VM Options: -Djps.track.ap.dependencies=false");
+        System.err.println("https://blog.csdn.net/u013541707/article/details/117993435");
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "这是我的处理器");
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "支持注解编译时解析：IDEA Compile VM Options: -Djps.track.ap.dependencies=false");
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "https://blog.csdn.net/u013541707/article/details/117993435");
         javacTrees = JavacTrees.instance(processingEnv);// 语法树
         Context context = ((JavacProcessingEnvironment) processingEnv).getContext();
         this.treeMaker = TreeMaker.instance(context);

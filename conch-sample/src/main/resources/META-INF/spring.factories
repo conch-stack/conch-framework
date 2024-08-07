@@ -1,0 +1,6 @@
+# Application Context Initializer
+org.springframework.context.ApplicationContextInitializer=com.nabob.conch.sample.bootenhance.ainit.ApplicationContextInitializerPoint
+
+
+# Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=

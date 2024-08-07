@@ -19,6 +19,6 @@ public class AutoConfigurationTest {
 
     @Bean(name = "user")
     public User user() {
-        return new User();
+        return new User("原始name", 1000);
     }
 }
