@@ -1,5 +1,6 @@
 package com.nabob.conch.sample.bootenhance.ainit;
 
+import com.nabob.conch.sample.bootenhance.bbeanfactory.MyBeanDefinitionRegistryPostProcessor;
 import com.nabob.conch.sample.bootenhance.bbeanfactory.MyBeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContextInitializer;
@@ -36,6 +37,7 @@ public class ApplicationContextInitializerPoint implements ApplicationContextIni
 //      applicationContext.addApplicationListener();
 
       applicationContext.addBeanFactoryPostProcessor(new MyBeanFactoryPostProcessor());
+      applicationContext.addBeanFactoryPostProcessor(new MyBeanDefinitionRegistryPostProcessor());
 
       System.out.println("-------------ApplicationContextInitializerPoint # initialize 结束------------");
       System.out.println();

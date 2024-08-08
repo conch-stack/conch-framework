@@ -15,6 +15,8 @@ import org.springframework.util.ObjectUtils;
  * 可直接用 @Bean进行注册；
  * 可以使用 configurableListableBeanFactory.addBeanPostProcessor(); {@linkplain  com.nabob.conch.sample.bootenhance.bbeanfactory.MyBeanFactoryPostProcessor }
  *
+ * 时机: bean在初始化之前(postProcessBeforeInitialization) 和初始化之后(postProcessAfterInitialization),注意 初始化前说明其肯定已经实例化了
+ *
  * 调用顺序：
  * 1. postProcessBeforeInstantiation
  * 2. postProcessAfterInstantiation

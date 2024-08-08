@@ -1,10 +1,13 @@
-package com.nabob.conch.sample.advice.testimport;
+package com.nabob.conch.sample.bootenhance.eaware;
 
 import com.nabob.conch.sample.User;
+import com.nabob.conch.sample.advice.EnableRpcLogV2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportAware;
+import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.lang.Nullable;
 
 /**
  * TestImportAware
@@ -19,11 +22,22 @@ import org.springframework.core.type.AnnotationMetadata;
  * @author Adam
  * @since 2023/3/15
  */
-@Configuration
+//@Configuration  不生效
 public class TestImportAware implements ImportAware {
+
+    @Nullable
+    protected AnnotationAttributes enableRpcLogV2;
+
     @Override
     public void setImportMetadata(AnnotationMetadata importMetadata) {
         System.out.println("TestImportAware run setImportMetadata");
+
+        this.enableRpcLogV2 = AnnotationAttributes.fromMap(
+                importMetadata.getAnnotationAttributes(EnableTestImportAware.class.getName(), false));
+        if (this.enableRpcLogV2 == null) {
+            throw new IllegalArgumentException(
+                    "@EnableAsync is not present on importing class " + importMetadata.getClassName());
+        }
     }
 
     @Bean(name = "user1")
