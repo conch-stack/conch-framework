@@ -3,7 +3,10 @@ package com.nabob.conch.sample.advice.agentv2;
 import com.nabob.conch.sample.advice.EnableRpcLogV2;
 import com.nabob.conch.sample.advice.agentv2.processor.AgentPackageBeanPostProcessor;
 import com.nabob.conch.sample.advice.agentv2.processor.RpcLogAnnotationBeanPostProcessor;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Role;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
@@ -16,6 +19,8 @@ import java.lang.annotation.Annotation;
  * @author Adam
  * @since 2023/3/15
  */
+@Configuration
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class RpcLogConfiguration extends AbstractRpcConfigurationConfiguration {
 
     @Bean

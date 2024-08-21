@@ -1,5 +1,7 @@
 ## ZGC
 
+https://github.com/yetianlong/ZGC_Analysis
+
 ### Allocation Stall
 
 ZGC日志中可以看到**大量的秒级Allocation Stall**，已经类似于FGC了。Allocation Stall是一种**GC吞吐量不够时触发的线程级的STW**：当没有剩余内存可供申请时，ZGC会暂停当前用户线程并专注于回收内存。
@@ -83,3 +85,13 @@ ZGC：
 G1:
 
 - 对于那些只是在后台进行密集计算的应用程序，G1 或者 Parallel 垃圾回收器可能具有更好的垃圾回收性能
+
+
+
+
+
+
+
+**ZGC Cycles：统计的是ZGC发生的次数以及总耗时**
+
+**ZGC Pauses：统计的是ZGC在GC过程中暂停的次数及暂停时间**

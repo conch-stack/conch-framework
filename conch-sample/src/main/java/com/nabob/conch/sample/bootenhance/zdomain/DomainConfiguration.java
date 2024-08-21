@@ -2,6 +2,12 @@ package com.nabob.conch.sample.bootenhance.zdomain;
 
 import com.nabob.conch.sample.bootenhance.dinitialization.InitializationBean;
 import com.nabob.conch.sample.bootenhance.eaware.EnableTestImportAware;
+import com.nabob.conch.sample.bootenhance.importselect.EnableImportSelectTest;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -11,8 +17,9 @@ import org.springframework.context.annotation.Lazy;
  * @since 2024/8/7
  */
 @EnableTestImportAware
+@EnableImportSelectTest
 @Configuration
-public class DomainConfiguration {
+public class DomainConfiguration extends TestConfiguration implements ApplicationContextAware {
 
     @Bean
     public SuperUser superUser() {
@@ -32,5 +39,11 @@ public class DomainConfiguration {
     @Lazy
     public InitializationBean initializationBean1() {
         return new InitializationBean();
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        ConfigurableApplicationContext ctx = (ConfigurableApplicationContext) applicationContext;
+        System.out.println(ctx.getBeanDefinitionCount());
     }
 }

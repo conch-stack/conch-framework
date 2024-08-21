@@ -14,6 +14,10 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 /**
  * 时机: refresh()的 this.invokeBeanFactoryPostProcessors(beanFactory);此时此bean的定义信息 都已经加载完毕 但是还没到实例化以及初始化阶段
  *
+ * 可参考 ： ConfigurationClassPostProcessor
+ * - postProcessBeanDefinitionRegistry 扫描解析
+ * - postProcessBeanFactory 增强Configuration类 enhanceConfigurationClasses
+ *
  * @author Adam
  * @since 2024/8/8
  */

@@ -19,6 +19,9 @@ import org.springframework.lang.Nullable;
  *      ImportAware 其实就是为了获取 AnnotationMetadata 进而拿到自己想要的 注解什么的
  *      可以使用  ImportBeanDefinitionRegistrar 代替
  *
+ * ImportAware是如何获取到注解元信息的呢？
+ * 主要就是在ConfigurationClassPostProcessor中注入了一个ImportAwareBeanPostProcessor，在Bean的生命周期中将属性设置进去
+ *
  * @author Adam
  * @since 2023/3/15
  */
