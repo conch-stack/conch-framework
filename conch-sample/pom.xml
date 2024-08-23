@@ -17,6 +17,19 @@
     </properties>
 
     <dependencies>
+        <!-- needed for parsing the Keywords via JTree in ParserKeywordsUtils -->
+        <dependency>
+            <groupId>net.java.dev.javacc</groupId>
+            <artifactId>javacc</artifactId>
+            <version>[7.0.13,)</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>[2.15.1,)</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
