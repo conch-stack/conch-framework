@@ -85,6 +85,21 @@ $ sar -B 1
   - 解决方案：
     - 因为相比内存回收的危害而言，NUMA 带来的性能提升几乎可以忽略，所以配置为 0，利 远大于弊
       - vm.zone_reclaim_mode = 0
+  
+- 整体设置
+  
+  ```shell
+  echo 5 > /proc/sys/vm/dirty_background_ratio
+  echo 10 > /proc/sys/vm/dirty_ratio
+  echo 4194304 > /proc/sys/vm/extra_free_kbytes
+  
+  # 要使设置永久生效（即使在系统重启后），需要将参数写入 /etc/sysctl.conf 文件：
+  vm.dirty_background_ratio = 5
+  vm.dirty_ratio = 10
+  vm.extra_free_kbytes = 4194304
+  ```
+  
+  
 
 ##### PageCache专业分析工具
 
