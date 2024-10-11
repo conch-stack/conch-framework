@@ -1,8 +1,10 @@
 package com.nabob.conch.sample.bootenhance.importselect;
 
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
+import org.springframework.core.annotation.AnnotationAttributes;
 
 /**
  * CacheServiceConfiguration
@@ -18,4 +20,10 @@ public class CacheServiceConfiguration extends AbstractCacheConfiguration {
         System.out.println("CacheServiceConfiguration");
     }
 
+    @Bean
+    public MyTestBeanFactoryPostProcessor myTestBeanFactoryPostProcessor() {
+        Enum<?> anEnum = enableCacheAnnotation.getEnum("mode");
+        System.out.println(anEnum.name());
+        return new MyTestBeanFactoryPostProcessor();
+    }
 }

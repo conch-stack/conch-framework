@@ -1,0 +1,29 @@
+options {
+    IGNORE_CASE = true;
+    STATIC = false;
+    DEBUG_PARSER = false;
+    DEBUG_LOOKAHEAD = false;
+    DEBUG_TOKEN_MANAGER = false;
+    CACHE_TOKENS = false;
+//  FORCE_LA_CHECK = true;
+    UNICODE_INPUT = true;
+    JAVA_TEMPLATE_TYPE = "modern";
+    JDK_VERSION = "1.8";
+    TOKEN_EXTENDS = "BaseToken";
+    COMMON_TOKEN_ACTION = true;
+    NODE_DEFAULT_VOID = true;
+    TRACK_TOKENS = true;
+    VISITOR = true;
+    GRAMMAR_ENCODING = "UTF-8";
+    KEEP_LINE_COLUMN = true;
+}
+
+PARSER_BEGIN(SqlParser)
+
+package com.nabob.conch.sample.sqlparser;
+
+public class SqlParser {
+
+}
+
+PARSER_END(SqlParser)
