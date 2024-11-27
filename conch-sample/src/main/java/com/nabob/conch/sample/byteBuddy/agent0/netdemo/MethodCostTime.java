@@ -1,4 +1,4 @@
-package com.nabob.conch.sample.byteBuddy.agent.netdemo;
+package com.nabob.conch.sample.byteBuddy.agent0.netdemo;
 
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;

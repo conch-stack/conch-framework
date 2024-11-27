@@ -3,7 +3,7 @@
 // (powered by FernFlower decompiler)
 //
 
-package com.nabob.conch.sample.byteBuddy.agent;
+package com.nabob.conch.sample.byteBuddy.agent0;
 
 import java.util.HashMap;
 import java.util.List;
