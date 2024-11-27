@@ -1,4 +1,4 @@
-package com.nabob.conch.sample.byteBuddy;
+package com.nabob.conch.sample.byteBuddy.test0;
 
 import net.bytebuddy.implementation.bind.annotation.BindingPriority;
 

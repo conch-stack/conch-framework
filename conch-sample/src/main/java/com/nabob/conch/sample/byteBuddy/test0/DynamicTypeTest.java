@@ -1,8 +1,5 @@
-package com.nabob.conch.sample.byteBuddy.core;
+package com.nabob.conch.sample.byteBuddy.test0;
 
-import com.nabob.conch.sample.byteBuddy.TestClass;
-import com.nabob.conch.sample.byteBuddy.TestClass1;
-import com.nabob.conch.sample.byteBuddy.TestClass2;
 import com.nabob.conch.sample.enfinal.TestFinalClass;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;

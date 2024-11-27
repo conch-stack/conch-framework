@@ -1,8 +1,6 @@
 package com.nabob.conch.sample;
 
 import com.nabob.conch.sample.advice.EnableRpcLogV2;
-import com.nabob.conch.sample.byteBuddy.abtest.EnhanceAbTest;
-import com.nabob.conch.sample.byteBuddy.agent.ABClientCache;
 import com.nabob.conch.sample.job.ConfigurationConfigSupport;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,27 +22,13 @@ import javax.annotation.PostConstruct;
 @EnableRpcLogV2(agentPackage = "com.nabob.conch.sample.test")
 public class ConchSampleApplication {
 
-    @PostConstruct
-    public void test() {
-        try {
-//            EnhanceAbTest.enhance(ABClientCache.class);
-//            ABClientCache.getInstance();
-
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * 支持注解编译时解析：IDEA Compile VM Options: -Djps.track.ap.dependencies=false
      */
     public static void main(String[] args) {
-
         SpringApplication.run(ConchSampleApplication.class, args);
         System.out.println("end-container-1");
-
-//        String test = TestClassLoader.test();
-//        System.out.println(test);
     }
 
 }

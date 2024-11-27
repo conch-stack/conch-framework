@@ -1,5 +1,7 @@
 package com.nabob.conch.sample;
 
+import com.nabob.conch.sample.reflect.FirstAnnotation;
+
 /**
  * @author Adam
  * @since 2020/3/30
@@ -9,6 +11,7 @@ public class User {
     /**
      * 姓名
      */
+    @FirstAnnotation("name_zjz")
     private String name;
 
     /**

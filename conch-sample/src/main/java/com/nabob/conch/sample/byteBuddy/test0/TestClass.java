@@ -1,4 +1,4 @@
-package com.nabob.conch.sample.byteBuddy;
+package com.nabob.conch.sample.byteBuddy.test0;
 
 /**
  * @author Adam
