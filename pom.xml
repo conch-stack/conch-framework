@@ -40,6 +40,7 @@
         <module>conch-hystrix</module>
 <!--        <module>conch-lombok</module>-->
         <module>conch-agent</module>
+        <module>conch-dynamic-load-jar</module>
     </modules>
 
     <dependencies>
