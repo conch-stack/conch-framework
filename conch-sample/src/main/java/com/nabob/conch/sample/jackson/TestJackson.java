@@ -14,6 +14,7 @@ import lombok.Data;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,6 +30,8 @@ public class TestJackson {
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+        System.out.println(mapper.getTypeFactory().constructType(TestProps.class).toCanonical());
 
         TestProps data1 = new TestProps();
         data1.setTargetId(1);
@@ -51,6 +54,15 @@ public class TestJackson {
         TestProps1 dataRs = (TestProps1) rs.getData();
         System.out.println(dataRs);
 
+        // null
+        info.setData(null);
+        String jsonNull = mapper.writeValueAsString(info);
+        System.out.println(jsonNull);
+
+        TestTaskInfo<?> rsjsonNull = (TestTaskInfo<?>) mapper.readValue(jsonNull.getBytes(StandardCharsets.UTF_8), TestTaskInfo.class);
+        TestProps1 dataRsNull = (TestProps1) rsjsonNull.getData();
+        System.out.println(dataRsNull);
+
         // list
         TestTaskInfo<List<TestProps>> list =  new TestTaskInfo<>();
         list.setType(0);
@@ -63,6 +75,15 @@ public class TestJackson {
         TestTaskInfo<?> rs1 = (TestTaskInfo<?>) mapper.readValue(json1.getBytes(StandardCharsets.UTF_8), TestTaskInfo.class);
         List<TestProps1> dataRs1 = (List<TestProps1>) rs1.getData();
         System.out.println(dataRs1);
+
+        // empty list
+        list.setData(Lists.newArrayList());
+        String jsonEmptyList = mapper.writeValueAsString(list);
+        System.out.println(jsonEmptyList);
+
+        TestTaskInfo<?> rs1jsonEmptyList = (TestTaskInfo<?>) mapper.readValue(jsonEmptyList.getBytes(StandardCharsets.UTF_8), TestTaskInfo.class);
+        List<TestProps1> dataRs1jsonEmptyList = (List<TestProps1>) rs1jsonEmptyList.getData();
+        System.out.println(dataRs1jsonEmptyList);
     }
 
     @Data
@@ -91,6 +112,23 @@ public class TestJackson {
         private String taskName;
     }
 
+    /**
+     * 将字节数组转换成对象
+     * 对于简单对象来说type就是其类的全限定名，如java.lang.String;
+     * 对于复杂列表对象来说，type例子：java.util.Map<java.lang.String, java.util.List<test.Person>>
+     */
+    public static Object byteToObject(byte[] bytes, String type) {
+        ObjectMapper mapper = new ObjectMapper();
+        JavaType javaType = mapper.getTypeFactory().constructFromCanonical(type);
+        try {
+            Object object = mapper.readValue(bytes, javaType);
+            return object;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static class RawJsonDeserializer extends JsonDeserializer<TestTaskInfo> {
 
         public RawJsonDeserializer() {
@@ -101,17 +139,34 @@ public class TestJackson {
             JsonNode jsonNode = jp.getCodec().readTree(jp);
 
             Integer type = getType(jsonNode);
-            boolean isCollection = type != null && type == 0;
+//            boolean isCollection = type != null && type == 0;
 
             String className = jsonNode.get("className").asText();
             JsonNode dateJsonNode = jsonNode.get("data");
+            if (dateJsonNode == null || dateJsonNode.isNull()) {
+                TestTaskInfo rs = new TestTaskInfo();
+                rs.setType(type);
+                rs.setClassName(className);
+                rs.setData(null);
+                return rs;
+            }
+
+            if (dateJsonNode.isEmpty()) {
+                TestTaskInfo rs = new TestTaskInfo();
+                rs.setType(type);
+                rs.setClassName(className);
+                rs.setData(Collections.emptyList());
+                return rs;
+            }
+
+            boolean array = dateJsonNode.isArray();
 
             Class<?> entityClass = inferTypeClass(className);
             if (entityClass == null) {
                 throw new IOException("entity class not found");
             }
 
-            if (isCollection) {
+            if (array) {
                 Collection<?> data = deserializeListNode(jp, ctxt, entityClass, dateJsonNode);
                 TestTaskInfo rs = new TestTaskInfo();
                 rs.setType(type);
@@ -156,7 +211,7 @@ public class TestJackson {
         private <T> Collection<T> deserializeListNode(JsonParser jp, DeserializationContext ctxt,
                                                       Class<T> targetTypeClass, JsonNode node) throws IOException {
 
-            JavaType javaType = ctxt.getTypeFactory().constructCollectionType(List.class, targetTypeClass);
+            JavaType javaType = ctxt.getTypeFactory().constructCollectionType(Collection.class, targetTypeClass);
             JsonDeserializer<?> deserializer = ctxt.findRootValueDeserializer(javaType);
             JsonParser parser = node.traverse(jp.getCodec());
             parser.nextToken();
@@ -172,5 +227,16 @@ public class TestJackson {
             parser.nextToken();
             return (T) deserializer.deserialize(parser, ctxt);
         }
+//
+//        private <T> T deserializeComplexNode(JsonParser jp, DeserializationContext ctxt,
+//                                      Class<T> targetTypeClass, JsonNode node) throws IOException {
+//
+//            JavaType javaType = ctxt.getTypeFactory().constructFromCanonical(targetTypeClass);
+//            JsonDeserializer<?> deserializer = ctxt.findRootValueDeserializer(javaType);
+//            JsonParser parser = node.traverse(jp.getCodec());
+//            parser.nextToken();
+//            return (T) deserializer.deserialize(parser, ctxt);
+//        }
+
     }
 }
