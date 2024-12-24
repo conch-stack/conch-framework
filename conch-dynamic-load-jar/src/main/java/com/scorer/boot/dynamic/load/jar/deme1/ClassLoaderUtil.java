@@ -1,12 +1,10 @@
 package com.scorer.boot.dynamic.load.jar.deme1;
 
-import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-@Slf4j
 public class ClassLoaderUtil {
 
     /**
@@ -24,7 +22,7 @@ public class ClassLoaderUtil {
             method.invoke(classLoader, new URL(url));
             return classLoader;
         } catch (Exception e) {
-            log.error("getClassLoader-error", e);
+            e.printStackTrace();
             return null;
         }
     }

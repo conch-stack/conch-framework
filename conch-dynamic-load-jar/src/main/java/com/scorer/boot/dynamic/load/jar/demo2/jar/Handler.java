@@ -16,14 +16,13 @@
  */
 package com.scorer.boot.dynamic.load.jar.demo2.jar;
 
-import com.alipay.sofa.ark.common.util.FileUtils;
-import com.alipay.sofa.ark.common.util.StringUtils;
+import com.scorer.boot.dynamic.load.jar.demo2.util.FileUtils;
+import com.scorer.boot.dynamic.load.jar.demo2.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.lang.reflect.Method;
-import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -86,10 +85,10 @@ public class Handler extends URLStreamHandler {
     @Override
     protected URLConnection openConnection(URL url) throws IOException {
         if (this.jarFile != null) {
-            return java.net.JarURLConnection.get(url, this.jarFile);
+            return JarURLConnection.get(url, this.jarFile);
         }
         try {
-            return java.net.JarURLConnection.get(url, getRootJarFileFromUrl(url));
+            return JarURLConnection.get(url, getRootJarFileFromUrl(url));
         } catch (Exception ex) {
             return openFallbackConnection(url, ex);
         }

@@ -16,7 +16,7 @@
  */
 package com.scorer.boot.dynamic.load.jar.demo2.jar;
 
-import com.alipay.sofa.ark.loader.data.RandomAccessData;
+import com.scorer.boot.dynamic.load.jar.demo2.data.RandomAccessData;
 
 import java.io.IOException;
 import java.util.Calendar;

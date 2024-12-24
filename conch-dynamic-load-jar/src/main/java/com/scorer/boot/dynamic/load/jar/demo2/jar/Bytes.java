@@ -16,8 +16,7 @@
  */
 package com.scorer.boot.dynamic.load.jar.demo2.jar;
 
-import com.alipay.sofa.ark.loader.data.RandomAccessData;
-import com.alipay.sofa.ark.loader.data.RandomAccessData.ResourceAccess;
+import com.scorer.boot.dynamic.load.jar.demo2.data.RandomAccessData;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +34,7 @@ final public class Bytes {
     }
 
     public static byte[] get(RandomAccessData data) throws IOException {
-        InputStream inputStream = data.getInputStream(ResourceAccess.ONCE);
+        InputStream inputStream = data.getInputStream(RandomAccessData.ResourceAccess.ONCE);
         try {
             return get(inputStream, data.getSize());
         } finally {

@@ -41,6 +41,8 @@
 <!--        <module>conch-lombok</module>-->
         <module>conch-agent</module>
         <module>conch-dynamic-load-jar</module>
+        <module>conch-dynamic-jar</module>
+        <module>demo1</module>
     </modules>
 
     <dependencies>
@@ -76,6 +78,11 @@
                 <version>${springboot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.nabob.conch</groupId>
+                <artifactId>conch-dynamic-jar</artifactId>
+                <version>0.0.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

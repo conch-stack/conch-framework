@@ -16,9 +16,8 @@
  */
 package com.scorer.boot.dynamic.load.jar.demo2.jar;
 
-import com.alipay.sofa.ark.loader.data.RandomAccessData;
-import com.alipay.sofa.ark.loader.data.RandomAccessData.ResourceAccess;
-import com.alipay.sofa.ark.loader.data.RandomAccessDataFile;
+import com.scorer.boot.dynamic.load.jar.demo2.data.RandomAccessData;
+import com.scorer.boot.dynamic.load.jar.demo2.data.RandomAccessDataFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,7 +62,7 @@ public class JarFile extends java.util.jar.JarFile {
 
     private final String               pathFromRoot;
 
-    private final RandomAccessData     data;
+    private final RandomAccessData data;
 
     private final JarFileType          type;
 
@@ -159,7 +158,7 @@ public class JarFile extends java.util.jar.JarFile {
                     manifest = jarFile.getManifest();
                 }
             } else {
-                try (InputStream inputStream = getInputStream(MANIFEST_NAME, ResourceAccess.ONCE)) {
+                try (InputStream inputStream = getInputStream(MANIFEST_NAME, RandomAccessData.ResourceAccess.ONCE)) {
                     if (inputStream == null) {
                         return null;
                     }
@@ -221,17 +220,17 @@ public class JarFile extends java.util.jar.JarFile {
 
     @Override
     public synchronized InputStream getInputStream(ZipEntry ze) throws IOException {
-        return getInputStream(ze, ResourceAccess.PER_READ);
+        return getInputStream(ze, RandomAccessData.ResourceAccess.PER_READ);
     }
 
-    public InputStream getInputStream(ZipEntry ze, ResourceAccess access) throws IOException {
+    public InputStream getInputStream(ZipEntry ze, RandomAccessData.ResourceAccess access) throws IOException {
         if (ze instanceof JarEntry) {
             return this.entries.getInputStream((JarEntry) ze, access);
         }
         return getInputStream(ze == null ? null : ze.getName(), access);
     }
 
-    InputStream getInputStream(String name, ResourceAccess access) throws IOException {
+    InputStream getInputStream(String name, RandomAccessData.ResourceAccess access) throws IOException {
         return this.entries.getInputStream(name, access);
     }
 
@@ -346,7 +345,7 @@ public class JarFile extends java.util.jar.JarFile {
         // happening that often.
         try {
             JarInputStream inputStream = new JarInputStream(getData().getInputStream(
-                ResourceAccess.ONCE));
+                RandomAccessData.ResourceAccess.ONCE));
             try {
                 java.util.jar.JarEntry certEntry = inputStream.getNextJarEntry();
                 while (certEntry != null) {

@@ -16,8 +16,7 @@
  */
 package com.scorer.boot.dynamic.load.jar.demo2.jar;
 
-import com.alipay.sofa.ark.loader.data.RandomAccessData;
-import com.alipay.sofa.ark.loader.data.RandomAccessData.ResourceAccess;
+import com.scorer.boot.dynamic.load.jar.demo2.data.RandomAccessData;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,7 +55,7 @@ public class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntr
 
     private final JarEntryFilter           filter;
 
-    private RandomAccessData               centralDirectoryData;
+    private RandomAccessData centralDirectoryData;
 
     private int                            size;
 
@@ -174,12 +173,12 @@ public class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntr
         return getEntry(name, JarEntry.class, true);
     }
 
-    public InputStream getInputStream(String name, ResourceAccess access) throws IOException {
+    public InputStream getInputStream(String name, RandomAccessData.ResourceAccess access) throws IOException {
         FileHeader entry = getEntry(name, FileHeader.class, false);
         return getInputStream(entry, access);
     }
 
-    public InputStream getInputStream(FileHeader entry, ResourceAccess access) throws IOException {
+    public InputStream getInputStream(FileHeader entry, RandomAccessData.ResourceAccess access) throws IOException {
         if (entry == null) {
             return null;
         }

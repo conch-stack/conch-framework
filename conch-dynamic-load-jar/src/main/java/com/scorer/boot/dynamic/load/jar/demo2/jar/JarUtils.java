@@ -16,10 +16,10 @@
  */
 package com.scorer.boot.dynamic.load.jar.demo2.jar;
 
-import com.alipay.sofa.ark.common.util.FileUtils;
-import com.alipay.sofa.ark.common.util.StringUtils;
-import com.alipay.sofa.ark.loader.archive.JarFileArchive;
-import com.alipay.sofa.ark.loader.util.ModifyPathUtils;
+import com.scorer.boot.dynamic.load.jar.demo2.archive.JarFileArchive;
+import com.scorer.boot.dynamic.load.jar.demo2.util.FileUtils;
+import com.scorer.boot.dynamic.load.jar.demo2.util.ModifyPathUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 
@@ -51,7 +51,7 @@ public class JarUtils {
 
     private static final String                        VERSION_REGEX                    = "^([0-9]+\\.)+.+";
 
-    private static final MavenXpp3Reader               READER                           = new MavenXpp3Reader();
+    private static final MavenXpp3Reader READER                           = new MavenXpp3Reader();
 
     public static final String                         JAR_SEPARATOR                    = "!/";
 
@@ -214,17 +214,17 @@ public class JarUtils {
     }
 
     private static String parseArtifactIdFromJar(String jarLocation) throws IOException {
-        try (com.alipay.sofa.ark.loader.jar.JarFile jarFile = getNestedRootJarFromJarLocation(jarLocation)) {
+        try (JarFile jarFile = getNestedRootJarFromJarLocation(jarLocation)) {
             JarFileArchive jarFileArchive = new JarFileArchive(jarFile);
             return jarFileArchive.getPomProperties().getProperty(JAR_ARTIFACT_ID);
         }
     }
 
-    public static com.alipay.sofa.ark.loader.jar.JarFile getNestedRootJarFromJarLocation(String jarLocation)
+    public static JarFile getNestedRootJarFromJarLocation(String jarLocation)
                                                                                                             throws IOException {
         //  /xxx/xxx/xxx-starter-1.0.0-SNAPSHOT.jar!/BOOT-INF/lib/xxx2-starter-1.1.4-SNAPSHOT-ark-biz.jar!/lib/xxx3-230605-sofa.jar
         String[] js = jarLocation.split(JAR_SEPARATOR, -1);
-        com.alipay.sofa.ark.loader.jar.JarFile rJarFile = new com.alipay.sofa.ark.loader.jar.JarFile(
+        JarFile rJarFile = new JarFile(
             FileUtils.file(js[0]));
         for (int i = 1; i < js.length; i++) {
             String jPath = js[i];

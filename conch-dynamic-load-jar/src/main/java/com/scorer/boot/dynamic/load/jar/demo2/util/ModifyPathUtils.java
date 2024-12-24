@@ -14,21 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.scorer.boot.dynamic.load.jar.demo2.jar;
-
-import com.scorer.boot.dynamic.load.jar.demo2.data.RandomAccessData;
+package com.scorer.boot.dynamic.load.jar.demo2.util;
 
 /**
- * Callback visitor triggered by {@link CentralDirectoryParser}.
- *
- * @author Phillip Webb
+ * @author sususama
+ * @since 2023/5/8
  */
-public interface CentralDirectoryVisitor {
-
-    void visitStart(CentralDirectoryEndRecord endRecord, RandomAccessData centralDirectoryData);
-
-    void visitFileHeader(CentralDirectoryFileHeader fileHeader, int dataOffset);
-
-    void visitEnd();
-
+public class ModifyPathUtils {
+    /** When using SofaArk in the Windows environment, you will encounter a path error.
+     * This tool class will judge the read file or the configured path,
+     * and judge whether it is the file path of the Windows operating system.
+     * If it is, this method will modify the path to suit WindowsOS,
+     * otherwise the input path will be returned directly.
+     *
+     * @param path File Path
+     * @return Modified file path
+     */
+    public static String modifyPath(String path) {
+        if (path.charAt(2) == ':') {
+            path = path.substring(1);
+        }
+        return path;
+    }
 }

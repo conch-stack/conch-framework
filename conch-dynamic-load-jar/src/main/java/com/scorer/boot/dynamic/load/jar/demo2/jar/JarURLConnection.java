@@ -16,7 +16,8 @@
  */
 package com.scorer.boot.dynamic.load.jar.demo2.jar;
 
-import com.alipay.sofa.ark.loader.data.RandomAccessData.ResourceAccess;
+
+import com.scorer.boot.dynamic.load.jar.demo2.data.RandomAccessData;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -166,7 +167,7 @@ final public class JarURLConnection extends java.net.JarURLConnection {
         }
         connect();
         InputStream inputStream = (this.jarEntryName.isEmpty() ? this.jarFile.getData()
-            .getInputStream(ResourceAccess.ONCE) : this.jarFile.getInputStream(this.jarEntry));
+            .getInputStream(RandomAccessData.ResourceAccess.ONCE) : this.jarFile.getInputStream(this.jarEntry));
         if (inputStream == null) {
             throwFileNotFound(this.jarEntryName, this.jarFile);
         }
