@@ -2,6 +2,7 @@ package com.nabob.conch.sample;
 
 import com.nabob.conch.sample.advice.EnableRpcLogV2;
 import com.nabob.conch.sample.job.ConfigurationConfigSupport;
+import com.nabob.conch.sample.job.ConfigurationConfigSupportV2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -9,6 +10,7 @@ import javax.annotation.PostConstruct;
 
 @SpringBootApplication
 @ConfigurationConfigSupport
+@ConfigurationConfigSupportV2
 //第一版
 //@EnableRpcLog("com.nabob.conch.sample.dynamic")
 
