@@ -1,5 +1,8 @@
 package com.nabob.conch.sample.bootenhance.dinitialization;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.annotation.PostConstruct;
@@ -12,7 +15,7 @@ import javax.annotation.PostConstruct;
  * @author Adam
  * @since 2020/4/3
  */
-public class InitializationBean implements InitializingBean {
+public class InitializationBean implements BeanFactoryAware, InitializingBean {
 
     @PostConstruct
     public void init() {
@@ -26,5 +29,11 @@ public class InitializationBean implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         System.out.println("使用：InitializingBean 方式初始化");
+
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+
     }
 }

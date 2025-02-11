@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ctrip Login</title>
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=EDGE"/>
+    <link rel="icon" href="static/v1/images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="static/v1/css/login.css?t=20200730">
+    <script type="text/javascript" src="static/v1/js/jquery.min.js"></script>
+    <script>
+        // 如果electron跳到老版页面
+        // var userAgent = navigator.userAgent.toLowerCase();
+        // if (userAgent.indexOf(' electron/') > -1){
+        //     window.location.href = 'login_old.html'+window.location.search;
+        // }
+        //一行搞定electron和jquery冲突,electron和jquery最简单和完美的兼容方法
+        if (typeof module === 'object') {
+            window.jQuery = window.$ = module.exports;
+        }
+    </script>
+    <script type="text/javascript" src="static/v1/js/json2.js"></script>
+</head>
+<body style="background: url(static/v1/bg/2331488.jpg) no-repeat center center;background-size: cover; height: 100vh; margin: 0;">
+    <div class="login-container">
+        <div class="clearfix" style="line-height: 32px;">
+            <div style="font-size: 14px; font-weight: bold; color: #666; float: left;">携程登录</div>
+            <!-- <img onclick="window.location.href = 'index_en.html'+window.location.search" style="cursor: pointer; float: right; width: 32px; height: 32px;" src="static/v1/images/en.png" alt=""> -->
+            <img onclick="window.location.href = 'login_en.html'+window.location.search" style="cursor: pointer; float: right; width: 32px; height: 32px;" src="static/v1/images/en2.png" alt="">
+            <!-- <img onclick="window.location.href = 'index_en.html'+window.location.search" style="cursor: pointer; float: right; width: 32px; height: 32px;" src="static/v1/images/zh1.png" alt=""> -->
+            <!-- <img onclick="window.location.href = 'index_en.html'+window.location.search" style="cursor: pointer; float: right; width: 32px; height: 32px;" src="static/v1/images/icon_zh.png" alt=""> -->
+        </div>
+        <div class="login-tab clearfix">
+            <div class="item">账号登录</div>
+            <div class="item" style="position: relative;">扫脸登录
+                <span style="position: absolute; color: #EC1313; top: -15px; right: 10px; font-size: 12px; font-weight: bold;">New</span>
+            </div>
+            <div class="item">扫码登录</div>
+            <div class="item">第三方登录</div>
+        </div>
+        <div class="tab-content">
+            <form  class="loginForm">
+            <div class="form">
+                <div class="form-group" style="margin-left: auto; margin-right: auto; margin-top: 25px;">
+                    <div class="input-group">
+                        <span class="input-group-icon user-icon">用户名</span>
+                        <input id="username" name="username" type="text" size="25" onBlur="testAccountCheck()"
+                                autocomplete="false" class="form-control" placeholder="域账户名">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-left: auto; margin-right: auto;">
+                    <div class="input-group">
+                        <span class="input-group-icon pwd-icon">密&nbsp;&nbsp;&nbsp;码</span>
+                        <input id="password" name="password" type="password"
+                                size="25" autocomplete="off" class="form-control" placeholder="域账户密码">
+                    </div>
+                </div>
+            </div>
+            <p class="account-login-tip"></p>
+            <p class="account-login-tip2"></p>
+            <div style="text-align: center;">
+                <input type="submit" data-lang='cn' class="account-button login-common-button" style="width: 302px; line-height: 40px; font-size: 14px;" value="登录"/>
+            </div>
+            </form>
+
+        </div>
+        <div class="tab-content face">
+            <div class="button-wrap" style="font-size: 14px; color: #666;">
+                检测中...
+            </div>
+            <div class="button-wrap" style="font-size: 14px; color: #666;">
+                未检测到可用的拍摄设备，请使用其他方式登录。
+            </div>
+            <div class="button-wrap" style="margin-top: 20px;">
+                <div class="domain-user"></div>
+                <input class="login-common-button face-button" type="button" value="开始刷脸">
+                <div style="line-height: 18px;font-size: 14px; color: #666; margin-top: 20px;">
+                    <label>
+                        <input type="checkbox" id="privacy" style="margin-right: 5px;vertical-align: middle;">
+                        <span style="vertical-align: middle;">
+                            我已阅读并知晓
+                        </span>
+                    </label>
+                    <a class="tip-button">《隐私提示》</a>
+                </div>
+                <p style="font-size: 12px; color: #ff0000; text-align: left; padding: 0 20px;">温馨提示：如果展示扫脸账号非您本人，请联系我们。</p>
+            </div>
+            <div class="button-wrap" style="font-size: 14px; color: #666;">
+                由于设备环境原因，暂时无法使用扫脸登录。
+            </div>
+            <div class="button-wrap" style="font-size: 14px; color: #666;">
+                服务维护中，请使用其他登录方式。
+            </div>
+        </div>
+        <div class="tab-content">
+            <div style="margin: 20px auto 0; width: 350px;">
+                <iframe id="qr-frame" class="qr-frame"  name="lang-zh only-qr-status qr-width-180 qr-height-180 bg-#fafafa status-size-14" width=350 height=220  frameborder="0"></iframe>
+            </div>
+            <p class="firefox-tip" style="display: none; cursor: pointer; font-size: 14px; color: rgb(102, 102, 102);text-decoration: underline; text-align: center;line-height: 1; margin: 0;">如二维码未正常展示请点击此处</p>
+        </div>
+        <div class="tab-content third" style="line-height: 0px;margin-top: 20%">
+            <p>
+                <input class="login-common-button qunar-button" type="submit" value="去哪儿用户登录">
+            </p>
+            <p>
+                <input class="login-common-button-travix travix-button" type="submit" value="Travix 用户登录">
+            </p>
+        </div>
+        <div style="position: absolute; width: 100%; bottom: 20px; line-height: 18px;font-size: 12px; color: #666;">
+            <label>
+                <!--<input type="checkbox" id="remember" checked="checked" style="margin-right: 5px;vertical-align: middle;">-->
+                <!--<span style="vertical-align: middle;">30天免登录</span>-->
+            </label>
+            <a href="https://itosg.ctrip.com/apk/cchatcp.html?action=openChat&type=groupchat&jid=1243420418522480668" target="_blank" style="float: right; margin-right: 40px;">问题反馈</a>
+        </div>
+        <div style="height: 18px;"></div>
+    </div>
+    <div class="copyright">
+        建议您使用最新版Google Chrome浏览器，分辨率1280*800及以上浏览本网站，获得更好用户体验
+    </div>
+    <!-- <input type="hidden" id="page_id" value="10650008581"/> -->
+    <div id="face-login-mask">
+        <div class="face-login-content">
+            <div style="width: 360px; height: 360px; border-radius: 50%; overflow: hidden; position: relative;">
+                <video id="video"></video>
+            </div>
+            <div>
+                <canvas id="canvas" style="display: none;"></canvas>
+            </div>
+            <div class="face-login-loading">
+                <div class="face-login-loading-content">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <div class="face-login-loading-tip">比对中...</div>
+            </div>
+            </div>
+            <span class="close" title="关闭扫脸登录"></span>
+            <div class="face-login-tip">把脸放在中间</div>
+        </div>
+    </div>
+    <div class="face-login-bind-mask">
+        <form class="bindForm">
+            <div style="width: 302px;  position: absolute; left: 50%; top: 50%;  background: #fff; padding: 20px; transform: translate(-50%,-50%);">
+                <div>
+                    <div class="form">
+                        <p style="font-size: 12px; text-align: left; color: #EC1313;">由于您首次登陆，或非常用设备或网络环境，请输入账号密码对本次登录进行验证</p>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-icon user-icon">用户名</span>
+                                <input id="bind-username" name="bind-username" type="text" size="25"
+                                        autocomplete="false" class="form-control" placeholder="域账户名">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-icon pwd-icon">密&nbsp;&nbsp;&nbsp;码</span>
+                                <input id="bind-password" name="bind-password" type="password" size="25" autocomplete="off" class="form-control" placeholder="域账户密码">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="face-login-bind-tip"></div>
+                    <input type="submit" class="login-common-button" style="width: 100%;" value="提交"/>
+                    <span class="bind-close" title="取消验证"></span>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="tip-mask">
+        <div class="tip">
+            <div style="line-height: 2;">
+                隐私提示：
+            </div>
+            <div>
+                我们会采取必要的安全措施（包括但不限于最小化收集、加密、访问控制）来保护您的人脸信息。
+            </div>
+            <div>
+                如果您有所顾虑，建议选择其他登陆方式。
+            </div>
+            <div style="text-align: center; padding-top: 20px;">
+                <input class="login-common-button tip-close" type="button" value="我已阅读完毕">
+                <input class="login-common-button tip-cancel" type="button" value="取消">
+            </div>
+        </div>
+    </div>
+    <div class="firefox-tip-mask">
+        <div class="tip">
+            <div style="line-height: 2;">
+                提示：
+            </div>
+            <div>
+                在火狐浏览器中访问about:config ，将“ security.enterprise_roots.enabled ”首选项设置为true 来启用Windows和MacOS企业根支持。
+            </div>
+            <div style="text-align: center; padding-top: 20px;">
+                <input class="login-common-button firefox-tip-close" type="button" value="关闭">
+            </div>
+        </div>
+    </div>
+
+    <script src="static/v1/js/aes.js"></script>
+    <script src="static/v1/js/login.js?t=20230419"></script>
+    <!-- <script type="text/javascript" src="//webresint.ctripcorp.com/code/ubt/_bfa.min.js"></script> -->
+    <script type="text/javascript" src="//static.tripcdn.com/packages/ubt/websdk/*/ubt.minh.js"></script>
+    <script>
+      try {
+        window['UBT_API'].push({
+          type: 'register',
+          data: {
+                // 替换为当前页的pageID
+            pageId: '10650008581',
+                // 替换为当前应用的appID
+            appId: 700135
+          }
+        })
+      } catch (e) {}
+    </script>
+    <script type="text/javascript" src="//webresource.c-ctrip.com/resaresonline/risk/ubtrms/latest/default/rms.js?v=20220524"></script>
+</body>
+</html>

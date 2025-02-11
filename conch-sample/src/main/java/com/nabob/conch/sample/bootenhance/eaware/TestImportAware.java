@@ -25,7 +25,7 @@ import org.springframework.lang.Nullable;
  * @author Adam
  * @since 2023/3/15
  */
-//@Configuration  不生效
+@Configuration
 public class TestImportAware implements ImportAware {
 
     @Nullable
@@ -46,5 +46,10 @@ public class TestImportAware implements ImportAware {
     @Bean(name = "user1")
     public User user() {
         return new User("TestImportAware", 19);
+    }
+
+    @Bean
+    public TestBeanFactoryPostProcessor testBeanFactoryPostProcessor() {
+        return new TestBeanFactoryPostProcessor();
     }
 }

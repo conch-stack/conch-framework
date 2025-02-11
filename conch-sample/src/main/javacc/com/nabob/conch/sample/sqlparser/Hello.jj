@@ -1,0 +1,77 @@
+//可选配置参数
+options{
+     STATIC = false; //关闭生成java方法是静态的，默认是true
+     DEBUG_PARSER = true;//开启调试解析打印,默认是false
+     JDK_VERSION = "1.8";//生产java时使用jdk版本,默认1.5
+     UNICODE_INPUT=true;//接收unicode编码的输入，默认是false
+}
+//固定格式
+PARSER_BEGIN(Hello)
+//像java一样的包名定义,生成的java文件会带上此包名
+package com.nabob.conch.sample.sqlparser.hello;
+
+import java.time.LocalDateTime;
+
+public class Hello {
+    //可以再里面定义初始化信息，字符串接收方式，异常处理..
+}
+
+//固定格式
+PARSER_END(Hello)
+
+//词法定义
+
+//SKIP是一种词法 要跳过忽略的字符串
+SKIP : {" "}
+
+//TOKEN也是一种词法，代表要识别的字符串
+TOKEN : {
+ /**定义一个Token名为HELLO,类似java语言中关键字“class”，会把符串中
+ * 有 "Hello" ， "hello" ,"HELLO" 识别成此TOKEN。
+ **/
+ <HELLO : "Hello"
+            | "hello"
+            | "HELLO">
+ |
+
+ //定义一个Token名为IDENTITY,类似自定义变量，可以是英文，中文unicode（"\u4e00"-"\u9fa5"）
+ // ["a" - "z"]表示的范围，小写a到z
+ //(...)+ 表示括号中的内容至少出现一次
+ <IDENTITY : (["a"-"z"
+               ,"A"-"Z"
+               ,"\u4e00"-"\u9fa5"])+>
+}
+
+//可以写多个TOKEN,此处主要定义特殊符号
+TOKEN : {
+  <EXCLAMATION : "!">
+ | <COMMA : ",">
+}
+//为了调试方便将换行定义为一个特殊的token
+TOKEN : { < EOL : "\n" | "\r" | "\r\n" > }
+//定义语法
+String sayHello():
+{
+  Token token;
+  StringBuilder builder = new StringBuilder("Javacc Say : Hello ");
+}
+{
+  <HELLO> token = <IDENTITY>
+            //匹配到第一IDENTITY执行的动作
+            {builder.append(token.image); }
+
+            (
+             <COMMA> token = <IDENTITY>
+             //匹配到逗号后的IDENTITY时执行的动作
+             {  builder.append(" , ");
+                builder.append(token.image);
+             }
+            )*
+            <EXCLAMATION>
+
+   {
+   builder.append(" ! ").append(LocalDateTime.now());
+   return builder.toString();
+   }
+
+}

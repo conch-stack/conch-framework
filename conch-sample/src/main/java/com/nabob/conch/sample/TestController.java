@@ -9,6 +9,7 @@ import com.nabob.conch.sample.dynamic.DynamicSpringBeanFactory;
 import com.nabob.conch.sample.gc.GarbageCollection;
 import com.nabob.conch.sample.job.Config;
 import com.nabob.conch.sample.job.ConfigBean;
+import com.nabob.conch.sample.job.ConfigV2;
 import com.nabob.conch.sample.test.AgentTestService;
 import com.nabob.conch.sample.timelimit.TestTimeLimit;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +31,8 @@ public class TestController {
 
     @Resource
     private Config config;
+    @Resource
+    private ConfigV2 configV2;
 
     @Resource
     private TestTimeLimit testTimeLimit;
@@ -54,6 +57,18 @@ public class TestController {
 
         configBean.getTargetMethod().invoke(configBean.getTargetBean(), message);
         System.out.println("test end");
+    }
+
+
+    @RequestMapping("/testv2")
+    @RpcLog
+    public void testv2(@RequestParam String topic, @RequestParam String message) throws InvocationTargetException, IllegalAccessException {
+        System.out.println("testv2 start");
+        Map<String, ConfigBean> configMap = configV2.getConfigMap();
+        ConfigBean configBean = configMap.get(topic);
+
+        configBean.getTargetMethod().invoke(configBean.getTargetBean(), message);
+        System.out.println("testv2 end");
     }
 
     @RequestMapping("/testTimeLimit")
