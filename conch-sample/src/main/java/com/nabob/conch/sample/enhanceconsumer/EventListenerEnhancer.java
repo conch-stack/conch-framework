@@ -1,6 +1,6 @@
 package com.nabob.conch.sample.enhanceconsumer;
 
-import com.ctrip.demo.JsonUtil;
+import com.nabob.conch.sample.uitl.JsonUtil;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;

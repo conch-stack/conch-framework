@@ -1,8 +1,9 @@
 package com.nabob.conch.sample.enhanceconsumer;
 
-import com.ctrip.demo.JsonUtil;
+import com.nabob.conch.sample.uitl.JsonUtil;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
+import org.springframework.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -38,7 +39,36 @@ public class MultiEventListenerFactory {
         Enhancer enhancer = new Enhancer();
         enhancer.setInterfaces(new Class[]{MessageListener.class});
         
-        enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -> {
+//        enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -> {
+//            if (method.getName().equals("onMessage")) {
+//                Class<?>[] parameterTypes = targetMethod.getParameterTypes();
+//
+//                EventMessage eventMessage = (EventMessage) args[0];
+//                String body = eventMessage.getBody();
+//
+//                // other class
+//                Object o = JsonUtil.json2Object(body, parameterTypes[0]);
+//                return targetMethod.invoke(target, o); // 将Message传递给目标方法
+//            }
+//            throw new UnsupportedOperationException("未实现的方法: " + method.getName());
+//        });
+
+        enhancer.setCallback(new MessageListenerMethodInterceptor(target, targetMethod));
+        return (MessageListener) enhancer.create();
+    }
+
+    private static class MessageListenerMethodInterceptor implements MethodInterceptor, EventStateTrace {
+
+        private final Object target;
+        private final Method targetMethod;
+
+        public MessageListenerMethodInterceptor(Object target, Method targetMethod) {
+            this.target = target;
+            this.targetMethod = targetMethod;
+        }
+
+        @Override
+        public Object intercept(Object obj, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
             if (method.getName().equals("onMessage")) {
                 Class<?>[] parameterTypes = targetMethod.getParameterTypes();
 
@@ -47,11 +77,15 @@ public class MultiEventListenerFactory {
 
                 // other class
                 Object o = JsonUtil.json2Object(body, parameterTypes[0]);
-                return targetMethod.invoke(target, o); // 将Message传递给目标方法
+                state(eventMessage, EventState.IN_PROGRESS);
+                System.out.println(JsonUtil.object2Json(eventMessage.getTags()));
+                Object rs = targetMethod.invoke(target, o); // 将Message传递给目标方法
+                state(eventMessage, EventState.SUCCESS);
+                System.out.println(JsonUtil.object2Json(eventMessage.getTags()));
+                return rs;
             }
-            throw new UnsupportedOperationException("未实现的方法: " + method.getName());
-        });
-
-        return (MessageListener) enhancer.create();
+            return methodProxy.invokeSuper(obj, args);
+        }
     }
+
 }

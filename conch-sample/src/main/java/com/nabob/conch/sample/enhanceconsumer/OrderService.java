@@ -20,7 +20,7 @@ class OrderService {
         List<MessageListener> listeners = MultiEventListenerFactory.createListeners(service);
 
         for (MessageListener listener : listeners) {
-            listener.onMessage(new EventMessage("2", "{\"eventId\":\"eventId来了\",\"sms\":\"sms来了\"}"));
+            listener.onMessage(new EventMessage("2", "{\"eventId\":\"email来了\",\"sms\":\"sms来了\"}"));
         }
     }
 }
