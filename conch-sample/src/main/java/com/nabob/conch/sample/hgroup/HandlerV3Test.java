@@ -1,5 +1,7 @@
 package com.nabob.conch.sample.hgroup;
 
+import com.nabob.conch.sample.hgroup.test3.AbstractTest33Handler;
+import com.nabob.conch.sample.hgroup.test3.AbstractTest3Handler;
 import com.nabob.conch.sample.hgroup.test3.Test3Handler;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +19,7 @@ public class HandlerV3Test {
     @Resource
     private HandlerGroupRegistryV3 handlerGroupRegistryV3;
 
-    @PostConstruct
+//    @PostConstruct
     void test2() {
         Optional<Test3Handler> a = handlerGroupRegistryV3.get("1", Test3Handler.class);
         a.ifPresent(Test3Handler::test);
@@ -50,4 +52,16 @@ public class HandlerV3Test {
         c1.ifPresent(Test3Handler::test);
     }
 
+    @PostConstruct
+    void test3() {
+        Optional<Test3Handler> a = handlerGroupRegistryV3.get("1", Test3Handler.class);
+        a.ifPresent(Test3Handler::test);
+
+        Optional<AbstractTest3Handler> b = handlerGroupRegistryV3.get("1", AbstractTest3Handler.class);
+        b.ifPresent(AbstractTest3Handler::test);
+
+        Optional<AbstractTest33Handler> c = handlerGroupRegistryV3.get("1", AbstractTest33Handler.class);
+        c.ifPresent(AbstractTest33Handler::test);
+        System.out.println("end");
+    }
 }
