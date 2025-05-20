@@ -2,4 +2,12 @@
 
 
 
-![image-20250211224554096](/Users/adam/adam/conch/conch-framework/AI/assets/image-20250211224554096.png)
+![image-20250211224554096](./assets/image-20250211224554096.png)
+
+React思维方式：
+
+- 问题：多次与模型交互，复杂业务，最终交互窗口大
+
+
+
+![image-20250211230706714](./assets/image-20250211230706714.png)
